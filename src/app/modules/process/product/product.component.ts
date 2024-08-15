@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { ProductsService } from 'src/app/core/services/process/products.service';
+import { SettingsService } from 'src/app/core/services/settings/settings.service';
 declare var $: any;
 @Component({
   selector: 'wlrd-product',
@@ -20,23 +21,24 @@ export class ProductComponent {
   itemId: string = '';
   product = {
     id: null,
-    tipoProductoId: null,
-    unidadMedidaId: null,
-    nombre: '',
-    kgPromedio: null,
-    porcentajeRecuperacion: null,
-    esCertificable: false,
-    referencia1: '',
-    referencia2: '',
-    referencia3: '',
-    descripcion: '',
-    referenciaWLL: '',
-    referenciaPH: '',
+    productTypeId: null,
+    unitMeasureId: null,
+    name: '',
+    averageKg: null,
+    recoveryPercentage: null,
+    isCertifiable: false,
+    reference1: '',
+    reference2: '',
+    reference3: '',
+    description: '',
+    referenceWLL: '',
+    referencePH: '',
   };
 
   listData: any = [];
-
-  constructor(private _Service: ProductsService) {}
+  listProduct: any = [];
+  Measure:any = [];
+  constructor(private _Service: ProductsService, private _settings: SettingsService) {}
 
   ngOnInit(): void {
     this.selectData();
@@ -45,9 +47,15 @@ export class ProductComponent {
   selectData(): void {
     forkJoin({
       products: this._Service.getProducts(),
+      typeProduct: this._settings.getCatalogChildrenByKey('TIPO_PRODUCTO'),
+      medidas: this._settings.getCatalogChildrenByKey('UNIDAD_MEDIDA'),
+
     }).subscribe({
       next: (data: any) => {
         this.listData = data.products.data.items;
+        this.listProduct = data.typeProduct.data
+        this.Measure = data.medidas.data
+
       },
       error: (error: any) => {
         console.error('Error al obtener datos:', error);
@@ -65,18 +73,18 @@ export class ProductComponent {
       this.viewoptions = false;
       this.product = {
         id: item.id,
-        tipoProductoId: item.productTypeId,
-        unidadMedidaId: item.unitMeasureId,
-        nombre: item.name,
-        kgPromedio: item.averageKg,
-        porcentajeRecuperacion: item.recoveryPercentage,
-        esCertificable: item.isCertifiable,
-        referencia1: item.reference1,
-        referencia2: item.reference2,
-        referencia3: item.reference3,
-        descripcion: item.description,
-        referenciaWLL: item.referenceWLL,
-        referenciaPH: item.referencePH,
+        productTypeId: item.productTypeId,
+        unitMeasureId: item.unitMeasureId,
+        name: item.name,
+        averageKg: item.averageKg,
+        recoveryPercentage: item.recoveryPercentage,
+        isCertifiable: item.isCertifiable,
+        reference1: item.reference1,
+        reference2: item.reference2,
+        reference3: item.reference3,
+        description: item.description,
+        referenceWLL: item.referenceWLL,
+        referencePH: item.referencePH,
       };
 
     }
@@ -86,18 +94,18 @@ export class ProductComponent {
   resetUser(): void {
     this.product = {
       id: null,
-      tipoProductoId: null,
-      unidadMedidaId: null,
-      nombre: '',
-      kgPromedio: null,
-      porcentajeRecuperacion: null,
-      esCertificable: false,
-      referencia1: '',
-      referencia2: '',
-      referencia3: '',
-      descripcion: '',
-      referenciaWLL: '',
-      referenciaPH: '',
+      productTypeId: null,
+      unitMeasureId: null,
+      name: '',
+      averageKg: null,
+      recoveryPercentage: null,
+      isCertifiable: false,
+      reference1: '',
+      reference2: '',
+      reference3: '',
+      description: '',
+      referenceWLL: '',
+      referencePH: '',
     };
   }
 
@@ -105,68 +113,66 @@ export class ProductComponent {
     $('#modalproduct').modal('hide');
   }
 
-  saveProduct(): void {
-    console.log(this.product);
 
-    // Verifica que los campos no estén vacíos
-    if (this.product.id === null) {
-      // Llamada al servicio para crear un nuevo producto
+  updateProduct(): void {
+    if (this.product.id) {
       this._Service
-        .createProduct({
-          productTypeId: this.product.tipoProductoId,
-          unitMeasureId: this.product.unidadMedidaId,
-          name: this.product.nombre,
-          averageKg: this.product.kgPromedio,
-          recoveryPercentage: this.product.porcentajeRecuperacion,
-          isCertifiable: this.product.esCertificable,
-          reference1: this.product.referencia1,
-          reference2: this.product.referencia2,
-          reference3: this.product.referencia3,
-          description: this.product.descripcion,
-          referenceWLL: this.product.referenciaWLL,
-          referencePH: this.product.referenciaPH,
-        })
+        .updateProduct(this.product.id, this.getProductPayload())
         .subscribe({
-          next: (response) => {
-            console.log(response);
-            this.selectData();
-            this.close();
-          },
-          error: (error) => {
-            console.error('Error al crear producto:', error);
-          },
-        });
-    } else if (this.product.id !== null) {
-      // Llamada al servicio para actualizar un producto existente
-      this._Service
-        .updateProduct(this.product.id, {
-          productTypeId: this.product.tipoProductoId,
-          unitMeasureId: this.product.unidadMedidaId,
-          name: this.product.nombre,
-          averageKg: this.product.kgPromedio,
-          recoveryPercentage: this.product.porcentajeRecuperacion,
-          isCertifiable: this.product.esCertificable,
-          reference1: this.product.referencia1,
-          reference2: this.product.referencia2,
-          reference3: this.product.referencia3,
-          description: this.product.descripcion,
-          referenceWLL: this.product.referenciaWLL,
-          referencePH: this.product.referenciaPH,
-        })
-        .subscribe({
-          next: (response: any) => {
-            console.log(response);
-            this.selectData();
-            this.close();
-          },
-          error: (error: any) => {
-            console.error('Error al actualizar producto:', error);
-          },
+          next: (response: any) => this.handleSuccess(response),
+          error: (error: any) =>
+            console.error('Error al actualizar el registro:', error),
         });
     }
   }
 
+  createProduct(): void {
+    this._Service.createProduct(this.getProductPayload()).subscribe({
+      next: (response: any) => this.handleSuccess(response),
+      error: (error: any) =>
+        console.error('Error al crear el registro:', error),
+    });
+  }
 
+  getProductPayload() {
+    const {
+      id,
+      productTypeId,
+      unitMeasureId,
+      name,
+      averageKg,
+      recoveryPercentage,
+      isCertifiable,
+      reference1,
+      reference2,
+      reference3,
+      description,
+      referenceWLL,
+      referencePH,
+    } = this.product;
+  
+    return {
+      id,
+      productTypeId,
+      unitMeasureId,
+      name,
+      averageKg,
+      recoveryPercentage,
+      isCertifiable,
+      reference1,
+      reference2,
+      reference3,
+      description,
+      referenceWLL,
+      referencePH,
+    };
+  }
+
+   handleSuccess(response: any): void {
+    console.log(response);
+    this.selectData();
+    this.close();
+  }
 
   removeItem(id:string){
     this.itemId = id;

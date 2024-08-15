@@ -34,9 +34,8 @@ export class CentersService {
   }
 
   // Cambiar el estado de un centro de acopio
-  changeCollectionSiteStatus(id: string, status: boolean): Observable<string> {
+  changeCollectionSiteStatus(id: string): Observable<string> {
     const url = `collection-sites/${id}/change-status`;
-    const data = { status };
-    return this._api.patch(url, data);
+    return this._api.patch(url);
   }
 }

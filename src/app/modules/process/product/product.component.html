@@ -23,6 +23,8 @@
                 <tr>
                   <th class="text-left"> Nombre</th>
                   <th class="text-center"> Fecha Creación </th>
+                  <th class="text-center"> Fecha Actualización </th>
+
                   <th class="text-center"> Estado </th>
                   <th class="text-center"> Acciones</th>
                 </tr>
@@ -32,6 +34,8 @@
                   style="font-size: smaller;">
                   <td class="text-left"> {{item.name}} </td>
                   <td class="text-center"> {{item.createdAt |
+                    date:'EEEE dd MMM yyyy'}} </td>
+                         <td class="text-center"> {{item.updatedAt |
                     date:'EEEE dd MMM yyyy'}} </td>
                   <td class="text-center">
                     <h5 *ngIf="item.status == true" style="color: white;"><span
@@ -97,24 +101,38 @@
           <div class="col-md-12 pb-3">
             <div class="row">
               <!-- First Row: TipoProductoId and UnidadMedidaId -->
+        
               <div class="col-md-4">
-                <label for="tipoProductoId" class="form-label text-black">Tipo de
-                  Producto ID</label>
+                <label for="documentTypeId" class="form-label text-black">Tipo de
+                  Producto</label>
                 <div class="input-group mb-3">
-                  <input type="number" class="form-control h-46"
-                    placeholder="Tipo de Producto ID" autocomplete="off"
-                    name="TipoProductoId" id="tipoProductoId"
-                    [(ngModel)]="product.tipoProductoId" />
+                  <select
+                    class="form-select h-46"
+                    name="DocumentTypeId"
+                    id="documentTypeId"
+                    [(ngModel)]="product.productTypeId"
+                  >
+                    <option *ngFor="let product of listProduct" [value]="product.id">
+                      {{ product.name }}
+                    </option>
+                  </select>
                 </div>
               </div>
+   
               <div class="col-md-4">
-                <label for="unidadMedidaId" class="form-label text-black">Unidad
+                <label for="documentTypeId" class="form-label text-black">Unidad
                   de Medida ID</label>
                 <div class="input-group mb-3">
-                  <input type="number" class="form-control h-46"
-                    placeholder="Unidad de Medida ID" autocomplete="off"
-                    name="UnidadMedidaId" id="unidadMedidaId"
-                    [(ngModel)]="product.unidadMedidaId" />
+                  <select
+                    class="form-control h-46"
+                    name="DocumentTypeId"
+                    id="documentTypeId"
+                    [(ngModel)]="product.unitMeasureId"
+                  >
+                    <option *ngFor="let product of Measure" [value]="product.id">
+                      {{ product.name }}
+                    </option>
+                  </select>
                 </div>
               </div>
 
@@ -124,7 +142,7 @@
                 <div class="input-group mb-3">
                   <input type="text" class="form-control h-46"
                     placeholder="Nombre" autocomplete="off" name="Nombre"
-                    id="nombre" [(ngModel)]="product.nombre" />
+                    id="nombre" [(ngModel)]="product.name" />
                 </div>
               </div>
               <div class="col-md-4">
@@ -133,7 +151,7 @@
                 <div class="input-group mb-3">
                   <input type="number" class="form-control h-46"
                     placeholder="Kg Promedio" autocomplete="off" name="KgPromedio"
-                    id="kgPromedio" [(ngModel)]="product.kgPromedio" />
+                    id="kgPromedio" [(ngModel)]="product.averageKg" />
                 </div>
               </div>
 
@@ -145,7 +163,7 @@
                   <input type="number" class="form-control h-46"
                     placeholder="Porcentaje de Recuperación" autocomplete="off"
                     name="PorcentajeRecuperacion" id="porcentajeRecuperacion"
-                    [(ngModel)]="product.porcentajeRecuperacion" />
+                    [(ngModel)]="product.recoveryPercentage" />
                 </div>
               </div>
               <div class="col-md-4">
@@ -153,7 +171,7 @@
                   Certificable?</label>
                 <div class="input-group mb-3">
                   <select class="form-control h-46" name="EsCertificable"
-                    id="esCertificable" [(ngModel)]="product.esCertificable">
+                    id="esCertificable" [(ngModel)]="product.isCertifiable">
                     <option value="true">Sí</option>
                     <option value="false">No</option>
                   </select>
@@ -168,7 +186,7 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Referencia 1" autocomplete="off"
                     name="Referencia1" id="referencia1"
-                    [(ngModel)]="product.referencia1" />
+                    [(ngModel)]="product.reference1" />
                 </div>
               </div>
               <div class="col-md-4">
@@ -178,7 +196,7 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Referencia 2" autocomplete="off"
                     name="Referencia2" id="referencia2"
-                    [(ngModel)]="product.referencia2" />
+                    [(ngModel)]="product.reference2" />
                 </div>
               </div>
 
@@ -190,7 +208,7 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Referencia 3" autocomplete="off"
                     name="Referencia3" id="referencia3"
-                    [(ngModel)]="product.referencia3" />
+                    [(ngModel)]="product.reference3" />
                 </div>
               </div>
               <div class="col-md-4">
@@ -200,7 +218,7 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Descripción" autocomplete="off"
                     name="Descripcion" id="descripcion"
-                    [(ngModel)]="product.descripcion" />
+                    [(ngModel)]="product.description" />
                 </div>
               </div>
 
@@ -212,7 +230,7 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Referencia WLL" autocomplete="off"
                     name="ReferenciaWLL" id="referenciaWLL"
-                    [(ngModel)]="product.referenciaWLL" />
+                    [(ngModel)]="product.referenceWLL" />
                 </div>
               </div>
               <div class="col-md-4">
@@ -222,14 +240,14 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Referencia PH" autocomplete="off"
                     name="ReferenciaPH" id="referenciaPH"
-                    [(ngModel)]="product.referenciaPH" />
+                    [(ngModel)]="product.referencePH" />
                 </div>
               </div>
             </div>
             <div class="row mt-5">
               <div class="col-md-12 d-flex flex-rows gap-10">
-                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="saveProduct()"> Crear </button>
-                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false " (click)="saveProduct()"> Actualizar </button>
+                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="createProduct()"> Crear </button>
+                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false " (click)="updateProduct()"> Actualizar </button>
                 <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
               </div>
             </div>

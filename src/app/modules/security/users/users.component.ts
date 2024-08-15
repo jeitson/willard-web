@@ -67,7 +67,7 @@ export class UsersComponent {
       this.viewoptions = false;
       this.user = {
         id: item.id ?? '',
-        authId: item.id ?? '',
+        authId: null ?? '',
         name: item.name ?? '',
         description: item.description ?? '',
         email: item.email ?? '',
@@ -77,58 +77,42 @@ export class UsersComponent {
   }
 
 
-  saveUser(): void {
-    console.log(this.user);
-    if (
-      this.user.name.trim() &&
-      this.user.description.trim() &&
-      this.user.email.trim() &&
-      this.user.role.trim()
-    ) {
-
-
-      if (this.user.id === null) {
-        this.userService
-          .createUser({
-            OauthId: this.user.authId,
-            name: this.user.name,
-            description: this.user.description,
-            email: this.user.email,
-            roles: [Number(this.user.role)],
-          })
-          .subscribe({
-            next: (response: any) => {
-              console.log('User created successfully:', response);
-              this.selectData(); // Refresh the list of users after creating a new one
-              this.close();
-            },
-            error: (error: any) => {
-              console.error('Error creating user:', error);
-            },
-          });
-      } else {
-        this.userService
-          .updateUser(this.user.id, {
-            OauthId: this.user.authId,
-            name: this.user.name,
-            description: this.user.description,
-            email: this.user.email,
-            roles: [Number(this.user.role)],
-          })
-          .subscribe({
-            next: (response: any) => {
-              console.log('User updated successfully:', response);
-              this.selectData(); // Refresh the list of users after updating an existing one
-              this.close();
-            },
-            error: (error: any) => {
-              console.error('Error updating user:', error);
-            },
-          });
-      }
-    } else {
-      console.log('Please complete all fields.');
+  updateeUser(): void {
+    if (this.user.id) {
+      this.userService
+        .updateUser(this.user.id, this.geteUserPayload())
+        .subscribe({
+          next: (response: any) => this.handleSuccess(response),
+          error: (error: any) =>
+            console.error('Error al actualizar el registro:', error),
+        });
     }
+  }
+
+  createeUser(): void {
+    this.userService.createUser(this.geteUserPayload()).subscribe({
+      next: (response: any) => this.handleSuccess(response),
+      error: (error: any) =>
+        console.error('Error al crear el registro:', error),
+    });
+  }
+
+  geteUserPayload() {
+    const { id, authId, name, description, email, role } = this.user;
+  
+    return {
+      authId,
+      name,
+      description,
+      email,
+      role: [Number(role)],
+    };
+  }
+
+  handleSuccess(response: any): void {
+    console.log(response);
+    this.selectData();
+    this.close();
   }
   close() {
     $('#userModal').modal('hide');

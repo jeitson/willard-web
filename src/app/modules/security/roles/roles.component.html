@@ -28,6 +28,7 @@
                 <tr>
                   <th class="text-left"> Nombre</th>
                   <th class="text-center"> Fecha Creación </th>
+                  <th class="text-center"> Fecha Actaulización </th>
                   <th class="text-center"> Estado </th>
                   <th class="text-center"> Acciones</th>
                 </tr>
@@ -38,13 +39,15 @@
                   <td class="text-left"> {{item.name}} </td>
                   <td class="text-center"> {{item.createdAt |
                     date:'EEEE dd MMM yyyy'}} </td>
+                     <td class="text-center"> {{item.updatedAt |
+                    date:'EEEE dd MMM yyyy'}} </td>
                   <td class="text-center">
                     <h5 *ngIf="item.status == true" style="color: white;"><span
                         class="badge bg-success2">Activo</span></h5>
                     <h5 *ngIf="item.status == false" style="color: white;"><span
                         class="badge bg-danger">Inactivo</span></h5>
                   </td>
-                  <td class="text-center">
+                  <td class="text-center ">
                     <i class="fa-solid f-larger pointer fa-pencil"
                       (click)="createAndUpdte(item)"></i>
 
@@ -102,8 +105,8 @@
             </div>
             <div class="row mt-5">
               <div class="col-md-12 d-flex flex-rows gap-10">
-                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="manageRole()"> Crear </button>
-                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="manageRole()"> Actualizar </button>
+                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="createRole()"> Crear </button>
+                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="updateRole()"> Actualizar </button>
                 <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
               </div>
             </div>

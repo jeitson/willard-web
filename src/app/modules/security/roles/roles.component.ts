@@ -42,14 +42,13 @@ export class RolesComponent implements OnInit {
     });
   }
 
-  clearDta(){
+  clearDta() {
     this.role = {
       id: null,
       name: '',
       description: '',
     };
   }
-
 
   close() {
     $('#modalRol').modal('hide');
@@ -71,47 +70,39 @@ export class RolesComponent implements OnInit {
     }
   }
 
-  manageRole(): void {
-    console.log(this.role);
-    // Verifica que los campos no estén vacíos
-    if (this.role.name.trim() && this.role.description.trim()) {
-      if (this.role.id === null) {
-        // Llamada al servicio para crear un nuevo rol
-        this._rolesService.createRol({
-          name: this.role.name,
-          description: this.role.description,
-        }).subscribe({
-          next: (response) => {
-            this.selectData();
-            this.close();
-          },
-          error: (error) => {
-            console.error('Error al crear rol:', error);
-          },
+  updateRole(): void {
+    if (this.role.id) {
+      this._rolesService
+        .updateRol(this.role.id, this.getRolePayload())
+        .subscribe({
+          next: (response: any) => this.handleSuccess(response),
+          error: (error: any) =>
+            console.error('Error al actualizar el registro:', error),
         });
-      } else if (this.role.id !== null) {
-        // Llamada al servicio para actualizar un rol existente
-        this._rolesService.updateRol(this.role.id, {
-          name: this.role.name,
-          description: this.role.description,
-        }).subscribe(x=>{
-          this.selectData();
-          this.close();
-        });
-
-
-      }
-    } else {
-      // Muestra un mensaje de error si los campos están vacíos
-      console.log('Por favor, completa todos los campos.');
     }
   }
 
-  
+  createRole(): void {
+    this._rolesService.createRol(this.getRolePayload()).subscribe({
+      next: (response: any) => this.handleSuccess(response),
+      error: (error: any) =>
+        console.error('Error al crear el registro:', error),
+    });
+  }
 
+  getRolePayload() {
+    const { id, name, description } = this.role;
 
+    return {
+      id,
+      name,
+      description,
+    };
+  }
 
-
-
-
+  handleSuccess(response: any): void {
+    console.log(response);
+    this.selectData();
+    this.close();
+  }
 }

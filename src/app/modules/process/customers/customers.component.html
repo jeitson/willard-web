@@ -111,7 +111,7 @@
                     autocomplete="off"
                     name="Name"
                     id="name"
-                    [(ngModel)]="client.Name"
+                    [(ngModel)]="client.name"
                   />
                 </div>
               </div>
@@ -125,7 +125,7 @@
                     autocomplete="off"
                     name="Description"
                     id="description"
-                    [(ngModel)]="client.Description"
+                    [(ngModel)]="client.description"
                   />
                 </div>
               </div>
@@ -141,7 +141,7 @@
                     autocomplete="off"
                     name="BusinessName"
                     id="businessName"
-                    [(ngModel)]="client.BusinessName"
+                    [(ngModel)]="client.businessName"
                   />
                 </div>
               </div>
@@ -149,10 +149,10 @@
                 <label for="documentTypeId" class="form-label text-black">Tipo de Documento</label>
                 <div class="input-group mb-3">
                   <select
-                    class="form-control h-46"
+                    class="form-select h-46"
                     name="DocumentTypeId"
                     id="documentTypeId"
-                    [(ngModel)]="client.DocumentTypeId"
+                    [(ngModel)]="client.documentTypeId"
                   >
                     <option *ngFor="let document of typeDocuments" [value]="document.id">
                       {{ document.name }}
@@ -166,10 +166,10 @@
                 <label for="countryId" class="form-label text-black">País</label>
                 <div class="input-group mb-3">
                   <select
-                    class="form-control h-46"
+                    class="form-select h-46"
                     name="CountryId"
                     id="countryId"
-                    [(ngModel)]="client.CountryId"
+                    [(ngModel)]="client.countryId"
                   >
                     <option *ngFor="let pais of paisData" [value]="pais.id">
                       {{ pais.name }}
@@ -187,7 +187,7 @@
                     autocomplete="off"
                     name="DocumentNumber"
                     id="documentNumber"
-                    [(ngModel)]="client.DocumentNumber"
+                    [(ngModel)]="client.documentNumber"
                   />
                 </div>
               </div>
@@ -203,7 +203,7 @@
                     autocomplete="off"
                     name="ReferenceWLL"
                     id="referenceWLL"
-                    [(ngModel)]="client.ReferenceWLL"
+                    [(ngModel)]="client.referenceWLL"
                   />
                 </div>
               </div>
@@ -217,15 +217,15 @@
                     autocomplete="off"
                     name="ReferencePH"
                     id="referencePH"
-                    [(ngModel)]="client.ReferencePH"
+                    [(ngModel)]="client.referencePH"
                   />
                 </div>
               </div>
             </div>
             <div class="row mt-5">
               <div class="col-md-12 d-flex flex-rows gap-10">
-                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="saveClient()"> Crear </button>
-                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="saveClient()"> Actualizar </button>
+                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="createClient()"> Crear </button>
+                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="updateClient()"> Actualizar </button>
                 <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
               </div>
             </div>

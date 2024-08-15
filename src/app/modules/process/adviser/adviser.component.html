@@ -7,7 +7,7 @@
     </div>
     <div class="d-flex flex-rows gap-10">
       <button type="button" class="btn btn-sm bg-add"
-        (click)="createOrUpdateRecord(null)">Agregar <i
+        (click)="createOrUpdateadviser(null)">Agregar <i
           class="fa-solid fa-add"></i></button>
       <button type="button" class="btn btn-sm btn-dark"
         (click)="selectData()">Recargar <i
@@ -45,7 +45,7 @@
                   </td>
                   <td class="text-center">
                     <i class="fa-solid f-larger pointer fa-pencil"
-                      (click)="createOrUpdateRecord(item)"></i>
+                      (click)="createOrUpdateadviser(item)"></i>
                     <i class="fa-solid f-larger pointer fa-sync"
                       (click)="editState(item.id)"></i>
                     <i class="fa-solid f-larger pointer fa-trash"
@@ -105,7 +105,7 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Nombre" autocomplete="off"
                     name="name" id="name"
-                    [(ngModel)]="record.name" />
+                    [(ngModel)]="adviser.name" />
                 </div>
               </div>
               <div class="col-md-6">
@@ -114,7 +114,7 @@
                   <input type="email" class="form-control h-46"
                     placeholder="Email" autocomplete="off"
                     name="email" id="email"
-                    [(ngModel)]="record.email" />
+                    [(ngModel)]="adviser.email" />
                 </div>
               </div>
 
@@ -125,7 +125,7 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Teléfono" autocomplete="off"
                     name="phone" id="phone"
-                    [(ngModel)]="record.phone" />
+                    [(ngModel)]="adviser.phone" />
                 </div>
               </div>
               <div class="col-md-6">
@@ -134,7 +134,7 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Descripción" autocomplete="off"
                     name="description" id="description"
-                    [(ngModel)]="record.description" />
+                    [(ngModel)]="adviser.description" />
                 </div>
               </div>
 
@@ -145,15 +145,15 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Referencia PH" autocomplete="off"
                     name="referencePH" id="referencePH"
-                    [(ngModel)]="record.referencePH" />
+                    [(ngModel)]="adviser.referencePH" />
                 </div>
               </div>
             </div>
             <div class="row mt-5">
               <div class="col-md-12 d-flex flex-rows gap-10">
-                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="saveRecord()"> Crear </button>
-                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="saveRecord()"> Actualizar </button>
-                <button class="btn btn-sm btn-dark" data-bs-dismiss="modal" aria-label="Close"> Cancelar </button>
+                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="createAdviser()"> Crear </button>
+                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="updateAdviser()"> Actualizar </button>
+                <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
               </div>
             </div>
           </div>
