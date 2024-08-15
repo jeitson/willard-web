@@ -8,7 +8,7 @@ import { UtilsLocalStorageService } from 'ngx-danisoft-utils';
 import { environment } from 'src/environments/environment';
 import { AuthService } from '@auth0/auth0-angular';
 
-const { app_name, appKey: _appKey_ } = environment;
+const { app_name} = environment;
 
 @Injectable({
   providedIn: 'root',
