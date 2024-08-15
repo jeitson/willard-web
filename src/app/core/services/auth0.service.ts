@@ -131,7 +131,7 @@ export class Auth0Service {
 
   login() {
     this.auth.loginWithRedirect({
-      appState: { target: environment.auth0.redirect_uri },
+      appState: { target: window.location.origin },//environment.auth0.redirect_uri },
     });
   }
 }
