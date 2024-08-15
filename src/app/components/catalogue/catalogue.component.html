@@ -2,15 +2,17 @@
   <div class="page-header">
     <div class="d-flex flex-column">
       <h3 class="primary title noselect">CONFIGURACIÓN DE {{keypluralspanish | uppercase}}</h3>
-      <p class="secundary">En este modulo podras configurar {{keypluralspanish | lowercase}}, realizando acciones como: crear | editar | eliminar | cambiar estado </p>
+      <p class="secundary mb-1">En este modulo podras configurar {{keypluralspanish | lowercase}}, realizando acciones como: crear | editar | eliminar | cambiar estado </p>
     </div>
     <div class="d-flex flex-rows gap-10">
       <button type="button" class="btn btn-sm bg-add" (click)="addItem()">Agregar <i class="fa-solid fa-add"></i></button>
       <button type="button" class="btn btn-sm btn-dark" (click)="backToList()">Recargar <i class="fa-solid fa-rotate-right"></i></button>
     </div>
   </div>
-  <div class="page-body">
+  <div class="page-divider mb-3">
     <hr class="mt-1 mb-1">
+  </div>
+  <div class="page-body">
     <div class="col-md-12">
         <div class="row">
             <div class="col-md-12">
