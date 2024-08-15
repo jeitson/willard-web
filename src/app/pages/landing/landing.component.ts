@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '@auth0/auth0-angular';
 import { map } from 'rxjs';
@@ -8,9 +8,17 @@ import { map } from 'rxjs';
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss'],
 })
-export class LandingComponent implements OnInit {
+export class LandingComponent implements AfterViewInit, OnInit {
   constructor(public auth: AuthService, private router: Router){
 
+  }
+
+  ngAfterViewInit(){
+    this.auth.isAuthenticated$.subscribe(isAuthenticaded => {
+      if(isAuthenticaded){
+        this.router.navigate(['/main/dashboard']);
+      }
+    })
   }
 
   ngOnInit(): void {
@@ -18,11 +26,6 @@ export class LandingComponent implements OnInit {
     //   console.log(r)
     // })
     // return;
-    this.auth.isAuthenticated$.subscribe(isAuthenticaded => {
-      if(isAuthenticaded){
-        this.router.navigate(['/main/dashboard']);
-      }
-    })
   }
 
   login(){
