@@ -99,13 +99,15 @@
           <div class="col-md-12 pb-3">
             <div class="row">
               <!-- Primera Fila: Tipo de Sitio y País -->
+         
               <div class="col-md-4">
-                <label for="siteTypeId" class="form-label text-black">Tipo de Sitio</label>
+                <label for="countryId" class="form-label text-black">Tipo de Sitio</label>
                 <div class="input-group mb-3">
-                  <input type="number" class="form-control h-46"
-                    placeholder="Tipo de Sitio" autocomplete="off"
-                    name="siteTypeId" id="siteTypeId"
-                    [(ngModel)]="centers.siteTypeId" />
+                  <select class="form-select h-46" name="countryId" id="countryId" [(ngModel)]="centers.siteTypeId">
+                    <option value="" disabled selected>Selecciona un tipo</option>
+                    <!-- Ejemplo de opciones, reemplaza con los datos dinámicos si es necesario -->
+                    <option *ngFor="let centers of typeCenters" [value]="centers.id">{{ centers.name }}</option>
+                  </select>
                 </div>
               </div>
               <div class="col-md-4">
@@ -260,8 +262,8 @@
             </div>
             <div class="row mt-5">
               <div class="col-md-12 d-flex flex-rows gap-10">
-                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="saveRecord()"> Crear </button>
-                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="saveRecord()"> Actualizar </button>
+                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="createCollection()"> Crear </button>
+                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="updateCollection()"> Actualizar </button>
                 <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
               </div>
             </div>

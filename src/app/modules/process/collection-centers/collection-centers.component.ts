@@ -39,7 +39,7 @@ export class CollectionCentersComponent {
   itemId: string = '';
   countries: any = [];
   cities: any = [];
-
+  typeCenters: any = [];
   constructor(
     private _Service: CentersService,
     private _settings: SettingsService
@@ -53,12 +53,14 @@ export class CollectionCentersComponent {
       centers: this._Service.getCollectionSites(),
       countries: this._settings.getCatalogChildrenByKey('PAIS'),
       cities: this._settings.getCatalogChildrenByKey('CIUDAD'),
-
+      typeCenters: this._settings.getCatalogChildrenByKey('TIPOS_SEDES_ACOPIO'),
     }).subscribe({
       next: (data: any) => {
         this.listData = data.centers.data.items;
         this.countries = data.countries.data;
         this.cities = data.cities.data;
+        this.typeCenters = data.typeCenters.data;
+
       },
       error: (error: any) => {
         console.error('Error al obtener datos:', error);
@@ -120,40 +122,70 @@ export class CollectionCentersComponent {
     $('#modalCenter').modal('hide');
   }
 
-  saveRecord(): void {
-    console.log(this.centers);
-
-    // Verifica que los campos no estén vacíos
-    if (!this.centers.siteTypeId) {
-      // Llamada al servicio para crear un nuevo registro
-      this._Service.createCollectionSite(this.centers)
+  updateCollection(): void {
+    if (this.centers.siteTypeId) {
+      this._Service
+        .updateCollectionSite(this.centers.siteTypeId, this.getCenterPayload())
         .subscribe({
-          next: (response: any) => {
-            console.log(response);
-            this.selectData();
-            this.close();
-          },
-          error: (error: any) => {
-            console.error('Error al crear el registro:', error);
-          },
-        });
-    } else if (this.centers.siteTypeId) {
-      // Llamada al servicio para actualizar un registro existente
-      this._Service.updateCollectionSite(this.centers.siteTypeId, this.centers)
-        .subscribe({
-          next: (response: any) => {
-            console.log(response);
-            this.selectData();
-            this.close();
-          },
-          error: (error: any) => {
-            console.error('Error al actualizar el registro:', error);
-          },
+          next: (response: any) => this.handleSuccess(response),
+          error: (error: any) =>
+            console.error('Error al actualizar el registro:', error),
         });
     }
   }
 
+  createCollection(): void {
+    this._Service.createCollectionSite(this.getCenterPayload()).subscribe({
+      next: (response: any) => this.handleSuccess(response),
+      error: (error: any) =>
+        console.error('Error al crear el registro:', error),
+    });
+  }
 
+  getCenterPayload() {
+    const {
+      siteTypeId,
+      countryId,
+      cityId,
+      name,
+      description,
+      taxId,
+      businessName,
+      neighborhood,
+      address,
+      latitude,
+      longitude,
+      contactName,
+      contactEmail,
+      contactPhone,
+      referenceWLL,
+      referencePH,
+    } = this.centers;
+
+    return {
+      siteTypeId,
+      countryId,
+      cityId,
+      name,
+      description,
+      taxId,
+      businessName,
+      neighborhood,
+      address,
+      latitude,
+      longitude,
+      contactName,
+      contactEmail,
+      contactPhone,
+      referenceWLL,
+      referencePH,
+    };
+  }
+   handleSuccess(response: any): void {
+    console.log(response);
+    this.selectData();
+    this.close();
+  }
 
   removeItem(id: string) {
     this.itemId = id;
@@ -187,7 +219,7 @@ export class CollectionCentersComponent {
   }
 
   changeStatus() {
-    this._Service.createCollectionSite(this.itemId).subscribe({
+    this._Service.changeCollectionSiteStatus(this.itemId).subscribe({
       next: () => {
         this.selectData();
         $('#modalconfirm').modal('hide');

@@ -16,7 +16,7 @@ export class ConveyorComponent {
     color: '',
   };
   itemId: string = '';
-  record = {
+  conveyor = {
     id: null,
     name: '',
     taxId: '',
@@ -49,15 +49,15 @@ export class ConveyorComponent {
     });
   }
 
-  createOrUpdateRecord(item: any | null): void {
-    this.resetRecord();
+  createOrUpdateconveyor(item: any | null): void {
+    this.resetconveyor();
     this.action.name = 'Crear';
     this.viewoptions = true;
     $('#modalconveyor').modal({ backdrop: 'static', keyboard: false });
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
-      this.record = {
+      this.conveyor = {
         id: item.id,
         name: item.name || '',
         taxId: item.taxId || '',
@@ -71,8 +71,8 @@ export class ConveyorComponent {
     }
   }
 
-  resetRecord(): void {
-    this.record = {
+  resetconveyor(): void {
+    this.conveyor = {
       id: null,
       name: '',
       taxId: '',
@@ -89,59 +89,58 @@ export class ConveyorComponent {
     $('#modalconveyor').modal('hide');
   }
 
-  saveRecord(): void {
-    console.log(this.record);
+ 
 
-    // Verifica que los campos no estén vacíos
-    if (this.record.id === null) {
-      // Llamada al servicio para crear un nuevo transportador
+  updateConveyor(): void {
+    if (this.conveyor.id) {
       this._Service
-        .createTransportador({
-          name: this.record.name,
-          taxId: this.record.taxId,
-          businessName: this.record.businessName,
-          description: this.record.description,
-          contactName: this.record.contactName,
-          contactEmail: this.record.contactEmail,
-          referenceWLL: this.record.referenceWLL,
-          referencePH: this.record.referencePH,
-        })
+        .updateTransportador(this.conveyor.id, this.getConveyorPayload())
         .subscribe({
-          next: (response: any) => {
-            console.log(response);
-            this.selectData();
-            this.close();
-          },
-          error: (error: any) => {
-            console.error('Error al crear transportador:', error);
-          },
-        });
-    } else if (this.record.id !== null) {
-      // Llamada al servicio para actualizar un transportador existente
-      this._Service
-        .updateTransportador(this.record.id, {
-          name: this.record.name,
-          taxId: this.record.taxId,
-          businessName: this.record.businessName,
-          description: this.record.description,
-          contactName: this.record.contactName,
-          contactEmail: this.record.contactEmail,
-          referenceWLL: this.record.referenceWLL,
-          referencePH: this.record.referencePH,
-        })
-        .subscribe({
-          next: (response: any) => {
-            console.log(response);
-            this.selectData();
-            this.close();
-          },
-          error: (error: any) => {
-            console.error('Error al actualizar transportador:', error);
-          },
+          next: (response: any) => this.handleSuccess(response),
+          error: (error: any) =>
+            console.error('Error al actualizar el registro:', error),
         });
     }
   }
 
+  createConveyor(): void {
+    this._Service.createTransportador(this.getConveyorPayload()).subscribe({
+      next: (response: any) => this.handleSuccess(response),
+      error: (error: any) =>
+        console.error('Error al crear el registro:', error),
+    });
+  }
+
+  getConveyorPayload() {
+    const {
+      id,
+      name,
+      taxId,
+      businessName,
+      description,
+      contactName,
+      contactEmail,
+      referenceWLL,
+      referencePH,
+    } = this.conveyor;
+  
+    return {
+      id,
+      name,
+      taxId,
+      businessName,
+      description,
+      contactName,
+      contactEmail,
+      referenceWLL,
+      referencePH,
+    };
+  }
+   handleSuccess(response: any): void {
+    console.log(response);
+    this.selectData();
+    this.close();
+  }
 
   removeItem(id: string) {
     this.itemId = id;

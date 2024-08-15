@@ -8,8 +8,8 @@ declare var $: any;
   styleUrls: ['./adviser.component.scss'],
 })
 export class AdviserComponent {
-  // Actualiza el objeto record con la nueva estructura
-  record = {
+  // Actualiza el objeto adviser con la nueva estructura
+  adviser = {
     id: null,
     name: '',
     email: '',
@@ -45,15 +45,15 @@ export class AdviserComponent {
     });
   }
 
-  createOrUpdateRecord(item: any | null): void {
-    this.resetRecord();
+  createOrUpdateadviser(item: any | null): void {
+    this.resetadviser();
     this.action.name = 'Crear';
     this.viewoptions = true;
     $('#modalconveyor').modal({ backdrop: 'static', keyboard: false });
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
-      this.record = {
+      this.adviser = {
         id: item.id,
         name: item.name || '',
         email: item.email || '',
@@ -64,8 +64,8 @@ export class AdviserComponent {
     }
   }
 
-  resetRecord(): void {
-    this.record = {
+  resetadviser(): void {
+    this.adviser = {
       id: null,
       name: '',
       email: '',
@@ -79,53 +79,35 @@ export class AdviserComponent {
     $('#modalconveyor').modal('hide');
   }
 
-  saveRecord(): void {
-    console.log(this.record);
+ 
 
-    // Verifica que los campos no estén vacíos
-    if (this.record.id === null) {
-      // Llamada al servicio para crear un nuevo registro
-      this._Service
-        .createConsultant({
-          name: this.record.name,
-          email: this.record.email,
-          phone: this.record.phone,
-          description: this.record.description,
-          referencePH: this.record.referencePH,
-        })
-        .subscribe({
-          next: (response: any) => {
-            console.log(response);
-            this.selectData();
-            this.close();
-          },
-          error: (error: any) => {
-            console.error('Error al crear el registro:', error);
-          },
-        });
-    } else if (this.record.id !== null) {
-      // Llamada al servicio para actualizar un registro existente
-      this._Service
-        .updateConsultant(this.record.id, {
-          name: this.record.name,
-          email: this.record.email,
-          phone: this.record.phone,
-          description: this.record.description,
-          referencePH: this.record.referencePH,
-        })
-        .subscribe({
-          next: (response: any) => {
-            console.log(response);
-            this.selectData();
-            this.close();
-          },
-          error: (error: any) => {
-            console.error('Error al actualizar el registro:', error);
-          },
-        });
+  updateAdviser(): void {
+    if (this.adviser.id) {
+      this._Service.updateConsultant(this.adviser.id, this.getadviserPayload()).subscribe({
+        next: (response: any) => this.handleSuccess(response),
+        error: (error: any) => console.error('Error al actualizar el registro:', error),
+      });
     }
   }
-
+  
+  createAdviser(): void {
+    if (!this.adviser.id) {
+      this._Service.createConsultant(this.getadviserPayload()).subscribe({
+        next: (response: any) => this.handleSuccess(response),
+        error: (error: any) => console.error('Error al crear el registro:', error),
+      });
+    }
+  }
+  private getadviserPayload() {
+    const { name, email, phone, description, referencePH } = this.adviser;
+    return { name, email, phone, description, referencePH };
+  }
+  private handleSuccess(response: any): void {
+    console.log(response);
+    this.selectData();
+    this.close();
+  }
+  
   removeItem(id: string) {
     this.itemId = id;
     this.action.name = 'Eliminar';

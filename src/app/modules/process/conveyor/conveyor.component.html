@@ -7,7 +7,7 @@
     </div>
     <div class="d-flex flex-rows gap-10">
       <button type="button" class="btn btn-sm bg-add"
-        (click)="createOrUpdateRecord(null)">Agregar <i
+        (click)="createOrUpdateconveyor(null)">Agregar <i
           class="fa-solid fa-add"></i></button>
       <button type="button" class="btn btn-sm btn-dark"
         (click)="selectData()">Recargar <i
@@ -44,7 +44,7 @@
                   </td>
                   <td class="text-center">
                     <i class="fa-solid f-larger pointer fa-pencil"
-                      (click)="createOrUpdateRecord(item)"></i>
+                      (click)="createOrUpdateconveyor(item)"></i>
                     <i class="fa-solid f-larger pointer fa-sync"
                       (click)="editState(item.id)"></i>
                     <i class="fa-solid f-larger pointer fa-trash"
@@ -106,7 +106,7 @@
                   <input type="text" class="form-control h-46"
                     placeholder="ID Fiscal" autocomplete="off"
                     name="taxId" id="taxId"
-                    [(ngModel)]="record.taxId" />
+                    [(ngModel)]="conveyor.taxId" />
                 </div>
               </div>
               <div class="col-md-4">
@@ -115,7 +115,7 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Nombre de Negocio" autocomplete="off"
                     name="businessName" id="businessName"
-                    [(ngModel)]="record.businessName" />
+                    [(ngModel)]="conveyor.businessName" />
                 </div>
               </div>
 
@@ -126,7 +126,7 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Nombre" autocomplete="off"
                     name="name" id="name"
-                    [(ngModel)]="record.name" />
+                    [(ngModel)]="conveyor.name" />
                 </div>
               </div>
               <div class="col-md-4">
@@ -135,7 +135,7 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Descripción" autocomplete="off"
                     name="description" id="description"
-                    [(ngModel)]="record.description" />
+                    [(ngModel)]="conveyor.description" />
                 </div>
               </div>
 
@@ -146,7 +146,7 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Nombre de Contacto" autocomplete="off"
                     name="contactName" id="contactName"
-                    [(ngModel)]="record.contactName" />
+                    [(ngModel)]="conveyor.contactName" />
                 </div>
               </div>
               <div class="col-md-4">
@@ -155,7 +155,7 @@
                   <input type="email" class="form-control h-46"
                     placeholder="Email de Contacto" autocomplete="off"
                     name="contactEmail" id="contactEmail"
-                    [(ngModel)]="record.contactEmail" />
+                    [(ngModel)]="conveyor.contactEmail" />
                 </div>
               </div>
 
@@ -166,7 +166,7 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Referencia WLL" autocomplete="off"
                     name="referenceWLL" id="referenceWLL"
-                    [(ngModel)]="record.referenceWLL" />
+                    [(ngModel)]="conveyor.referenceWLL" />
                 </div>
               </div>
               <div class="col-md-4">
@@ -175,14 +175,14 @@
                   <input type="text" class="form-control h-46"
                     placeholder="Referencia PH" autocomplete="off"
                     name="referencePH" id="referencePH"
-                    [(ngModel)]="record.referencePH" />
+                    [(ngModel)]="conveyor.referencePH" />
                 </div>
               </div>
             </div>
             <div class="row mt-5">
               <div class="col-md-12 d-flex flex-rows gap-10">
-                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="saveRecord()"> Crear </button>
-                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="saveRecord()"> Actualizar </button>
+                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="createConveyor()"> Crear </button>
+                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="updateConveyor()"> Actualizar </button>
                 <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
               </div>
             </div>
