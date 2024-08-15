@@ -1,0 +1,220 @@
+import { Component, Input, OnInit } from '@angular/core';
+import { ApiService } from 'src/app/core/services/api/api.service';
+declare var $: any;
+
+@Component({
+  selector: 'wlrd-catalogue',
+  templateUrl: './catalogue.component.html',
+  styleUrls: ['./catalogue.component.scss']
+})
+export class CatalogueComponent implements OnInit {
+
+
+  @Input() key:string = '';
+  @Input() parent:string = '';
+  @Input() keyspanish:string = '';
+  @Input() parentspanish:string = '';
+  @Input() keypluralspanish: string = '';
+  @Input() rol:string = '';
+
+  p:number = 1;
+  filtertext:string = '';
+  itemId:string = '';
+  viewoptions:boolean = true;
+  list:any[] = [];
+  listBase:any[] = [];
+  listParentRes:any[] = [];
+  action: any = {
+    icon:'',
+    name:'',
+    value:'',
+    color:''
+  };
+
+  item:any = {
+    catalogCode: this.key,
+    parentId: this.parent,
+    name: '',
+    description: '',
+    order: '',
+    Extra1: '',
+    Extra2: '',
+    Extra3: '',
+    Extra4: '',
+    Extra5: '',
+  }
+  idparent:string = '';
+  activeselect:boolean = true;
+
+  constructor(private api: ApiService){}
+
+  ngOnInit(): void {
+    this.listKey();
+    if(this.parent !== 'null'){
+      this.listParent();
+    }
+  }
+
+  listKey(){
+    this.api.get(`catalogs/key/${this.key}`).subscribe({
+      next: (response: any) => {
+        this.list = response.data;
+        this.listBase = this.list;
+      },
+      error: (error: any) => {
+        console.error('Error al crear usuario:', error);
+      },
+    });
+  }
+
+  listParent(){
+    this.api.get(`catalogs/key/${this.parent}`).subscribe({
+      next: (response: any) => {
+        this.listParentRes = response.data;
+      },
+      error: (error: any) => {
+        console.error('Error al crear usuario:', error);
+      },
+    });
+  }
+
+  addItem(){
+    this.item = {
+      catalogCode: this.key,
+      name: "",
+      description: "",
+      parentId: this.parent === 'null' ? null : this.parent,
+      order: '',
+      Extra1: '',
+      Extra2: '',
+      Extra3: '',
+      Extra4: '',
+      Extra5: '',
+    }
+    this.viewoptions = true;
+    this.action.name = 'Crear';
+    $("#modallist").modal({backdrop: 'static', keyboard: false});
+  }
+
+  backToList(){
+    this.listKey();
+  }
+
+  editItem(info:any){
+    this.item = {
+      ...info
+    }
+    this.viewoptions = false;
+    this.action.name = 'Actualizar';
+    $("#modallist").modal({backdrop: 'static', keyboard: false});
+  }
+
+  removeItem(id:string){
+    this.itemId = id;
+    this.action.name = 'Eliminar';
+    this.action.value = 'delete';
+    this.action.color = '#dc3545';
+    this.action.icon = 'fa-solid fa-trash';
+    $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
+  }
+
+  editState(id:string){
+    this.itemId = id;
+    this.action.name = 'Modificar Estado';
+    this.action.value = 'changestatus';
+    this.action.color = '#ffc107';
+    this.action.icon = 'fa-solid fa-sync';
+    $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
+  }
+
+  actionConfirm(){
+    switch (this.action.value) {
+      case 'delete':
+        this.delete();
+      break;
+      case 'changestatus':
+        this.changeStatus();
+      break;
+      default:
+        break;
+    }
+  }
+
+  save(){
+    const data = {
+      ...this.item
+    };
+    this.api.post(`catalogs`, data).subscribe({
+      next: (response: any) => {
+        this.listKey();
+        $("#modallist").modal("hide");
+      },
+      error: (error: any) => {
+        console.error('Error al crear usuario:', error);
+      },
+    });
+  }
+
+  update(){
+    const data = {
+      ...this.item
+    };
+    this.api.put(`catalogs/${this.item.id}`, data).subscribe({
+      next: (response: any) => {
+        this.listKey();
+        $("#modallist").modal("hide");
+      },
+      error: (error: any) => {
+        console.error('Error al crear usuario:', error);
+      },
+    });
+  }
+
+  changeStatus(){
+    const data = {
+      ...this.item
+    };
+    this.api.put(`catalogs/${this.itemId}/change-status`, data).subscribe({
+      next: (response: any) => {
+        this.listKey();
+      },
+      error: (error: any) => {
+        console.error('Error al crear usuario:', error);
+      },
+    });
+  }
+
+  delete(){
+    this.api.delete(`catalogs/${this.itemId}`).subscribe({
+      next: (response: any) => {
+        this.listKey();
+        $("#modalconfirm").modal("hide");
+      },
+      error: (error: any) => {
+        console.error('Error al crear usuario:', error);
+      },
+    });
+  }
+
+  noty(type:string,message:string){
+    // switch (type) {
+    //   case 'error':
+    //     this.toastr.error(message, `Error!`);
+    //   break;
+    //   case 'success':
+    //     this.toastr.success(message, `Completado!`);
+    //   break;
+    //   case 'info':
+    //     this.toastr.info(message, `Importante!`)
+    //   break;
+    //   case 'warning':
+    //     this.toastr.warning(message, `Advertencia!`)
+    //   break;
+
+    //   default:
+    //     break;
+    // }
+  }
+
+
+}

@@ -1,0 +1,245 @@
+<div class="container">
+  <div class="page-header">
+    <div class="d-flex flex-column">
+      <h3 class="primary title noselect">PRODUCTOS</h3>
+      <p class="secundary">En este modulo podras configurar productos realizando
+        acciones como: crear | editar | eliminar | cambiar estado </p>
+    </div>
+    <div class="d-flex flex-rows gap-10">
+      <button type="button" class="btn btn-sm bg-add"
+        (click)="createOrUpdateproduct(null)">Agregar <i
+          class="fa-solid fa-add"></i></button>
+      <button type="button" class="btn btn-sm btn-dark"
+        (click)="selectData()">Recargar <i
+          class="fa-solid fa-rotate-right"></i></button>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <hr class="mt-1 mb-1">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead class="bg-white">
+                <tr>
+                  <th class="text-left"> Nombre</th>
+                  <th class="text-center"> Fecha Creación </th>
+                  <th class="text-center"> Estado </th>
+                  <th class="text-center"> Acciones</th>
+                </tr>
+              </thead>
+              <tbody style="background-color: white;">
+                <tr *ngFor="let item of listData; let i = index"
+                  style="font-size: smaller;">
+                  <td class="text-left"> {{item.name}} </td>
+                  <td class="text-center"> {{item.createdAt |
+                    date:'EEEE dd MMM yyyy'}} </td>
+                  <td class="text-center">
+                    <h5 *ngIf="item.status == true" style="color: white;"><span
+                        class="badge bg-success2">Activo</span></h5>
+                    <h5 *ngIf="item.status == false" style="color: white;"><span
+                        class="badge bg-danger">Inactivo</span></h5>
+                  </td>
+                  <td class="text-center">
+                    <i class="fa-solid f-larger pointer fa-pencil"
+                      (click)="createOrUpdateproduct(item)"></i>
+                    <i class="fa-solid f-larger pointer fa-sync"
+                      (click)="editState(item.id)"></i>
+                    <i class="fa-solid f-larger pointer fa-trash"
+                      (click)="removeItem(item.id)"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal fade" id="modalconfirm" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="col-md-12 text-center pb5">
+            <i class="{{action.icon}} noselect f-xx-large"
+              [style.color]="action.color"></i>
+          </div>
+          <div class="col-md-12 mt-4">
+            <div class="row">
+              <div class="col-md-12 text-center">
+                <h6><strong>¿Esta seguro que desea {{action.name | lowercase}}
+                    este item?</strong></h6>
+                <p><small>Esta acción no se podra deshacer</small></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12 d-flex justify-content-around">
+            <button class="btn btn-sm text-white btn-dark" data-dismiss="modal"
+              aria-label="Close"> Cancelar </button>
+            <button class="btn btn-sm text-white"
+              [style.background]="action.color" (click)="actionConfirm()">
+              Confirmar </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalproduct" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title pricolor" id="modal-title-notification">{{action.name | uppercase}} PRODUCTO</h5>
+        </div>
+        <div class="modal-body">
+          <div class="col-md-12 pb-3">
+            <div class="row">
+              <!-- First Row: TipoProductoId and UnidadMedidaId -->
+              <div class="col-md-4">
+                <label for="tipoProductoId" class="form-label text-black">Tipo de
+                  Producto ID</label>
+                <div class="input-group mb-3">
+                  <input type="number" class="form-control h-46"
+                    placeholder="Tipo de Producto ID" autocomplete="off"
+                    name="TipoProductoId" id="tipoProductoId"
+                    [(ngModel)]="product.tipoProductoId" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="unidadMedidaId" class="form-label text-black">Unidad
+                  de Medida ID</label>
+                <div class="input-group mb-3">
+                  <input type="number" class="form-control h-46"
+                    placeholder="Unidad de Medida ID" autocomplete="off"
+                    name="UnidadMedidaId" id="unidadMedidaId"
+                    [(ngModel)]="product.unidadMedidaId" />
+                </div>
+              </div>
+
+              <!-- Second Row: Nombre and KgPromedio -->
+              <div class="col-md-4">
+                <label for="nombre" class="form-label text-black">Nombre</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Nombre" autocomplete="off" name="Nombre"
+                    id="nombre" [(ngModel)]="product.nombre" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="kgPromedio" class="form-label text-black">Kg
+                  Promedio</label>
+                <div class="input-group mb-3">
+                  <input type="number" class="form-control h-46"
+                    placeholder="Kg Promedio" autocomplete="off" name="KgPromedio"
+                    id="kgPromedio" [(ngModel)]="product.kgPromedio" />
+                </div>
+              </div>
+
+              <!-- Third Row: PorcentajeRecuperacion and EsCertificable -->
+              <div class="col-md-4">
+                <label for="porcentajeRecuperacion"
+                  class="form-label text-black">Porcentaje de Recuperación</label>
+                <div class="input-group mb-3">
+                  <input type="number" class="form-control h-46"
+                    placeholder="Porcentaje de Recuperación" autocomplete="off"
+                    name="PorcentajeRecuperacion" id="porcentajeRecuperacion"
+                    [(ngModel)]="product.porcentajeRecuperacion" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="esCertificable" class="form-label text-black">¿Es
+                  Certificable?</label>
+                <div class="input-group mb-3">
+                  <select class="form-control h-46" name="EsCertificable"
+                    id="esCertificable" [(ngModel)]="product.esCertificable">
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Fourth Row: Referencia1 and Referencia2 -->
+              <div class="col-md-4">
+                <label for="referencia1" class="form-label text-black">Referencia
+                  1</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Referencia 1" autocomplete="off"
+                    name="Referencia1" id="referencia1"
+                    [(ngModel)]="product.referencia1" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="referencia2" class="form-label text-black">Referencia
+                  2</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Referencia 2" autocomplete="off"
+                    name="Referencia2" id="referencia2"
+                    [(ngModel)]="product.referencia2" />
+                </div>
+              </div>
+
+              <!-- Fifth Row: Referencia3 and Descripcion -->
+              <div class="col-md-4">
+                <label for="referencia3" class="form-label text-black">Referencia
+                  3</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Referencia 3" autocomplete="off"
+                    name="Referencia3" id="referencia3"
+                    [(ngModel)]="product.referencia3" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="descripcion"
+                  class="form-label text-black">Descripción</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Descripción" autocomplete="off"
+                    name="Descripcion" id="descripcion"
+                    [(ngModel)]="product.descripcion" />
+                </div>
+              </div>
+
+              <!-- Sixth Row: ReferenciaWLL and ReferenciaPH -->
+              <div class="col-md-4">
+                <label for="referenciaWLL"
+                  class="form-label text-black">Referencia WLL</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Referencia WLL" autocomplete="off"
+                    name="ReferenciaWLL" id="referenciaWLL"
+                    [(ngModel)]="product.referenciaWLL" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="referenciaPH" class="form-label text-black">Referencia
+                  PH</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Referencia PH" autocomplete="off"
+                    name="ReferenciaPH" id="referenciaPH"
+                    [(ngModel)]="product.referenciaPH" />
+                </div>
+              </div>
+            </div>
+            <div class="row mt-5">
+              <div class="col-md-12 d-flex flex-rows gap-10">
+                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="saveProduct()"> Crear </button>
+                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false " (click)="saveProduct()"> Actualizar </button>
+                <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+  </div>
+</div>
+

@@ -1,0 +1,280 @@
+<div class="container">
+  <div class="page-header">
+    <div class="d-flex flex-column">
+      <h3 class="primary title noselect">SEDES DE ACOPIO</h3>
+      <p class="secundary">En este modulo podras configurar sedes de acopio realizando
+        acciones como: crear | editar | eliminar | cambiar estado </p>
+    </div>
+    <div class="d-flex flex-rows gap-10">
+      <button type="button" class="btn btn-sm bg-add"
+        (click)="createOrUpdateCenter(null)">Agregar <i
+          class="fa-solid fa-add"></i></button>
+      <button type="button" class="btn btn-sm btn-dark"
+        (click)="selectData()">Recargar <i
+          class="fa-solid fa-rotate-right"></i></button>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <hr class="mt-1 mb-1">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead class="bg-white">
+                <tr>
+                  <th class="text-left"> Nombre</th>
+                  <th class="text-center"> Fecha de Creación </th>
+                  <th class="text-center"> Estado </th>
+                  <th class="text-center"> Acciones</th>
+                </tr>
+              </thead>
+              <tbody style="background-color: white;">
+                <tr *ngFor="let item of listData; let i = index"
+                  style="font-size: smaller;">
+                  <td class="text-left"> {{item.name}} </td>
+                  <td class="text-center"> {{item.createdAt |
+                    date:'EEEE dd MMM yyyy'}} </td>
+                  <td class="text-center">
+                    <h5 *ngIf="item.status == true" style="color: white;"><span
+                        class="badge bg-success2">Activo</span></h5>
+                    <h5 *ngIf="item.status == false" style="color: white;"><span
+                        class="badge bg-danger">Inactivo</span></h5>
+                  </td>
+                  <td class="text-center">
+                    <i class="fa-solid f-larger pointer fa-pencil"
+                      (click)="createOrUpdateCenter(item)"></i>
+                    <i class="fa-solid f-larger pointer fa-sync"
+                      (click)="editState(item.id)"></i>
+                    <i class="fa-solid f-larger pointer fa-trash"
+                      (click)="removeItem(item.id)"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal fade" id="modalconfirm" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="col-md-12 text-center pb5">
+            <i class="{{action.icon}} noselect f-xx-large"
+              [style.color]="action.color"></i>
+          </div>
+          <div class="col-md-12 mt-4">
+            <div class="row">
+              <div class="col-md-12 text-center">
+                <h6><strong>¿Esta seguro que desea {{action.name | lowercase}}
+                    este item?</strong></h6>
+                <p><small>Esta acción no se podra deshacer</small></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12 d-flex justify-content-around">
+            <button class="btn btn-sm text-white btn-dark" data-dismiss="modal"
+              aria-label="Close"> Cancelar </button>
+            <button class="btn btn-sm text-white"
+              [style.background]="action.color" (click)="actionConfirm()">
+              Confirmar </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="modalCenter" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title pricolor" id="modal-title-notification">{{ action.name | uppercase }} CENTRO</h5>
+        </div>
+        <div class="modal-body">
+          <div class="col-md-12 pb-3">
+            <div class="row">
+              <!-- Primera Fila: Tipo de Sitio y País -->
+              <div class="col-md-4">
+                <label for="siteTypeId" class="form-label text-black">Tipo de Sitio</label>
+                <div class="input-group mb-3">
+                  <input type="number" class="form-control h-46"
+                    placeholder="Tipo de Sitio" autocomplete="off"
+                    name="siteTypeId" id="siteTypeId"
+                    [(ngModel)]="centers.siteTypeId" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="countryId" class="form-label text-black">País</label>
+                <div class="input-group mb-3">
+                  <select class="form-select h-46" name="countryId" id="countryId" [(ngModel)]="centers.countryId">
+                    <option value="" disabled selected>Selecciona un país</option>
+                    <!-- Ejemplo de opciones, reemplaza con los datos dinámicos si es necesario -->
+                    <option *ngFor="let country of countries" [value]="country.id">{{ country.name }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label for="cityId" class="form-label text-black">Ciudad</label>
+                <div class="input-group mb-3">
+                  <select class="form-select h-46" name="cityId" id="cityId" [(ngModel)]="centers.cityId">
+                    <option value="" disabled selected>Selecciona una ciudad</option>
+                    <!-- Ejemplo de opciones, reemplaza con los datos dinámicos si es necesario -->
+                    <option *ngFor="let city of cities" [value]="city.id">{{ city.name }}</option>
+                  </select>
+                </div>
+              </div>
+
+
+              <!-- Segunda Fila: Nombre y Descripción -->
+              <div class="col-md-6">
+                <label for="name" class="form-label text-black">Nombre</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Nombre" autocomplete="off"
+                    name="name" id="name"
+                    [(ngModel)]="centers.name" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="description" class="form-label text-black">Descripción</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Descripción" autocomplete="off"
+                    name="description" id="description"
+                    [(ngModel)]="centers.description" />
+                </div>
+              </div>
+
+              <!-- Tercera Fila: ID Fiscal, Nombre de Negocio y Barrio -->
+              <div class="col-md-4">
+                <label for="taxId" class="form-label text-black">ID Fiscal</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="ID Fiscal" autocomplete="off"
+                    name="taxId" id="taxId"
+                    [(ngModel)]="centers.taxId" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="businessName" class="form-label text-black">Nombre de Negocio</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Nombre de Negocio" autocomplete="off"
+                    name="businessName" id="businessName"
+                    [(ngModel)]="centers.businessName" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="neighborhood" class="form-label text-black">Barrio</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Barrio" autocomplete="off"
+                    name="neighborhood" id="neighborhood"
+                    [(ngModel)]="centers.neighborhood" />
+                </div>
+              </div>
+
+              <!-- Cuarta Fila: Dirección, Latitud y Longitud -->
+              <div class="col-md-4">
+                <label for="address" class="form-label text-black">Dirección</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Dirección" autocomplete="off"
+                    name="address" id="address"
+                    [(ngModel)]="centers.address" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="latitude" class="form-label text-black">Latitud</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Latitud" autocomplete="off"
+                    name="latitude" id="latitude"
+                    [(ngModel)]="centers.latitude" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="longitude" class="form-label text-black">Longitud</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Longitud" autocomplete="off"
+                    name="longitude" id="longitude"
+                    [(ngModel)]="centers.longitude" />
+                </div>
+              </div>
+
+              <!-- Quinta Fila: Nombre de Contacto, Email de Contacto y Teléfono de Contacto -->
+              <div class="col-md-4">
+                <label for="contactName" class="form-label text-black">Nombre de Contacto</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Nombre de Contacto" autocomplete="off"
+                    name="contactName" id="contactName"
+                    [(ngModel)]="centers.contactName" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="contactEmail" class="form-label text-black">Email de Contacto</label>
+                <div class="input-group mb-3">
+                  <input type="email" class="form-control h-46"
+                    placeholder="Email de Contacto" autocomplete="off"
+                    name="contactEmail" id="contactEmail"
+                    [(ngModel)]="centers.contactEmail" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="contactPhone" class="form-label text-black">Teléfono de Contacto</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Teléfono de Contacto" autocomplete="off"
+                    name="contactPhone" id="contactPhone"
+                    [(ngModel)]="centers.contactPhone" />
+                </div>
+              </div>
+
+              <!-- Sexta Fila: Referencia WLL y Referencia PH -->
+              <div class="col-md-6">
+                <label for="referenceWLL" class="form-label text-black">Referencia WLL</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Referencia WLL" autocomplete="off"
+                    name="referenceWLL" id="referenceWLL"
+                    [(ngModel)]="centers.referenceWLL" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="referencePH" class="form-label text-black">Referencia PH</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control h-46"
+                    placeholder="Referencia PH" autocomplete="off"
+                    name="referencePH" id="referencePH"
+                    [(ngModel)]="centers.referencePH" />
+                </div>
+              </div>
+            </div>
+            <div class="row mt-5">
+              <div class="col-md-12 d-flex flex-rows gap-10">
+                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="saveRecord()"> Crear </button>
+                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="saveRecord()"> Actualizar </button>
+                <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+</div>
+
+
+

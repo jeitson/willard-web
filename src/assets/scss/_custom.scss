@@ -1,0 +1,111 @@
+
+// Lightbox
+@import "ngx-lightbox/lightbox.css";
+
+// Select 2
+@import "@ng-select/ng-select/themes/default.theme.css";
+
+// Date Picker
+@import 'flatpickr/dist/flatpickr.css';
+
+// LeafLet Chart
+@import 'leaflet/dist/leaflet.css';
+
+// Emoji Picker
+@import '@ctrl/ngx-emoji-mart/picker';
+.emoji-mart{
+    position: absolute;
+    bottom: 20px;
+    left: -80px;
+  }
+  .emoji-mart-preview{
+    display: none;
+  }
+
+
+
+// dropdown
+.dropdown-toggle {
+    &:after {
+        display: none;
+    }
+}
+
+.modal-backdrop{
+    z-index: 1002 !important;
+}
+
+.dropdown-toggle::after{
+    display: none;
+}
+
+.dropzone .dz-message {
+    font-size: 24px;
+    min-height: 150px !important;
+    border: none !important;
+    background: #fff !important;
+    color: #495057 !important;
+  }
+
+  // ----- Advance Ui --------//
+// Rating
+.stars {
+    font-size: 30px;
+    color:var(--bs-gray-600);
+}
+.star {
+    position: relative;
+    display: inline-block;
+}
+.star_fill {
+    color: $gray-500;
+}
+.full {
+    color: #b0c4de;
+}
+.half {
+    position: absolute;
+    display: inline-block;
+    overflow: hidden;
+    color:var(--bs-gray-600);
+}
+.filled {
+    color: #1e90ff;
+}
+.bad {
+    color: #deb0b0;
+}
+.filled.bad {
+    color: #ff1e1e;
+}
+.halfHeart {
+    position: absolute;
+    display: inline-block;
+    overflow: hidden;
+    color:red;
+}
+
+// Calendar
+.flatpickr-calendar.open{
+    z-index: 1061;
+}
+
+// Swich Btn
+.switch.switch-small.checked > .switch-pane > span{
+    color: #fff;
+}
+.switch.switch-small > .switch-pane > span{
+    font-size: 14px;
+}
+
+// Ck Editer
+.ck-editor__editable {
+    min-height: 245px !important;
+}
+
+.custom-accordion{
+    .accordion-list {
+        padding: 0px;
+        background-color: transparent;
+    }
+}

@@ -1,0 +1,39 @@
+<ng-template #contentTemplate>
+  <nav class="sidebar vertical-menu">
+    <ul>
+      <li *ngFor="let item of menuItems">
+        <div
+          class="menu-item"
+          [class.active]="item.link && isActiveLink(item.link)"
+          (click)="item.children ? toggleModule(item.title) : setActiveLink(item.link)"
+          [routerLink]="item.link ? [item.link] : null"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }">
+          <i class="fa-solid fa-{{ item.icon }}"></i>
+          <span>{{ item.title }}</span>
+          <i *ngIf="item.children" class="expand-icon fa-solid" [ngClass]="openedModule === item.title ? 'fa-caret-up' : 'fa-caret-down'"></i>
+        </div>
+        <ul [ngClass]="{'submenu': true, 'expanded': openedModule === item.title}">
+          <li
+            *ngFor="let child of item.children"
+            [routerLink]="child.link ? [child.link] : null"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="setActiveLink(child.link)">
+            <i class="expand-child-icon fa-solid fa-angle-right"></i>
+            <span>{{ child.title }}</span>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</ng-template>
+
+<div class="vertical-menu">
+  <div data-simplebar class="h-100" #componentRef>
+    <ng-container
+      *ngIf="menuItems && menuItems.length > 0; else contentTemplate">
+      <ng-template [ngTemplateOutlet]="contentTemplate"></ng-template>
+    </ng-container>
+  </div>
+</div>

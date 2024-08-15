@@ -1,0 +1,960 @@
+/* Importing Bootstrap SCSS file. */
+@import "bootstrap/scss/bootstrap";
+
+/* You can add global styles to this file, and also import other style files */
+.modal-holder {
+  animation-name: example;
+  animation-duration: 0.3s;
+}
+
+@keyframes example {
+  0% {
+    transform: scale(0.5);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.carousel-item {
+  transition: opacity 0.7s ease !important;
+  position: absolute !important;
+  display: block !important;
+  opacity: 0;
+}
+
+.carousel-item.active {
+  position: relative !important;
+  opacity: 1;
+}
+
+.page-content {
+  padding: calc(70px + 8px) calc(8px * 0.75) 8px calc(8px * 0.75) !important;
+}
+
+button {
+  cursor: pointer !important;
+}
+
+a.bt {
+  text-decoration: none !important;
+}
+
+.bt {
+  white-space: nowrap;
+  display: inline-block;
+  height: 50px;
+  line-height: 50px;
+  padding: 0 14px;
+  -webkit-box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11),
+    0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: #fff;
+  border-radius: 4px;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  text-decoration: none;
+  -webkit-transition: all 0.15s ease;
+  transition: all 0.15s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.bt-wrap {
+  white-space: initial;
+  min-height: 50px;
+  line-height: 111%;
+}
+
+.bt:disabled {
+  opacity: 0.5 !important;
+  cursor: no-drop;
+}
+
+.bt:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.2);
+  color: white;
+  opacity: 0.9;
+}
+
+.bt-blue {
+  color: #fff !important;
+  background: #3886fe !important;
+}
+
+.bt-orange {
+  background-color: orange !important;
+  color: white;
+}
+
+.bt-green {
+  color: #fff !important;
+  background: #00d274;
+}
+
+.bt-red {
+  color: #fff !important;
+  background: red;
+}
+
+.bt-red:hover {
+  color: red !important;
+  background: #fff !important;
+}
+
+.bt-o-red {
+  color: red;
+  border: red 1px solid;
+}
+
+.bt-o-red:hover {
+  color: #fff !important;
+  background: red;
+}
+
+.btnDs {
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+}
+
+.bt-white {
+  color: #506afb !important;
+  background: #ecf4ff;
+}
+
+.bt-o-green {
+  border: 1px solid #009e00;
+  color: #009e00;
+}
+
+.bt-o-green:hover {
+  color: #fff !important;
+  background: #00d274;
+  border: none;
+}
+
+.bt-wide {
+  width: 100%;
+  overflow: hidden;
+}
+
+.bt-margin {
+  margin-right: 20px;
+}
+
+.closed-invoice {
+  color: green;
+  font-weight: 600;
+}
+
+.open-invoice {
+  font-weight: 600;
+  color: #ff9800;
+}
+
+.canceled-invoice {
+  font-weight: 600;
+  color: red;
+}
+
+.section_title {
+  font-size: 1.6em;
+  color: #2196f3;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.section_title.title_mobile {
+  font-size: 1.2em;
+}
+
+.card {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  margin-top: 10px;
+}
+
+.card-title {
+  margin-bottom: 0;
+  color: #5a5a5a;
+  font-weight: 400;
+}
+
+.card-svg img {
+  width: 43%;
+}
+
+.card-svg {
+  padding-top: 29px;
+}
+
+.card-grey {
+  background: #fdfdfd;
+  overflow: hidden;
+}
+
+.card-h {
+  height: 100%;
+}
+
+.card-help {
+  transform: scale(-1, 1);
+  position: absolute;
+  top: -6px;
+  right: -12px;
+  width: 22px;
+  height: 22px;
+}
+
+.pull-left {
+  float: left;
+}
+
+.pull-right {
+  float: right;
+}
+
+.card {
+  box-shadow: 7px 7px 12px -5px rgb(223 224 255);
+}
+
+.card_stat_hor {
+  flex-direction: column;
+}
+
+.card_text {
+  font-size: 1.5em;
+}
+
+.card_options {
+  display: inline-block;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+}
+
+.card-d {
+  margin: 10px 0px 0px 0px;
+}
+
+.low_text {
+  color: grey;
+  font-style: italic;
+  font-weight: 300;
+}
+
+.text-blue {
+  color: #0275d8;
+}
+
+.text-red {
+  color: red;
+}
+
+.text-grey {
+  color: grey;
+}
+
+.action_panel {
+  overflow: scroll;
+  display: flex;
+  text-align: right;
+  padding: 18px 0;
+}
+
+.action_panel .bt,
+.action_panel .btn-group,
+.action_panel .dropdown {
+  flex-grow: 1;
+  margin-left: 10px;
+  text-align: center;
+}
+
+.action_panel .back_button {
+  flex-grow: inherit;
+}
+
+@media screen and (min-width: 768px) {
+  .speaker_text {
+    font-size: 2em;
+  }
+
+  .flex_grow {
+    display: flex;
+  }
+
+  .action_panel {
+    display: block;
+    overflow: visible;
+  }
+
+  .goals-office {
+    text-align: left;
+  }
+
+  #goal-chart {
+    display: block;
+  }
+
+  .docs_tab {
+    overflow-x: initial;
+    font-size: 0.9rem;
+  }
+
+  .container-semi {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+
+  .breadcrumbs {
+    padding-left: 40px;
+  }
+
+  .pos-items {
+    margin-top: 19px;
+    width: 155%;
+  }
+
+  .qty-input-pos {
+    width: 50%;
+    display: inline-block;
+  }
+
+  .btn-add-pos {
+    height: 60px;
+    padding: 0px;
+    top: -6px;
+    position: relative;
+    width: 32%;
+    margin-top: 0;
+  }
+
+  .pos-total-item {
+    text-align: right;
+  }
+}
+
+.selected_user {
+  text-transform: uppercase;
+  font-size: 1.1rem;
+}
+
+.action_panel_two {
+  padding-bottom: 10px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e3e3e3;
+}
+
+.selected_user_info {
+  margin-top: 10px;
+}
+
+.action_panel_two button {
+  margin: 0 3px;
+  padding: 6px 8px;
+}
+
+.card-block {
+  padding: 0.65rem;
+}
+
+.card-label {
+  color: #696969;
+  font-size: 0.8em;
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
+.conciled {
+  background: #bcfdbc;
+}
+
+.crmcontainer {
+  padding-top: 40px;
+  background-color: #fbfbfb;
+  padding-bottom: 150px;
+  overflow: auto;
+}
+
+.late {
+  border-left: 5px solid red;
+}
+
+.tomorrow {
+  border-left: 5px solid #00d274;
+}
+
+.today {
+  border-left: 5px solid #47a3ff;
+}
+
+.suggestion_name {
+  white-space: initial;
+}
+
+.elipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.pill {
+  font-size: 1.1rem;
+  background: #e6e6e6;
+  padding: 2px 5px;
+  border-radius: 7px;
+  display: inline-block;
+}
+
+.pill-red {
+  background-color: #ff4e4e;
+  color: white;
+}
+
+.pill-green {
+  background-color: #4bd150;
+  color: white;
+}
+
+.pill-bigger {
+  font-size: 1.5rem;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.is_credit {
+  color: white;
+  background-color: #e50000;
+  padding: 0px 6px;
+  border-radius: 8px;
+}
+
+span.new_item {
+  background-color: #ffbc00;
+  padding: 3px;
+  border-radius: 4px;
+  font-size: small;
+  position: relative;
+  top: -16px;
+  right: 18px;
+}
+
+.tax_section {
+  text-align: center;
+  font-size: 1.2rem;
+  background-color: #00be18;
+  color: white;
+}
+
+.tax_title {
+  text-align: right;
+  font-size: 1.3rem;
+  color: green;
+  padding-top: 16px;
+}
+
+.green_tax {
+  background-color: #e4f1e4;
+  color: #004600;
+  text-align: right;
+  border-bottom: 1px #009400 solid;
+  padding: 13px;
+}
+
+.lowercase {
+  text-transform: lowercase;
+}
+
+.is_due {
+  color: red;
+}
+
+span.yellow_pill {
+  background: #ff9900;
+  padding: 0 2px;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.8em;
+}
+
+.office-pill.selected {
+  background-color: #0679db;
+  color: white;
+  cursor: pointer;
+  box-shadow: 1px 1px 5px 2px #8dc5f5;
+}
+
+.null-item {
+  color: red;
+  text-align: right;
+  width: 100%;
+  padding: 100px 17px 20px 0px;
+}
+
+.clickable {
+  cursor: pointer;
+  text-decoration: underline solid;
+  color: blue;
+  text-underline-position: under;
+}
+
+.is_negative {
+  color: red;
+  font-weight: 500;
+}
+
+.is_positive {
+  color: #68cf00;
+  font-weight: 500;
+}
+
+.yellowstar {
+  color: yellow;
+}
+
+.notice {
+  text-align: center;
+  background-color: #b7ffc0;
+  padding: 15px;
+  color: #13701f;
+  border: 1px dotted green;
+}
+
+.delete-retention {
+  color: red;
+  cursor: pointer;
+}
+
+.spanclick:hover {
+  color: #0275d8;
+}
+
+.spanclick {
+  cursor: pointer;
+  color: grey;
+}
+
+hr {
+  width: 100%;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.pagination {
+  display: inline-flex;
+}
+
+.timestamp {
+  font-style: italic;
+  padding-top: 7px;
+  font-size: 0.9rem;
+}
+
+.pad2rem {
+  padding: 2rem;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.bt-clear:hover {
+  color: black !important;
+}
+
+.bggreen {
+  background-color: #1abb9c !important;
+  color: white;
+}
+
+.bggreen:hover {
+  background-color: #08a98a !important;
+  color: white;
+}
+
+.full_width {
+  min-width: 100%;
+}
+
+.pill-primary {
+  background-color: var(--maincolor);
+}
+
+.pill-secondary {
+  background-color: var(--secondarycolor);
+}
+
+.pill-white {
+  color: #506afb !important;
+  background: #ecf4ff;
+}
+
+.pill-grey {
+  color: #909090;
+  background: #eaeaea;
+}
+
+.pill-black {
+  background-color: #2c2c2c;
+  color: white;
+}
+
+.pill-red {
+  background-color: #ff4e4e;
+  color: white;
+}
+
+.pill-info {
+  color: #776eff;
+  background: #ecf9ff;
+  box-shadow: 2px 2px 4px -1px #eaeaea;
+}
+
+.pill-green {
+  background-color: #00d274 !important;
+  color: white;
+}
+
+.pill-orange {
+  background-color: orange;
+  color: white;
+}
+
+.pill-bigger {
+  font-size: 1.5rem;
+}
+
+.pill-smaller {
+  font-size: 1rem;
+}
+
+.pill-tiny {
+  font-size: 0.75rem;
+}
+
+.pill-outline-blue {
+  background-color: white;
+  border: 2px #3886fe solid;
+  color: #3886fe;
+  font-weight: 600;
+}
+
+.pill-blue {
+  background-color: #3886fe !important;
+  color: white;
+}
+
+span.required {
+  color: red;
+}
+
+.card_height {
+  height: 100%;
+  justify-content: center;
+}
+
+.card_stat {
+  min-height: 190px;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  padding: 20px;
+}
+
+.card_stat_red {
+  background-color: #ef0000;
+  color: white;
+}
+
+.card_stat_red:hover {
+  background-color: white !important;
+  color: #ef0000;
+}
+
+.card_stat_white {
+  background-color: white;
+  color: #0275d8;
+}
+
+.card_stat_blue {
+  background-color: #2196f3;
+  color: white;
+}
+
+.stat_shade {
+  color: #0000007a;
+  font-size: 1.1rem;
+  font-style: italic;
+}
+
+.card_stat_blue:hover {
+  background-color: white !important;
+  color: #2196f3;
+}
+
+.card_stat_yellow {
+  background-color: #ffc107;
+  color: white;
+}
+
+.card_stat_yellow:hover {
+  background-color: white !important;
+  color: #ffc107;
+}
+
+.card_stat_green {
+  background-color: #00d274;
+  color: white;
+}
+
+.card_stat_green:hover {
+  background-color: white !important;
+  color: #00d274;
+}
+
+.card_stat_red_text {
+  background-color: white;
+  color: #ef0000;
+}
+
+.card_stat_red_text:hover {
+  background-color: #ef0000 !important;
+  color: white;
+}
+
+.card_stat_green_text {
+  background-color: white;
+  color: #5cb85c;
+}
+
+.card_stat_green_text:hover {
+  background-color: #5cb85c !important;
+  color: white;
+}
+
+.card_stat_white:hover {
+  background-color: #0275d8 !important;
+  color: white !important;
+}
+
+.card_stat_s {
+  min-height: inherit !important;
+}
+
+.text_main_color {
+  color: var(--maincolor);
+}
+
+.selected_user_info {
+  text-align: right;
+}
+
+@media (min-width: 768px) {
+  .selected_user_info {
+    text-align: left;
+  }
+
+  .answer::before {
+    top: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card_number {
+    font-size: 6em;
+  }
+}
+
+.oculto {
+  display: none;
+}
+
+.auto-item {
+  display: block !important;
+  align-items: initial !important;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  word-wrap: break-word;
+  background-color: #fff;
+  background-clip: border-box;
+  border: 1px solid rgba(26, 54, 126, 0.125);
+  border-radius: 0.25rem;
+}
+
+.card_info {
+  font-size: 1.5rem;
+  color: #0275d8;
+  font-weight: 100;
+  text-transform: uppercase;
+}
+
+.closed-invoice {
+  color: green;
+  font-weight: 600;
+}
+
+.open-invoice {
+  font-weight: 600;
+  color: #ff9800;
+}
+
+.canceled-invoice {
+  font-weight: 600;
+  color: red;
+}
+
+.card-h {
+  height: 100% !important;
+}
+
+.card {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  margin-top: 10px;
+  box-shadow: 7px 7px 12px -5px rgb(223 224 255) !important;
+}
+
+.small_title {
+  font-size: 1.5rem;
+  text-align: center;
+  color: #0275d8;
+  font-weight: 100;
+  text-transform: uppercase;
+  line-height: 100%;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+/* Importing Bootstrap SCSS file. */
+@import "bootstrap/scss/bootstrap";
+
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+.text-left {
+  text-align: left;
+}
+.text-uppercase {
+  text-transform: uppercase;
+}
+.text-capitalize {
+  text-transform: capitalize;
+}
+.text-lowercase {
+  text-transform: lowercase;
+}
+.text-bold {
+  font-weight: bold;
+}
+.text-italic {
+  font-style: italic;
+}
+.text-underline {
+  text-decoration: underline;
+}
+.text-overline {
+  text-decoration: overline;
+}
+.text-line-through {
+  text-decoration: line-through;
+}
+.text-nowrap {
+  white-space: nowrap;
+}
+.breadcrumb-item {
+  margin-top: 0.1rem;
+}
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.4em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.375rem;
+  background-color: transparent;
+}
+
+.badge-success {
+  color: #fff;
+  background-color: #28a745;
+}
+
+.badge-danger {
+  color: #fff;
+  background-color: #dc3545;
+}
+
+.badge-warning {
+  color: #000;
+  background-color: #ffc107;
+}
+
+.badge-info {
+  color: #000;
+  background-color: #17a2b8;
+}
+
+.badge-primary {
+  color: #fff;
+  background-color: #007bff;
+}
+
+.badge-secondary {
+  color: #fff;
+  background-color: #34395e;
+}
+
+.badge-light {
+  color: #000;
+  background-color: #f8f9fa;
+}
+
+.badge-dark {
+  color: #fff;
+  background-color: #343a40;
+}
+.dark-mode {
+  .text-muted {
+    color: white !important;
+  }
+  .text-primary {
+    color: #fbfbfc !important;
+  }
+}
+.autocomplete-container .suggestions-container.is-visible {
+  visibility: visible;
+  z-index: 100;
+}
+.autocomplete-container .input-container input:disabled {
+  background-color: #eff2f7 !important;
+  color: #4a5057 !important;
+}
+/* si deseas aplicar un stylo particular
+a un componente que viene de la libra externa usa
+"::ng-deep" antes la clase ejemplo:
+
+::ng-deep .badge-danger {
+  background-color: #f77b72;
+}
+
+*/

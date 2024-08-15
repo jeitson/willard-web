@@ -1,0 +1,108 @@
+
+<div class="container">
+  <div class="page-header">
+    <div class="d-flex flex-column">
+      <h3 class="primary title noselect">USUARIOS</h3>
+      <p class="secundary">En este modulo podras configurar usuarios de acopio realizando
+        acciones como: crear | editar | eliminar | cambiar estado </p>
+    </div>
+    <div class="d-flex flex-rows gap-10">
+      <button type="button" class="btn btn-sm bg-add"
+        (click)="createOrUpdateUser(null)">Agregar <i
+          class="fa-solid fa-add"></i></button>
+      <button type="button" class="btn btn-sm btn-dark"
+        (click)="selectData()">Recargar <i
+          class="fa-solid fa-rotate-right"></i></button>
+    </div>
+  </div>
+
+  <div class="page-body">
+    <hr class="mt-1 mb-1">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead class="bg-white">
+                <tr>
+                  <th class="text-left"> Nombre</th>
+                  <th class="text-center"> Fecha Creación </th>
+                  <th class="text-center"> Estado </th>
+                  <th class="text-center"> Acciones</th>
+                </tr>
+              </thead>
+              <tbody style="background-color: white;">
+                <tr *ngFor="let item of users; let i = index"
+                  style="font-size: smaller;">
+                  <td class="text-left"> {{item.name}} </td>
+                  <td class="text-center"> {{item.createdAt |
+                    date:'EEEE dd MMM yyyy'}} </td>
+                  <td class="text-center">
+                    <h5 *ngIf="item.status == true" style="color: white;"><span
+                        class="badge bg-success2">Activo</span></h5>
+                    <h5 *ngIf="item.status == false" style="color: white;"><span
+                        class="badge bg-danger">Inactivo</span></h5>
+                  </td>
+                  <td class="text-center">
+                    <i class="fa-solid f-larger pointer fa-pencil"
+                      (click)="createOrUpdateUser(item)"></i>
+                   
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal fade" id="userModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title pricolor" id="modal-title-notification">{{ action.name | uppercase }} CENTRO</h5>
+        </div>
+        <div class="modal-body">
+          <div class="col-md-12 pb-3">
+            <div class="row">
+              <div class="mb-3">
+                <label for="name" class="form-label">Nombre</label>
+                <input type="text" id="name" class="form-control" name="name" [(ngModel)]="user.name">
+              </div>
+              <div class="mb-3">
+                <label for="description" class="form-label">Descripción</label>
+                <input type="text" id="description" class="form-control" name="description" [(ngModel)]="user.description">
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input type="email" id="email" class="form-control" name="email" [(ngModel)]="user.email">
+              </div>
+              <div class="mb-3">
+                <label for="role" class="form-label">Rol</label>
+                <select class="form-control"  [(ngModel)]="user.role">
+                  <option *ngFor="let item of listData" [value]="item.id">{{item.name}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="row mt-5">
+              <div class="col-md-12 d-flex flex-rows gap-10">
+                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="saveUser()"> Crear </button>
+                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="saveUser()"> Actualizar </button>
+                <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  
+</div>
+
+
+

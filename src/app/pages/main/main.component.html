@@ -1,0 +1,13 @@
+<div id="layout-wrapper">
+  <wlrd-topbar (settingsButtonClicked)="onSettingsButtonClicked()"
+      (mobileMenuButtonClicked)="onToggleMobileMenu()"></wlrd-topbar>
+  <wlrd-sidebar [isCondensed]="isCondensed"></wlrd-sidebar>
+  <div class="main-content">
+      <div class="page-content">
+          <!-- content -->
+          <router-outlet></router-outlet>
+      </div>
+      <!-- footer -->
+      <!-- <wlrd-footer></wlrd-footer> -->
+  </div>
+</div>

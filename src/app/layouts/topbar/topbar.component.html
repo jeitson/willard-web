@@ -1,0 +1,173 @@
+<header id="page-topbar">
+  <div class="navbar-header">
+    <div class="d-flex">
+      <!-- LOGO -->
+      <div class="navbar-brand-box">
+        <a routerLink="/" class="logo logo-dark">
+          <span class="logo-sm">
+            <img src="assets/images/logo.png" alt="" height="30">
+          </span>
+          <span class="logo-lg">
+            <img src="assets/images/logo-dark.png" alt="" height="30">
+          </span>
+        </a>
+
+        <a routerLink="/" class="logo logo-light">
+          <span class="logo-sm">
+            <img src="assets/images/logolight.png" alt="" height="30">
+          </span>
+          <span class="logo-lg">
+            <img src="assets/images/logo-light.png" alt="" height="30">
+          </span>
+        </a>
+      </div>
+
+      <button type="button" class="btn btn-sm px-3 font-size-16 header-item" id="vertical-menu-btn"
+        (click)="toggleMobileMenu($event)">
+        <i class="fa fa-fw fa-bars text-white"></i>
+      </button>
+
+
+
+    </div>
+
+
+
+    <div class="d-flex">
+      <!-- swich mode -->
+      <!-- <div>
+        <div class="position-relative">
+          <label id="switch" class="switch">
+            <input type="checkbox" [(ngModel)]="_isDarkModeActive" id="slider" (ngModelChange)="darkModeChange($event)">
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div> -->
+
+      <div class="dropdown d-none d-lg-inline-block ms-1">
+        <button type="button" class="btn header-item noti-icon" data-toggle="fullscreen" (click)="fullscreen()">
+          <i class="bx bx-fullscreen text-white"></i>
+        </button>
+      </div>
+
+      <div class="dropdown d-inline-block" ngbDropdown>
+        <button type="button" class="btn header-item noti-icon" id="page-header-notifications-dropdown"
+          ngbDropdownToggle>
+          <i class="bx bx-bell bx-tada text-white"></i>
+          <span class="badge bg-danger rounded-pill">0</span>
+        </button>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
+          aria-labelledby="page-header-notifications-dropdown" ngbDropdownMenu>
+          <div class="p-3">
+            <div class="row align-items-center">
+              <div class="col">
+                <h6 class="m-0">Notifications </h6>
+              </div>
+              <div class="col-auto">
+                <a href="javascript: void(0);" class="small">View All</a>
+              </div>
+            </div>
+          </div>
+          <div style="position: relative; height: 230px;">
+            <!-- <div class="simplebar-wrapper" style="margin: 0px;">
+              <div class="simplebar-height-auto-observer-wrapper">
+                <div class="simplebar-height-auto-observer"></div>
+              </div>
+              <div class="simplebar-mask">
+                <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                  <div class="simplebar-content-wrapper" style="height: 100%; overflow: hidden scroll;">
+                    <div class="simplebar-content" style="padding: 0px;"><a href="javascript: void(0);"
+                        class="text-reset notification-item">
+                        <div class="d-flex">
+                          <div class="avatar-xs me-3">
+                            <span class="avatar-title bg-primary rounded-circle font-size-16">
+                              <i class="bx bx-cart"></i>
+                            </span>
+                          </div>
+                          <div class="flex-grow-1">
+                            <h6 class="mb-1">Your order is placed
+                            </h6>
+                            <div class="font-size-12 text-muted">
+                              <p class="mb-1">If several languages
+                                coalesce the grammar</p>
+                              <p class="mb-0"><i class="mdi mdi-clock-outline"></i> 3 min
+                                ago</p>
+                            </div>
+                          </div>
+                        </div>
+                      </a><a href="javascript: void(0);" class="text-reset notification-item">
+                        <div class="d-flex"><img src="assets/images/users/avatar-3.jpg" alt="user-pic"
+                            class="me-3 rounded-circle avatar-xs">
+                          <div class="flex-grow-1">
+                            <h6 class="mb-1">James Lemire</h6>
+                            <div class="font-size-12 text-muted">
+                              <p class="mb-1">It will seem like
+                                simplified English.</p>
+                              <p class="mb-0"><i class="mdi mdi-clock-outline"></i>1 hours
+                                ago</p>
+                            </div>
+                          </div>
+                        </div>
+                      </a><a href="javascript: void(0);" class="text-reset notification-item">
+                        <div class="d-flex">
+                          <div class="avatar-xs me-3"><span
+                              class="avatar-title bg-success rounded-circle font-size-16"><i
+                                class="bx bx-badge-check"></i></span></div>
+                          <div class="flex-grow-1">
+                            <h6 class="mb-1">Your item is shipped
+                            </h6>
+                            <div class="font-size-12 text-muted">
+                              <p class="mb-1">If several languages
+                                coalesce the grammar</p>
+                              <p class="mb-0"><i class="mdi mdi-clock-outline"></i>3 min
+                                ago</p>
+                            </div>
+                          </div>
+                        </div>
+                      </a><a href="javascript: void(0);" class="text-reset notification-item">
+                        <div class="d-flex"><img src="assets/images/users/avatar-4.jpg" alt="user-pic"
+                            class="me-3 rounded-circle avatar-xs">
+                          <div class="flex-grow-1">
+                            <h6 class="mb-1">Salena Layfield</h6>
+                            <div class="font-size-12 text-muted">
+                              <p class="mb-1">As a skeptical
+                                Cambridge friend of mine
+                                occidental.</p>
+                              <p class="mb-0"><i class="mdi mdi-clock-outline"></i>1 hours
+                                ago</p>
+                            </div>
+                          </div>
+                        </div>
+                      </a></div>
+                  </div>
+                </div>
+              </div>
+              <div class="simplebar-placeholder" style="width: auto; height: 388px;"></div>
+            </div> -->
+          </div>
+          <div class="p-2 border-top d-grid">
+            <a class="btn btn-sm btn-link font-size-14 text-center" href="javascript:void(0)">
+              <i class="mdi mdi-arrow-right-circle me-1"></i> <span key="t-view-more">View More..</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="dropdown d-inline-block" ngbDropdown>
+        <button type="button" class="btn header-item" ngbDropdownToggle id="page-header-user-dropdown">
+          <img class="rounded-circle header-profile-user" src="{{ user?.picture || 'assets/images/users/avatar-5.jpg'  }}" alt="Header Avatar">
+          <span class="d-none d-xl-inline-block ms-1 text-white">{{ user?.nickname }}</span>
+          <i class="mdi mdi-chevron-down d-none d-xl-inline-block  text-white"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-end" ngbDropdownMenu>
+          <!-- item-->
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item text-danger" href="javascript: void(0);" (click)="logout()"><i
+              class="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i>
+            Logout
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
