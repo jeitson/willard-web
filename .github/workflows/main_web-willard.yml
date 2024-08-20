@@ -27,7 +27,7 @@ jobs:
           npm run build --if-present
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./dist/portalcli-app -r
+        run: zip release.zip ./dist/portalCli -r
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -57,5 +57,5 @@ jobs:
         with:
           app-name: 'web-willard'
           slot-name: 'Production'
-          package: 'dist/portalcli-app'
+          package: 'dist/portalCli'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0F7675920E9E4AD6B224A6618C6D93C7 }}
