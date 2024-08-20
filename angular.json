@@ -64,7 +64,7 @@
           },
           "configurations": {
             "production": {
-              "baseHref": "/portalCli/",
+              "baseHref": "",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
