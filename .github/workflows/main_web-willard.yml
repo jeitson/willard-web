@@ -57,5 +57,5 @@ jobs:
         with:
           app-name: 'web-willard'
           slot-name: 'Production'
-          package: 'dist/portalcli-app'
+          package: 'dist'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0F7675920E9E4AD6B224A6618C6D93C7 }}
