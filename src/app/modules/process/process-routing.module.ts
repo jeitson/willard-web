@@ -3,41 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
 	{
-		path: 'customer',
+		path: 'requestplanner',
 		loadChildren: () =>
-			import('./customers/customers.module').then(
-				({ CustomersModule }) => CustomersModule,
+			import('../process/requestplanner/requestplanner.module').then(
+				({ RequestplannerModule }) => RequestplannerModule,
 			),
-	},
-	{
-		path: 'collection',
-		loadChildren: () =>
-			import('./collection-centers/collection-centers.module').then(
-				({ CollectionCentersModule }) => CollectionCentersModule,
-			),
-	},
-	{
-		path: 'product',
-		loadChildren: () =>
-			import('./product/product.module').then(
-				({ ProductModule }) => ProductModule,
-			),
-	},
-	{
-		path: 'conveyor',
-		loadChildren: () =>
-			import('./conveyor/conveyor.module').then(
-				({ ConveyorModule }) => ConveyorModule,
-			),
-	},
-	{
-		path: 'adviser',
-		loadChildren: () =>
-			import('./adviser/adviser.module').then(
-				({ AdviserModule }) => AdviserModule,
-			),
-	},
-
+	}
 ];
 
 @NgModule({

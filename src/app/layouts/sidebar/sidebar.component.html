@@ -10,7 +10,7 @@
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: true }">
           <i class="fa-solid fa-{{ item.icon }}"></i>
-          <span>{{ item.title }}</span>
+          <span class="text-menu">{{ item.title }}</span>
           <i *ngIf="item.children" class="expand-icon fa-solid" [ngClass]="openedModule === item.title ? 'fa-caret-up' : 'fa-caret-down'"></i>
         </div>
         <ul [ngClass]="{'submenu': true, 'expanded': openedModule === item.title}">

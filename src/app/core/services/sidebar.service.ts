@@ -57,14 +57,23 @@ export class SidebarService {
         {
           title: 'Tipo evidencia',
           link: 'settings/typeevidence'
-        }
-      ]
-    },
-    {
-      icon: 'fa-solid fa-person-dots-from-line',
-      title: 'Proceso',
-      link: null,
-      children: [
+        },
+        {
+          title: 'Zona',
+          link: 'settings/zone'
+        },
+        {
+          title: 'Tipo de Camión',
+          link: 'settings/trucktype'
+        },
+        {
+          title: 'Tipo de Cliente',
+          link: 'settings/typecustomer'
+        },
+        {
+          title: 'Estado de rutas',
+          link: 'settings/routestatus'
+        },
         {
           title: 'Productos',
           link: 'process/product'
@@ -84,6 +93,17 @@ export class SidebarService {
         {
           title: 'Asesor',
           link: 'process/adviser'
+        }
+      ]
+    },
+    {
+      icon: 'fa-solid fa-person-dots-from-line',
+      title: 'Proceso',
+      link: null,
+      children: [
+        {
+          title: 'Solicitudes (planeador)',
+          link: 'process/requestplanner'
         }
       ]
     },

@@ -72,6 +72,69 @@ const routes: Routes = [
 				({ UnitymetricsModule }) => UnitymetricsModule,
 			),
 	},
+  {
+		path: 'zone',
+		loadChildren: () =>
+			import('./zone/zone.module').then(
+				({ ZoneModule }) => ZoneModule,
+			),
+	},
+  {
+		path: 'trucktype',
+		loadChildren: () =>
+			import('./trucktype/trucktype.module').then(
+				({ TrucktypeModule }) => TrucktypeModule,
+			),
+	},
+  {
+		path: 'typecustomer',
+		loadChildren: () =>
+			import('./typecustomer/typecustomer.module').then(
+				({ TypecustomerModule }) => TypecustomerModule,
+			),
+	},
+  {
+		path: 'routestatus',
+		loadChildren: () =>
+			import('./routestatus/routestatus.module').then(
+				({ RoutestatusModule }) => RoutestatusModule,
+			),
+	},
+  {
+		path: 'customer',
+		loadChildren: () =>
+			import('../configuration/customers/customers.module').then(
+				({ CustomersModule }) => CustomersModule,
+			),
+	},
+	{
+		path: 'collection',
+		loadChildren: () =>
+			import('./collection-centers/collection-centers.module').then(
+				({ CollectionCentersModule }) => CollectionCentersModule,
+			),
+	},
+	{
+		path: 'product',
+		loadChildren: () =>
+			import('../configuration/product/product.module').then(
+				({ ProductModule }) => ProductModule,
+			),
+	},
+	{
+		path: 'conveyor',
+		loadChildren: () =>
+			import('../configuration/conveyor/conveyor.module').then(
+				({ ConveyorModule }) => ConveyorModule,
+			),
+	},
+	{
+		path: 'adviser',
+		loadChildren: () =>
+			import('../configuration/adviser/adviser.module').then(
+				({ AdviserModule }) => AdviserModule,
+			),
+	},
 ];
 
 @NgModule({

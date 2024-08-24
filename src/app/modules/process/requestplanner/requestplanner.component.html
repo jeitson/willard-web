@@ -1,0 +1,130 @@
+<div class="container">
+  <div class="page-header">
+    <div class="d-flex flex-column">
+      <h3 class="primary title noselect">SOLICITUDES</h3>
+      <p class="secundary mb-1">En este modulo podras planear y configurar la solicitud para que continue el proceso</p>
+    </div>
+    <div class="d-flex flex-rows gap-10">
+      <!-- <button type="button" class="btn btn-sm bg-add" (click)="addItem()">Agregar <i class="fa-solid fa-add"></i></button> -->
+      <button type="button" class="btn btn-sm btn-dark">Recargar <i class="fa-solid fa-rotate-right"></i></button>
+    </div>
+  </div>
+  <div class="page-divider mb-3">
+    <hr class="mt-1 mb-1">
+  </div>
+  <div class="page-body">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+              <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead class="bg-white">
+                        <tr>
+                            <th class="text-center"> Id</th>
+                            <th class="text-center"> Fecha </th>
+                            <th class="text-left"> Acopio </th>
+                            <th class="text-center"> Cantidad </th>
+                            <th class="text-left"> Recogida</th>
+                            <th class="text-left"> Cliente </th>
+                            <th class="text-center"> Transportadora </th>
+                            <th class="text-center"> Estado </th>
+                            <th class="text-center"> </th>
+                        </tr>
+                    </thead>
+                    <tbody style="background-color: white;">
+                        <tr *ngFor="let item of requests" style="font-size: smaller;">
+                            <td class="text-center"> {{item.id}} </td>
+                            <td class="text-center"> {{item.dateRequest | date:'shortdate'}} </td>
+                            <td class="text-left"> {{item.acopiCenter }} </td>
+                            <td class="text-center"> {{item.count }} </td>
+                            <td class="text-center"> {{item.place }} </td>
+                            <td class="text-left"> {{item.customer }} </td>
+                            <td class="text-left"> {{item.transporter }} </td>
+                            <td class="text-center">
+                                <h5 *ngIf="item.status == true" style="color: white;"><span class="badge bg-success2">Activo</span></h5>
+                                <h5 *ngIf="item.status == false" style="color: white;"><span class="badge bg-danger">Inactivo</span></h5>
+                            </td>
+                            <td class="text-center">
+                              <i class="fa-solid f-larger pointer fa-pencil" (click)="editRequest(item)"></i>
+                              <!-- <i class="fa-solid f-larger pointer fa-pencil" (click)="viewDetail(item)"></i> -->
+                              <i class="fa-solid f-larger pointer fa-eye" [routerLink]="['32983283']"></i>
+                              <!--<i class="fa-solid f-larger pointer fa-trash" (click)="removeItem(item.id)"></i> -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="modal fade" id="modallist" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title pricolor" id="modal-title-notification">{{action.name | uppercase}} {{keyspanish | uppercase}}</h5>
+                </div>
+                <div class="modal-body">
+                    <h6 style="text-transform: none; font-weight: 300;">A través de esta funcionalidad podrá realizar el proceso de {{action.name}} de {{keyspanish}}. Diligenciar la información y seleccionar la opción {{action.name | lowercase}}.</h6>
+                    <div class="col-md-12">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6 text-left" *ngIf="parent !== 'null'">
+                                    <label for="basic-url" class="pricolor">{{parentspanish}}</label>
+                                    <div class="input-group mb-3">
+                                        <select class="form-control form-select" name="parent" [(ngModel)]="item.parentId" required>
+                                            <option value="" selected>Seleccionar {{parentspanish}}</option>
+                                            <option *ngFor="let opt of listParentRes" value="{{opt.id}}">{{opt.name}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="" class="pricolor">Nombre</label>
+                                    <input type="text" class="form-control" placeholder="Nombre" name="names" [(ngModel)]="item.name" autocomplete="off" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label for="" class="pricolor">Descripción</label>
+                                    <textarea type="textarea" class="form-control" placeholder="Descripción" name="describe" autocomplete="off" [(ngModel)]="item.description"></textarea>
+                                </div>
+                            </div>
+                            <div class="row mt-5">
+                                <div class="col-md-12 d-flex flex-rows gap-10">
+                                  <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="save()"> Crear </button>
+                                  <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false " (click)="update()"> Actualizar </button>
+                                  <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalconfirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="col-md-12 text-center pb5">
+                         <i class="{{action.icon}} noselect f-xx-large" [style.color]="action.color"></i>
+                    </div>
+                    <div class="col-md-12 mt-4">
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <h6><strong>¿Esta seguro que desea {{action.name | lowercase}} este item?</strong></h6>
+                                <p><small>Esta acción no se podra deshacer</small></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 d-flex justify-content-around">
+                        <button class="btn btn-sm text-white btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
+                        <button class="btn btn-sm text-white" [style.background]="action.color" (click)="actionConfirm()"> Confirmar </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+  </div>
+</div>
