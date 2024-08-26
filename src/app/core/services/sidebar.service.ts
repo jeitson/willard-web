@@ -104,6 +104,10 @@ export class SidebarService {
         {
           title: 'Solicitudes (planeador)',
           link: 'process/requestplanner'
+        },
+        {
+          title: 'Solicitudes (Agencia)',
+          link: 'process/requestagency'
         }
       ]
     },

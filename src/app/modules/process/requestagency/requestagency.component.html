@@ -1,0 +1,386 @@
+<div class="container">
+  <div class="page-header">
+    <div class="d-flex flex-column">
+      <h3 class="primary title noselect">SOLICITUDES</h3>
+      <p class="secundary mb-1">
+        En este modulo podras planear y configurar la solicitud para que
+        continue el proceso
+      </p>
+    </div>
+    <div class="d-flex flex-rows gap-10">
+      <button type="button" class="btn btn-sm bg-add" (click)="createRequest()">
+        Crear nueva solicitud <i class="fa-solid fa-add"></i>
+      </button>
+      <button type="button" class="btn btn-sm btn-dark">
+        Recargar <i class="fa-solid fa-rotate-right"></i>
+      </button>
+    </div>
+  </div>
+  <div class="page-divider mb-3">
+    <hr class="mt-1 mb-1" />
+  </div>
+  <div class="page-body">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead class="bg-white">
+                <tr>
+                  <th class="text-center">Id</th>
+                  <th class="text-center">Fecha</th>
+                  <th class="text-left">Sede</th>
+                  <th class="text-center">Cantidad</th>
+                  <th class="text-left">Recogida</th>
+                  <th class="text-left">Cliente</th>
+                  <th class="text-center">Transportadora</th>
+                  <th class="text-center">Estado</th>
+                  <th class="text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody style="background-color: white">
+                <tr *ngFor="let item of [1, 2, 3]" style="font-size: smaller">
+                  <td class="text-center">1</td>
+                  <td class="text-center">1</td>
+                  <td class="text-left">1</td>
+                  <td class="text-center">1</td>
+                  <td class="text-center">1</td>
+                  <td class="text-left">1</td>
+                  <td class="text-left">1</td>
+                  <td class="text-center">
+                    <h5 style="color: white">
+                      <span class="badge bg-success2">Activo</span>
+                    </h5>
+                  </td>
+                  <td class="text-center">
+                    <i class="fa-solid f-larger pointer fa-pencil"></i>
+                    <!-- <i class="fa-solid f-larger pointer fa-pencil" (click)="viewDetail(item)"></i> -->
+                    <i class="fa-solid f-larger pointer fa-eye"></i>
+                    <!--<i class="fa-solid f-larger pointer fa-trash" (click)="removeItem(item.id)"></i> -->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    id="modalRequest"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    aria-labelledby="modalRequestLabel"
+    aria-hidden="true"
+  >
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h5 class="modal-title pricolor" id="modalRequestLabel">
+          {{ action.name | uppercase }} SOLICITUD
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <form>
+          <div class="row g-3">
+            <!-- Datos de Solicitud -->
+            <h6 class="fw-bold text-uppercase mb-3">Datos de Solicitud</h6>
+      
+            <!-- Descripción -->
+            <div class="col-12 mb-2">
+              <label for="description" class="form-label">Descripción</label>
+              <textarea
+                class="form-control"
+                id="description"
+                [(ngModel)]="request.description"
+                name="description"
+                rows="2"
+                placeholder="Descripción de la solicitud"
+                required
+              ></textarea>
+            </div>
+      
+            <!-- Fecha y Hora de Solicitud -->
+            <div class="col-md-6 mb-2">
+              <label for="requestDate" class="form-label">Fecha de Solicitud</label>
+              <input
+                type="date"
+                class="form-control"
+                id="requestDate"
+                [(ngModel)]="request.requestDate"
+                name="requestDate"
+                required
+              />
+            </div>
+      
+            <div class="col-md-6 mb-2">
+              <label for="requestTime" class="form-label">Hora de Solicitud</label>
+              <input
+                type="time"
+                class="form-control"
+                id="requestTime"
+                [(ngModel)]="request.requestTime"
+                name="requestTime"
+                required
+              />
+            </div>
+      
+            <!-- Cantidad y Peso Estimados -->
+            <div class="col-md-6 mb-2">
+              <label for="estimatedQuantity" class="form-label">Cantidad Estimada</label>
+              <input
+                type="number"
+                class="form-control"
+                id="estimatedQuantity"
+                [(ngModel)]="request.estimatedQuantity"
+                name="estimatedQuantity"
+                placeholder="0"
+                min="0"
+                required
+              />
+            </div>
+      
+            <div class="col-md-6 mb-2">
+              <label for="estimatedKG" class="form-label">Peso Estimado (KG)</label>
+              <input
+                type="number"
+                class="form-control"
+                id="estimatedKG"
+                [(ngModel)]="request.estimatedKG"
+                name="estimatedKG"
+                placeholder="0"
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
+      
+            <!-- Es Especial -->
+            <div class="col-md-6 mb-2">
+              <label class="form-label">¿Es Especial?</label>
+              <div class="form-check form-switch">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="isSpecial"
+                  [(ngModel)]="request.isSpecial"
+                  name="isSpecial"
+                />
+                <label class="form-check-label" for="isSpecial">Sí / No</label>
+              </div>
+            </div>
+      
+            <!-- Estado de Solicitud -->
+            <div class="col-md-6 mb-2">
+              <label for="requestStatusId" class="form-label">Estado de la Solicitud</label>
+              <select
+                class="form-select"
+                id="requestStatusId"
+                [(ngModel)]="request.requestStatusId"
+                name="requestStatusId"
+                required
+              >
+                <option value="" disabled selected>Seleccione un estado</option>
+                <option *ngFor="let status of requestStatuses" [value]="status.id">
+                  {{ status.name }}
+                </option>
+              </select>
+            </div>
+      
+            <!-- Fecha y Hora de Recogida Estimada -->
+            <div class="col-md-6 mb-2">
+              <label for="estimatedPickUpDate" class="form-label">Fecha de Recogida Estimada</label>
+              <input
+                type="date"
+                class="form-control"
+                id="estimatedPickUpDate"
+                [(ngModel)]="request.estimatedPickUpDate"
+                name="estimatedPickUpDate"
+                required
+              />
+            </div>
+      
+            <div class="col-md-6 mb-2">
+              <label for="estimatedPickUpTime" class="form-label">Hora de Recogida Estimada</label>
+              <input
+                type="time"
+                class="form-control"
+                id="estimatedPickUpTime"
+                [(ngModel)]="request.estimatedPickUpTime"
+                name="estimatedPickUpTime"
+                required
+              />
+            </div>
+      
+            <!-- Datos del Cliente y Recogida -->
+            <div class="row mt-3">
+                <!-- Datos del Cliente -->
+                <div class="col-md-3 mb-3">
+                  <h6 class="fw-bold text-uppercase mb-2">Datos del Cliente</h6>
+                  <div class="mb-3">
+                    <label for="clientId" class="form-label">Cliente</label>
+                    <select
+                      class="form-select"
+                      id="clientId"
+                      [(ngModel)]="request.clientId"
+                      name="clientId"
+                      required
+                    >
+                      <option value="" disabled selected>Seleccione un cliente</option>
+                      <option *ngFor="let client of clients" [value]="client.id">
+                        {{ client.name }}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="border p-2 rounded bg-light">
+                    <div class="ft d-flex justify-content-between mb-2">
+                      <strong>NIT:</strong>
+                      <span>12233223</span>
+                    </div>
+                    <div class=" ft d-flex justify-content-between mb-2">
+                      <strong>Agencia:</strong>
+                      <span>AGENCIA1</span>
+                    </div>
+                  </div>
+                </div>
+              
+                <!-- Datos Transportadora -->
+                <div class="col-md-3 mb-3">
+                  <h6 class="fw-bold text-uppercase mb-2">Datos Transportadora</h6>
+                  <div class="mb-3">
+                    <label for="transportadoraId" class="form-label">Transportadora</label>
+                    <select
+                      class="form-select"
+                      id="transportadoraId"
+                      [(ngModel)]="request.transportadoraId"
+                      name="transportadoraId"
+                      required
+                    >
+                      <option value="" disabled selected>Seleccione una transportadora</option>
+                      <option *ngFor="let transport of transportadoras" [value]="transport.id">
+                        {{ transport.name }}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="border p-2 rounded bg-light">
+                    <div class=" ft d-flex justify-content-between mb-2">
+                      <strong>NIT:</strong>
+                      <span>12233223</span>
+                    </div>
+                    <div class="ft d-flex justify-content-between mb-2">
+                      <strong>Contacto:</strong>
+                      <span>contacto1</span>
+                    </div>
+                    <div class="ft d-flex justify-content-between mb-2">
+                      <strong>Teléfono:</strong>
+                      <span>432212</span>
+                    </div>
+                  </div>
+                </div>
+              
+                <!-- Datos de Recogida -->
+                <div class="col-md-6 mb-3">
+                  <h6 class="fw-bold text-uppercase mb-2">Datos de Recogida</h6>
+                  <div class="mb-3">
+                    <label for="pickUpLocationId" class="form-label">Lugar de Recogida</label>
+                    <select
+                      class="form-select"
+                      id="pickUpLocationId"
+                      [(ngModel)]="request.pickUpLocationId"
+                      name="pickUpLocationId"
+                      required
+                    >
+                      <option value="" disabled selected>Seleccione un lugar de recogida</option>
+                      <option *ngFor="let location of pickUpLocations" [value]="location.id">
+                        {{ location.name }}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="border p-2 rounded bg-light">
+                    <div class="row">
+                      <div class="col-6 mb-2">
+                        <div class="d-flex flex-column">
+                          <span class="ft"><strong>Dirección:</strong> Calle 123</span>
+                          <span class="ft"><strong>País:</strong> Colombia</span>
+                          <span class="ft"><strong>Teléfono:</strong> +57 123 4567890</span>
+                          <span class="ft"><strong>Zona:</strong> Zona Norte</span>
+                        </div>
+                      </div>
+                      <div class="col-6 mb-2">
+                        <div class="d-flex flex-column">
+                          <span class="ft"><strong>Ciudad:</strong> Bogotá</span>
+                          <span class="ft"><strong>Contacto:</strong> Juan Pérez</span>
+                          <span class="ft"><strong>Correo:</strong> juan.perezcorreo.com</span>
+                          <span class="ft"><strong>Estado:</strong> Activo</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+      
+            <!-- Datos del Transportador -->
+
+            <div class="row">
+                        <!-- Observaciones y Recomendaciones -->
+            <div class="col-12 mt-3 mb-2">
+                <h6 class="fw-bold text-uppercase mb-2">Observaciones y Recomendaciones</h6>
+              </div>
+        
+              <div class="col-12 mb-2">
+                <label for="observations" class="form-label">Observaciones</label>
+                <textarea
+                  class="form-control"
+                  id="observations"
+                  [(ngModel)]="request.observations"
+                  name="observations"
+                  rows="2"
+                  placeholder="Observaciones adicionales"
+                ></textarea>
+              </div>
+        
+              <div class="col-12 mb-2">
+                <label for="recommendations" class="form-label">Recomendaciones</label>
+                <textarea
+                  class="form-control"
+                  id="recommendations"
+                  [(ngModel)]="request.recommendations"
+                  name="recommendations"
+                  rows="2"
+                  placeholder="Recomendaciones"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
