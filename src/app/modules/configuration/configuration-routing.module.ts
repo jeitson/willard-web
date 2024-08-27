@@ -138,8 +138,8 @@ const routes: Routes = [
 	{
 		path: 'pickuplocation',
 		loadChildren: () =>
-			import('../configuration/product/product.module').then(
-				({ ProductModule }) => ProductModule,
+			import('../configuration/pickuplocation/pickuplocation.module').then(
+				({ PickuplocationModule }) => PickuplocationModule,
 			),
 	},
 ];

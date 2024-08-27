@@ -93,6 +93,10 @@ export class SidebarService {
         {
           title: 'Asesor',
           link: 'settings/adviser'
+        },
+        {
+          title: 'Lugares de Recogida',
+          link: 'settings/pickuplocation'
         }
       ]
     },

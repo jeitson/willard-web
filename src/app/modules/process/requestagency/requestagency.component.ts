@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { forkJoin } from 'rxjs';
+import { ConvenyorService } from 'src/app/core/services/process/convenyor.service';
+import { CustomersService } from 'src/app/core/services/process/customers.service';
 declare var $: any;
 @Component({
   selector: 'wlrd-requestagency',
@@ -65,10 +68,23 @@ export class RequestagencyComponent {
     { id: 3, name: 'Completado' },
     // Más estados...
   ];
-
+  constructor(private _Customers: CustomersService, private _Conveyor: ConvenyorService) {}
   ngOnInit(): void {
+    this.getData();
   }
 
+  getData(){
+    forkJoin({
+      transportadores: this._Conveyor.getTransportadores(),
+    }).subscribe({
+      next: (data: any) => {
+        // this.listData = data.transportadores.data.items;
+      },
+      error: (error: any) => {
+        console.error('Error al obtener datos:', error);
+      },
+    });
+  }
   createRequest() {
     // Lógica para crear la solicitud
     $('#modalRequest').modal({ backdrop: 'static', keyboard: false });
