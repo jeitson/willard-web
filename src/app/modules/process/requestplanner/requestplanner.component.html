@@ -32,7 +32,7 @@
                         </tr>
                     </thead>
                     <tbody style="background-color: white;">
-                        <tr *ngFor="let item of requests" style="font-size: smaller;">
+                        <tr *ngFor="let item of listsrequest" style="font-size: smaller;">
                             <td class="text-center"> {{item.id}} </td>
                             <td class="text-center"> {{item.dateRequest | date:'shortdate'}} </td>
                             <td class="text-left"> {{item.acopiCenter }} </td>
@@ -58,52 +58,108 @@
         </div>
     </div>
 
-    <!-- <div class="modal fade" id="modallist" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-md">
+    <div class="modal fade" id="modalplaner" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title pricolor" id="modal-title-notification">{{action.name | uppercase}} {{keyspanish | uppercase}}</h5>
+                    <h5 class="modal-title pricolor" id="modal-title-notification">Planear Recogida</h5>
                 </div>
                 <div class="modal-body">
-                    <h6 style="text-transform: none; font-weight: 300;">A través de esta funcionalidad podrá realizar el proceso de {{action.name}} de {{keyspanish}}. Diligenciar la información y seleccionar la opción {{action.name | lowercase}}.</h6>
-                    <div class="col-md-12">
-                        <form>
-                            <div class="row">
-                                <div class="col-md-6 text-left" *ngIf="parent !== 'null'">
-                                    <label for="basic-url" class="pricolor">{{parentspanish}}</label>
-                                    <div class="input-group mb-3">
-                                        <select class="form-control form-select" name="parent" [(ngModel)]="item.parentId" required>
-                                            <option value="" selected>Seleccionar {{parentspanish}}</option>
-                                            <option *ngFor="let opt of listParentRes" value="{{opt.id}}">{{opt.name}}</option>
-                                        </select>
-                                    </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <h6 style="text-transform: none; font-weight: 300;">A través de esta funcionalidad podrá realizar el proceso de planeación para la recogida de los productos.</h6>
+                      <div class="col-md-12">
+                          <form>
+                              <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="" class="pricolor">Fecha de Recogida</label>
+                                    <input type="date" class="form-control" name="datesdelivery" [(ngModel)]="formRequest.confirmedPickUpDate" autocomplete="off" required>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="" class="pricolor">Nombre</label>
-                                    <input type="text" class="form-control" placeholder="Nombre" name="names" [(ngModel)]="item.name" autocomplete="off" required>
+                              </div>
+                              <div class="row mb-3">
+                                <div class="col-md-3">
+                                  <label for="" class="pricolor">Fecha Apertura</label>
+                                  <input type="date" class="form-control" name="datestart" [(ngModel)]="formRequest.tripStartDate" autocomplete="off" required>
                                 </div>
-                            </div>
-                            <div class="row">
+                                <div class="col-md-3">
+                                  <label for="" class="pricolor">Hora Apertura</label>
+                                  <input type="time" class="form-control" name="datestart" [(ngModel)]="formRequest.tripStartTime" autocomplete="off" required>
+                                </div>
+                                <div class="col-md-3">
+                                  <label for="" class="pricolor">Cierre de viaje</label>
+                                  <input type="date" class="form-control" name="dateend" [(ngModel)]="formRequest.tripEndDate" autocomplete="off" required>
+                                </div>
+                                <div class="col-md-3">
+                                  <label for="" class="pricolor">Hora Apertura</label>
+                                  <input type="time" class="form-control" name="datestart" [(ngModel)]="formRequest.tripEndTime" autocomplete="off" required>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-md-4">
+                                  <label for="" class="pricolor">Placa</label>
+                                  <input type="text" class="form-control" name="plate" [(ngModel)]="formRequest.plate" autocomplete="off" required>
+                                </div>
+                                <div class="col-md-4">
+                                  <label for="basic-url" class="pricolor">Tipo de Camion</label>
+                                  <div class="input-group mb-3">
+                                      <select class="form-control form-select" name="typetrcuk" [(ngModel)]="formRequest.truckTypeId" required>
+                                          <option value="" selected>Seleccionar</option>
+                                          <option *ngFor="let opt of lists.listTruckType" value="{{opt.id}}">{{opt.name}}</option>
+                                      </select>
+                                  </div>
+                                </div>
+                                <div class="col-md-4">
+                                  <label for="" class="pricolor">Fecha Entrega</label>
+                                  <input type="date" class="form-control" name="date" [(ngModel)]="formRequest.deliveryDateToCollectionSite" autocomplete="off" required>
+                                </div>
+                              </div>
+                              <div class="row">
                                 <div class="col-md-12">
-                                    <label for="" class="pricolor">Descripción</label>
-                                    <textarea type="textarea" class="form-control" placeholder="Descripción" name="describe" autocomplete="off" [(ngModel)]="item.description"></textarea>
+                                  <label for="basic-url" class="pricolor">Conductor</label>
+                                  <div class="input-group mb-3">
+                                      <select class="form-control form-select" name="parent" [(ngModel)]="formRequest.typetruck" required>
+                                          <option value="" selected>Seleccionar</option>
+                                          <option *ngFor="let opt of [{id:00,name:'kdkd'}]" value="{{opt.id}}">{{opt.name}}</option>
+                                      </select>
+                                  </div>
                                 </div>
-                            </div>
-                            <div class="row mt-5">
-                                <div class="col-md-12 d-flex flex-rows gap-10">
-                                  <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="save()"> Crear </button>
-                                  <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false " (click)="update()"> Actualizar </button>
-                                  <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
+                                <div class="col-md-12">
+                                  <div class="card">
+                                    <div class="card-body">
+                                      <div class="d-flex flex-rows gap-10">
+                                        <div class="avatar">
+                                          <img class="rounded-circle header-profile-user my-auto mx-0 m-auto" src="assets/images/users/avatar-3.jpg" alt="" srcset="">
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                          <h6>Alberto Manuel Lopez Llano</h6>
+                                          <span>CC 1045727156</span>
+                                          <span>317 8902922</span>
+                                          <span>aldairguerrerobarajasdsgmail.com</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
-                            </div>
-                        </form>
+                              </div>
+                              <div class="col-md-12 d-flex flex-rows gap-10 justify-content-around position-a">
+                                <button class="btn btn-md bg-success2 text-white" (click)="actionConfirm()"> Confirmar </button>
+                                <button class="btn btn-md bg-danger text-white" (click)="actionConfirm()"> Rechazar </button>
+                                 <!-- <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false " (click)="update()"> Actualizar </button> -->
+                                <button class="btn btn-md btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
+                              </div>
+                          </form>
+                      </div>
                     </div>
+                    <div class="col-md-6">
+                      <wlrd-detailrequest></wlrd-detailrequest>
+                    </div>
+                  </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="modalconfirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
+    <div class="modal fade" id="modalconfirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true"> -->
         <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
             <div class="modal-content">
                 <div class="modal-body">
@@ -113,18 +169,18 @@
                     <div class="col-md-12 mt-4">
                         <div class="row">
                             <div class="col-md-12 text-center">
-                                <h6><strong>¿Esta seguro que desea {{action.name | lowercase}} este item?</strong></h6>
+                                <h6><strong>¿Esta seguro que desea {{action.name | lowercase}} esta solicitud?</strong></h6>
                                 <p><small>Esta acción no se podra deshacer</small></p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12 d-flex justify-content-around">
                         <button class="btn btn-sm text-white btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
-                        <button class="btn btn-sm text-white" [style.background]="action.color" (click)="actionConfirm()"> Confirmar </button>
+                        <button class="btn btn-sm text-white" [style.background]="action.color" > Confirmar </button>
                     </div>
                 </div>
             </div>
         </div>
-    </div> -->
+    </div>
   </div>
 </div>

@@ -135,6 +135,13 @@ const routes: Routes = [
 				({ AdviserModule }) => AdviserModule,
 			),
 	},
+	{
+		path: 'pickuplocation',
+		loadChildren: () =>
+			import('../configuration/product/product.module').then(
+				({ ProductModule }) => ProductModule,
+			),
+	},
 ];
 
 @NgModule({

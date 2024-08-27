@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgxDanisoftUtilsModule } from 'ngx-danisoft-utils';
 import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 import { AuthModule as Auth0Module } from '@auth0/auth0-angular';
 import { AppRoutingModule } from './app-routing.module';

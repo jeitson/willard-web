@@ -9,7 +9,6 @@ declare var $: any;
 })
 export class CatalogueComponent implements OnInit {
 
-
   @Input() key:string = '';
   @Input() parent:string = '';
   @Input() keyspanish:string = '';
@@ -18,6 +17,8 @@ export class CatalogueComponent implements OnInit {
   @Input() rol:string = '';
 
   p:number = 1;
+  totalItemsRender: number = 10;
+  pagination: any = {};
   filtertext:string = '';
   itemId:string = '';
   viewoptions:boolean = true;
@@ -60,6 +61,7 @@ export class CatalogueComponent implements OnInit {
       next: (response: any) => {
         this.list = response.data;
         this.listBase = this.list;
+        this.pagination.totalItems = response.data.length;
       },
       error: (error: any) => {
         console.error('Error al crear usuario:', error);

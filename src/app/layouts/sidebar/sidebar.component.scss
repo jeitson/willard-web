@@ -1,27 +1,10 @@
-// .vertical-menu{
-//   background: #6D9773;
-// }
-
-// #side-menu > li:active{
-//   background: #f5f5f9 !important;
-//   border-radius: 49px !important;
-// }
-
-// .mm-active .active i {
-//   color: #ffffff !important;
-// }
-
-// .mm-active .active {
-//   color: #ffffff !important;
-// }
-
 .sidebar {
   width: 250px;
   background-color: #1c5717bd;
   color: #343a40;
   padding: 15px;
-  height: 100%;
-  overflow-y: auto;
+  height: calc(100vh - 70px);
+  overflow-y: auto; /* Activa el scroll si el contenido excede la altura */
 }
 
 ul {
@@ -46,6 +29,7 @@ ul {
 
 
 .menu-item i.fa-solid {
+  margin-right: 20px;
   font-size: 20px;
 }
 
@@ -66,29 +50,7 @@ ul {
 }
 
 .submenu.expanded {
-  max-height: 500px; /* Ajustar según la cantidad de elementos */
-  overflow-y: auto; /* Habilita el scroll vertical cuando está expandido */
-}
-
-/* Estilos personalizados para el scrollbar */
-.submenu::-webkit-scrollbar {
-  width: 6px; /* Ancho del scrollbar */
-}
-
-.submenu::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2); /* Color del "thumb" (el control de scroll) */
-  border-radius: 10px; /* Bordes redondeados para el thumb */
-}
-
-.submenu::-webkit-scrollbar-track {
-  background-color: rgba(0, 0, 0, 0.05); /* Color de fondo del track (la pista por donde se mueve el thumb) */
-  border-radius: 10px; /* Bordes redondeados para el track */
-}
-
-/* Firefox scrollbar styles */
-.submenu {
-  scrollbar-width: thin; /* Reduce el ancho del scrollbar en Firefox */
-  scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05); /* Color del thumb y del track en Firefox */
+  max-height: 1000px; /* Ajusta según la cantidad de elementos */
 }
 
 .submenu li {
@@ -115,9 +77,6 @@ ul {
   padding-right: 12px;
   border-radius: 20px;
 
-}
-.text-menu{
-  margin-left: 5px;
 }
 
 .submenu li:hover {
@@ -186,3 +145,18 @@ ul {
 }
 
 /* Add more nth-child selectors as needed dynamically */
+
+
+.sidebar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: #9acea1;
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background-color: #343a40;
+}
