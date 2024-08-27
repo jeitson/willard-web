@@ -1,27 +1,10 @@
-// .vertical-menu{
-//   background: #6D9773;
-// }
-
-// #side-menu > li:active{
-//   background: #f5f5f9 !important;
-//   border-radius: 49px !important;
-// }
-
-// .mm-active .active i {
-//   color: #ffffff !important;
-// }
-
-// .mm-active .active {
-//   color: #ffffff !important;
-// }
-
 .sidebar {
   width: 250px;
   background-color: #1c5717bd;
   color: #343a40;
   padding: 15px;
-  height: 100%;
-  overflow-y: auto;
+  height: calc(100vh - 70px);
+  overflow-y: auto; /* Activa el scroll si el contenido excede la altura */
 }
 
 ul {
@@ -46,6 +29,7 @@ ul {
 
 
 .menu-item i.fa-solid {
+  margin-right: 20px;
   font-size: 20px;
 }
 
@@ -66,7 +50,7 @@ ul {
 }
 
 .submenu.expanded {
-  max-height: 500px; /* Ajustar según la cantidad de elementos */
+  max-height: 1000px; /* Ajusta según la cantidad de elementos */
 }
 
 .submenu li {
@@ -93,9 +77,6 @@ ul {
   padding-right: 12px;
   border-radius: 20px;
 
-}
-.text-menu{
-  margin-left: 5px;
 }
 
 .submenu li:hover {
@@ -164,3 +145,18 @@ ul {
 }
 
 /* Add more nth-child selectors as needed dynamically */
+
+
+.sidebar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: #9acea1;
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background-color: #343a40;
+}
