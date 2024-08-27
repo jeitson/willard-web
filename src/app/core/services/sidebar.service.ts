@@ -76,23 +76,23 @@ export class SidebarService {
         },
         {
           title: 'Productos',
-          link: 'process/product'
+          link: 'settings/product'
         },
         {
           title: 'Clientes',
-          link: 'process/customer'
+          link: 'settings/customer'
         },
         {
           title: 'Sedes de Acopio',
-          link: 'process/collection'
+          link: 'settings/collection'
         },
         {
           title: 'Transportador',
-          link: 'process/conveyor'
+          link: 'settings/conveyor'
         },
         {
           title: 'Asesor',
-          link: 'process/adviser'
+          link: 'settings/adviser'
         }
       ]
     },

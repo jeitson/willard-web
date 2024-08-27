@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { CatalogueRoutingModule } from './catalogue-routing.module';
 import { CatalogueComponent } from './catalogue.component';
 import { FormsModule } from '@angular/forms';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 
 @NgModule({
@@ -13,6 +14,7 @@ import { FormsModule } from '@angular/forms';
   imports: [
     FormsModule,
     CommonModule,
+    NgxPaginationModule,
     CatalogueRoutingModule
   ],
   exports: [

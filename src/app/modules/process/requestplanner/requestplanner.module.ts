@@ -3,14 +3,16 @@ import { CommonModule } from '@angular/common';
 
 import { RequestplannerRoutingModule } from './requestplanner-routing.module';
 import { DetailrequestComponent } from './detailrequest/detailrequest.component';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
   declarations: [
-    DetailrequestComponent
+
   ],
   imports: [
     CommonModule,
+    FormsModule,
     RequestplannerRoutingModule
   ]
 })
