@@ -8,6 +8,7 @@ import { ProductComponent } from '../configuration/product/product.component';
 import { ConveyorComponent } from '../configuration/conveyor/conveyor.component';
 import { AdviserComponent } from '../configuration/adviser/adviser.component';
 import { CustomersComponent } from '../configuration/customers/customers.component';
+import { PickuplocationComponent } from './pickuplocation/pickuplocation.component';
 
 
 @NgModule({
@@ -17,6 +18,7 @@ import { CustomersComponent } from '../configuration/customers/customers.compone
     ConveyorComponent,
     AdviserComponent,
     CustomersComponent,
+    PickuplocationComponent,
   ],
   imports: [
     CommonModule,

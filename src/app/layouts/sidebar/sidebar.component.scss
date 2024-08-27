@@ -61,12 +61,34 @@ ul {
 .submenu {
   padding-left: 14px;
   max-height: 0;
-  overflow: hidden;
+  overflow: hidden; /* Mantén el overflow oculto por defecto */
   transition: max-height 0.3s ease;
 }
 
 .submenu.expanded {
   max-height: 500px; /* Ajustar según la cantidad de elementos */
+  overflow-y: auto; /* Habilita el scroll vertical cuando está expandido */
+}
+
+/* Estilos personalizados para el scrollbar */
+.submenu::-webkit-scrollbar {
+  width: 6px; /* Ancho del scrollbar */
+}
+
+.submenu::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2); /* Color del "thumb" (el control de scroll) */
+  border-radius: 10px; /* Bordes redondeados para el thumb */
+}
+
+.submenu::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.05); /* Color de fondo del track (la pista por donde se mueve el thumb) */
+  border-radius: 10px; /* Bordes redondeados para el track */
+}
+
+/* Firefox scrollbar styles */
+.submenu {
+  scrollbar-width: thin; /* Reduce el ancho del scrollbar en Firefox */
+  scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05); /* Color del thumb y del track en Firefox */
 }
 
 .submenu li {
