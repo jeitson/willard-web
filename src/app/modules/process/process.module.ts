@@ -6,13 +6,15 @@ import { FormsModule } from '@angular/forms';
 import { RequestplannerComponent } from './requestplanner/requestplanner.component';
 import { DetailrequestComponent } from './requestplanner/detailrequest/detailrequest.component';
 import { RequestagencyComponent } from './requestagency/requestagency.component';
+import { RequestlogisticsComponent } from './requestlogistics/requestlogistics.component';
 
 
 @NgModule({
   declarations: [
     RequestplannerComponent,
     RequestagencyComponent,
-    DetailrequestComponent
+    DetailrequestComponent,
+    RequestlogisticsComponent
   ],
   imports: [
     CommonModule,

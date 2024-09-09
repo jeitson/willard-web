@@ -9,27 +9,27 @@ declare var $: any;
 @Component({
   selector: 'wlrd-pickuplocation',
   templateUrl: './pickuplocation.component.html',
-  styleUrls: ['./pickuplocation.component.scss']
+  styleUrls: ['./pickuplocation.component.scss'],
 })
 export class PickuplocationComponent {
   switchSection: string = 'List';
   actionModal: string = '';
   viewoptions = true;
   action: any = {
-    icon:'',
-    name:'',
-    value:'',
-    color:''
+    icon: '',
+    name: '',
+    value: '',
+    color: '',
   };
   itemId: string = '';
-   lugar = {
-    id: 0,
-    tipoLugarId: 0,
-    clienteId: 0,
-    sedeAcopioId: 0,
-    asesorId: 0,
-    ciudadId: 0,
-    zonaId: 0,
+  lugar = {
+    id: '', // Cambiar todos los números a cadenas
+    tipoLugarId: '',
+    clienteId: '',
+    sedeAcopioId: '',
+    asesorId: '',
+    ciudadId: '',
+    zonaId: '',
     nombre: '',
     descripcion: '',
     neighborhood: '',
@@ -40,8 +40,9 @@ export class PickuplocationComponent {
     contactEmail: '',
     contactPhone: '',
     referenceWLL: '',
-    referencePH: ''
+    referencePH: '',
   };
+  
   listClientes: any = [];
   listAsesores: any = [];
   listTipos: any = [];
@@ -50,8 +51,13 @@ export class PickuplocationComponent {
   listZonas: any = [];
   listData: any = [];
   listProduct: any = [];
-  Measure:any = [];
-  constructor(private _Service:PickuplocationService, private _Customers:CustomersService, private _Adviser: AdviserService, private _Settings:SettingsService) {}
+  Measure: any = [];
+  constructor(
+    private _Service: PickuplocationService,
+    private _Customers: CustomersService,
+    private _Adviser: AdviserService,
+    private _Settings: SettingsService
+  ) {}
 
   ngOnInit(): void {
     this.selectData();
@@ -62,24 +68,29 @@ export class PickuplocationComponent {
       list: this._Service.getPickUpLocations(),
       listClientes: this._Customers.getClients(),
       listAsesores: this._Adviser.getConsultants(),
-      listTipos:  this._Settings.getCatalogChildrenByKey('TIPOS_LUGAR_RECOGIDA'),
-      listSedes: this._Settings.getCatalogChildrenByKey('TIPOS_SEDES_ACOPIO'), 
-      listCiudades: this._Settings.getCatalogChildrenByKey('CIUDAD'), 
-      listZonas: this._Settings.getCatalogChildrenByKey('ZONA'), 
+      listTipos: this._Settings.getCatalogChildrenByKey('TIPO_LUGAR_RECOGIDA'),
+      listSedes: this._Settings.getCatalogChildrenByKey('TIPOS_SEDES_ACOPIO'),
+      listCiudades: this._Settings.getCatalogChildrenByKey('CIUDAD'),
+      listZonas: this._Settings.getCatalogChildrenByKey('ZONA'),
     }).subscribe({
-      next: (data: any) => {
-        console.log('soyy',data);
-        this.listData = data.list.data.items;
-        this.listClientes = data.listClientes.data.items;
-        this.listAsesores = data.listAsesores.data.items;
-        this.listTipos = data.listTipos.data.items;
-        this.listSedes = data.listSedes.data.items;
-        this.listCiudades = data.listCiudades.data.items;
-        this.listZonas = data.listZonas.data.items;
+      next: ({
+        list,
+        listClientes,
+        listAsesores,
+        listTipos,
+        listSedes,
+        listCiudades,
+        listZonas,
+      }) => {
+        this.listData = list.data.items;
+        this.listClientes = listClientes.data.items;
+        this.listAsesores = listAsesores.data.items;
+        this.listTipos = listTipos.data;
+        this.listSedes = listSedes.data;
+        this.listCiudades = listCiudades.data;
+        this.listZonas = listZonas.data;
       },
-      error: (error: any) => {
-        console.error('Error al obtener datos:', error);
-      },
+      error: (error) => console.error('Error al obtener datos:', error),
     });
   }
 
@@ -87,18 +98,18 @@ export class PickuplocationComponent {
     this.resetUser();
     this.action.name = 'Crear';
     this.viewoptions = true;
-    $('#modalPickup').modal({backdrop: 'static', keyboard: false});
+    $('#modalPickup').modal({ backdrop: 'static', keyboard: false });
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
       this.lugar = {
-        id: 0,
-        tipoLugarId: 0,
-        clienteId: 0,
-        sedeAcopioId: 0,
-        asesorId: 0,
-        ciudadId: 0,
-        zonaId: 0,
+        id: '', // Cambiar todos los números a cadenas
+        tipoLugarId: '',
+        clienteId: '',
+        sedeAcopioId: '',
+        asesorId: '',
+        ciudadId: '',
+        zonaId: '',
         nombre: '',
         descripcion: '',
         neighborhood: '',
@@ -109,22 +120,20 @@ export class PickuplocationComponent {
         contactEmail: '',
         contactPhone: '',
         referenceWLL: '',
-        referencePH: ''
+        referencePH: '',
       };
-
     }
   }
 
-
   resetUser(): void {
     this.lugar = {
-      id: 0,
-      tipoLugarId: 0,
-      clienteId: 0,
-      sedeAcopioId: 0,
-      asesorId: 0,
-      ciudadId: 0,
-      zonaId: 0,
+      id: '', // Cambiar todos los números a cadenas
+      tipoLugarId: '',
+      clienteId: '',
+      sedeAcopioId: '',
+      asesorId: '',
+      ciudadId: '',
+      zonaId: '',
       nombre: '',
       descripcion: '',
       neighborhood: '',
@@ -135,14 +144,13 @@ export class PickuplocationComponent {
       contactEmail: '',
       contactPhone: '',
       referenceWLL: '',
-      referencePH: ''
+      referencePH: '',
     };
   }
 
   close() {
     $('#modalPickup').modal('hide');
   }
-
 
   updateLugar(): void {
     if (this.lugar.id) {
@@ -182,16 +190,16 @@ export class PickuplocationComponent {
       contactEmail,
       contactPhone,
       referenceWLL,
-      referencePH
+      referencePH,
     } = this.lugar;
-  
+
     return {
-      tipoLugarId,
-      clienteId,
-      sedeAcopioId,
-      asesorId,
-      ciudadId,
-      zonaId,
+      tipoLugarId: parseInt(tipoLugarId, 10),
+      clienteId: parseInt(clienteId, 10),
+      sedeAcopioId: parseInt(sedeAcopioId, 10),
+      asesorId: parseInt(asesorId, 10),
+      ciudadId: parseInt(ciudadId, 10),
+      zonaId: parseInt(zonaId, 10),
       nombre,
       descripcion,
       neighborhood,
@@ -202,67 +210,63 @@ export class PickuplocationComponent {
       contactEmail,
       contactPhone,
       referenceWLL,
-      referencePH
+      referencePH,
     };
   }
-  
-
-   handleSuccess(response: any): void {
+  handleSuccess(response: any): void {
     console.log(response);
     this.selectData();
     this.close();
   }
 
-  removeItem(id:string){
+  removeItem(id: string) {
     this.itemId = id;
     this.action.name = 'Eliminar';
     this.action.value = 'delete';
     this.action.color = '#dc3545';
     this.action.icon = 'fa-solid fa-trash';
-    $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
+    $('#modalconfirm').modal({ backdrop: 'static', keyboard: false });
   }
 
-  editState(id:string){
+  editState(id: string) {
     this.itemId = id;
     this.action.name = 'Modificar Estado';
     this.action.value = 'changestatus';
     this.action.color = '#ffc107';
     this.action.icon = 'fa-solid fa-sync';
-    $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
+    $('#modalconfirm').modal({ backdrop: 'static', keyboard: false });
   }
 
-  actionConfirm(){
+  actionConfirm() {
     switch (this.action.value) {
       case 'delete':
         this.delete();
-      break;
+        break;
       case 'changestatus':
         this.changeStatus();
-      break;
+        break;
       default:
         break;
     }
   }
 
-  changeStatus(){
+  changeStatus() {
     this._Service.changeConsultantStatus(this.itemId).subscribe({
-      next: ()=>{
+      next: () => {
         this.selectData();
-        $("#modalconfirm").modal("hide");
-      }, error: ()=>{
-
-      }
+        $('#modalconfirm').modal('hide');
+      },
+      error: () => {},
     });
   }
 
-  delete(){
+  delete() {
     this._Service.deletePickUpLocation(this.itemId).subscribe({
-      next: ()=>{
+      next: () => {
         this.selectData();
-        $("#modalconfirm").modal("hide");
-      }, error: ()=>{
-
-      }
+        $('#modalconfirm').modal('hide');
+      },
+      error: () => {},
     });
   }
 }

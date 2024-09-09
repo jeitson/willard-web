@@ -112,6 +112,10 @@ export class SidebarService {
         {
           title: 'Solicitudes (Agencia)',
           link: 'process/requestagency'
+        },
+        {
+          title: 'Solicitudes (logistics)',
+          link: 'process/requestlogistics'
         }
       ]
     },

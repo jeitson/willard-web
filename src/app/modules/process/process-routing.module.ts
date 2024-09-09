@@ -15,6 +15,13 @@ const routes: Routes = [
 			import('../process/requestagency/requestagency.module').then(
 				({ RequestagencyModule }) => RequestagencyModule,
 			),
+	},
+	{
+		path: 'requestlogistics',
+		loadChildren: () =>
+			import('../process/requestlogistics/requestlogistics.module').then(
+				({ RequestlogisticsModule }) => RequestlogisticsModule,
+			),
 	}
 ];
 

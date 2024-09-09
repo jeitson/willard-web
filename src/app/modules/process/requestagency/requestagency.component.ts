@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { ConvenyorService } from 'src/app/core/services/process/convenyor.service';
 import { CustomersService } from 'src/app/core/services/process/customers.service';
+import { SettingsService } from 'src/app/core/services/settings/settings.service';
 declare var $: any;
 @Component({
   selector: 'wlrd-requestagency',
   templateUrl: './requestagency.component.html',
-  styleUrls: ['./requestagency.component.scss']
+  styleUrls: ['./requestagency.component.scss'],
 })
 export class RequestagencyComponent {
   // constructor(private) {}
@@ -14,71 +15,85 @@ export class RequestagencyComponent {
   viewoptions = true; // true para crear, false para actualizar
 
   request = {
-    clientId: null,
-    pickUpLocationId: null,
-    collectionSiteId: null,
-    transportadoraId: null,
-    consultantId: null,
+    clientId: '',
+    pickUpLocationId: '',
+    collectionSiteId: '',
+    transportadoraId: '',
+    consultantId: '',
     name: '',
     description: '',
     requestDate: '',
     requestTime: '',
-    estimatedQuantity: null,
-    estimatedKG: null,
+    estimatedQuantity: '',
+    estimatedKG: '',
     isSpecial: false,
-    requestStatusId: null,
+    requestStatusId: '',
     estimatedPickUpDate: '',
     estimatedPickUpTime: '',
     observations: '',
     recommendations: '',
   };
+  selectedClient: any = null;
+  selectedTransportador: any = null;
+  selectedTipo: any = null;
+  listClient: any = [];
+  listTransportador: any = [];
+  listData: any = [];
+  listTipos: any = [];
+  listSedes: any = [];
+  listCiudades: any = [];
+  listZonas: any = [];
+  requestStatuses: any[] = [
+    {
+        name: 'Volumen (>700)',
+        status: 'Pendiente',
+        description: 'El volumen del pedido es mayor a 700 unidades.'
+    },
+    {
+        name: 'Ruta No Definida',
+        status: 'En Proceso',
+        description: 'La ruta para la entrega aún no ha sido definida.'
+    },
+    {
+        name: 'Cambio de Destino',
+        status: 'Confirmado',
+        description: 'El destino del pedido ha sido cambiado.'
+    }
+];
 
-  clients = [
-    { id: 1, name: 'Cliente 1', nit: '1001101', agency: 'Agencia 1' },
-    { id: 2, name: 'Cliente 2', nit: '2002202', agency: 'Agencia 2' },
-    // Más clientes
-  ];
-  pickUpLocations = [
-    { id: 1, name: 'Ubicación A' },
-    { id: 2, name: 'Ubicación B' },
-    // Más ubicaciones...
-  ];
-
-  collectionSites = [
-    { id: 1, name: 'Sitio A' },
-    { id: 2, name: 'Sitio B' },
-    // Más sitios...
-  ];
-
-  transportadoras = [
-    { id: 1, name: 'Transportadora A' },
-    { id: 2, name: 'Transportadora B' },
-    // Más transportadoras...
-  ];
-
-  consultants = [
-    { id: 1, name: 'Consultor A' },
-    { id: 2, name: 'Consultor B' },
-    // Más consultores...
-  ];
-
-  requestStatuses = [
-    { id: 1, name: 'Pendiente' },
-    { id: 2, name: 'En Proceso' },
-    { id: 3, name: 'Completado' },
-    // Más estados...
-  ];
-  constructor(private _Customers: CustomersService, private _Conveyor: ConvenyorService) {}
+  constructor(
+    private _Customers: CustomersService,
+    private _Conveyor: ConvenyorService,
+    private _Settings: SettingsService
+  ) {}
   ngOnInit(): void {
     this.getData();
   }
 
-  getData(){
+  getData() {
     forkJoin({
       transportadores: this._Conveyor.getTransportadores(),
+      listClientes: this._Customers.getClients(),
+      listTipos: this._Settings.getCatalogChildrenByKey('TIPO_LUGAR_RECOGIDA'),
+      listSedes: this._Settings.getCatalogChildrenByKey('TIPOS_SEDES_ACOPIO'),
+      listCiudades: this._Settings.getCatalogChildrenByKey('CIUDAD'),
+      listZonas: this._Settings.getCatalogChildrenByKey('ZONA'),
     }).subscribe({
-      next: (data: any) => {
-        // this.listData = data.transportadores.data.items;
+      next: ({
+        transportadores,
+        listClientes,
+        listTipos,
+        listSedes,
+        listCiudades,
+        listZonas,
+      }) => {
+        // this.listData = list.data.items;
+        this.listTransportador = transportadores.data.items;
+        this.listClient = listClientes.data.items;
+        this.listTipos = listTipos.data;
+        this.listSedes = listSedes.data;
+        this.listCiudades = listCiudades.data;
+        this.listZonas = listZonas.data;
       },
       error: (error: any) => {
         console.error('Error al obtener datos:', error);
@@ -97,4 +112,12 @@ export class RequestagencyComponent {
   }
 
 
+  selectItem(id: string, list: any[], target: 'selectedClient' | 'selectedTransportador' | 'selectedTipo') {
+    this[target] = list.find((item: any) => item.id === id);
+  }
+
+  isSpecial(boolean: boolean){
+    console.log(boolean);
+  }
+  
 }
