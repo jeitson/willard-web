@@ -67,9 +67,13 @@ export class RequestagencyComponent {
     private _Settings: SettingsService
   ) {}
   ngOnInit(): void {
+    this.getRequest();
     this.getData();
   }
 
+  getRequest(){
+    
+  }
   getData() {
     forkJoin({
       transportadores: this._Conveyor.getTransportadores(),
