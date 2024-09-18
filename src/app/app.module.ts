@@ -9,6 +9,9 @@ import {NgxPaginationModule} from 'ngx-pagination';
 
 import { AuthModule as Auth0Module } from '@auth0/auth0-angular';
 import { AppRoutingModule } from './app-routing.module';
+import { Auth0Interceptor } from './core/interceptors/auth0.interceptor';
+import { ToastrModule } from 'ngx-toastr';
+import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,6 +22,7 @@ import { AppRoutingModule } from './app-routing.module';
     AppRoutingModule,
     NgxDanisoftUtilsModule,
     NgbModule,
+    ToastrModule.forRoot(),
     Auth0Module.forRoot({
       domain: 'dev-tf6rjjtc.auth0.com',
       clientId: 'WZNm59oARsrlUlcSjdDrxqRfM6DtmqSz',
@@ -29,7 +33,8 @@ import { AppRoutingModule } from './app-routing.module';
 
   ],
   providers: [
-    // { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: Auth0Interceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })

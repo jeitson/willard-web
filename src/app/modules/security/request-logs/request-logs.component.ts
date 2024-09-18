@@ -11,14 +11,14 @@ export class RequestLogsComponent {
   listData: any[] = [
     {
       id: 1,
-      status: '200 - Ok',
-      verb: 'POST',
+      statusDescription: '200 - Ok',
+      method: 'POST',
       title: 'Creación de usuarios',
       statusCode: '200',
-      creationAt: '2024-08-01',
+      createdAt: '2024-08-01',
       timeAt: '10:30 AM',
-      user: 'Aldair Guerrero',
-      role: 'Admin',
+      userName: 'Aldair Guerrero',
+      roleName: 'Admin',
       payload: {
         username: 'my_username',
         password: 'my_password',
@@ -32,241 +32,6 @@ export class RequestLogsComponent {
         }
       },
       response: {
-        dato1: 'Prueba',
-        dato2: 'test',
-        dato3: 'prueba 2',
-        dato4: 'chao de aqui',
-      },
-    },
-    {
-      Id: 2,
-      status: '500 - Internal Server Error',
-      title: 'Creación de usuarios',
-      verb: 'POST',
-      statusCode: '500',
-      creationAt: '2024-08-01',
-      timeAt: '10:30 AM',
-      user: 'Aldair Guerrero',
-      role: 'Admin',
-      payload: {
-        username: 'my_username',
-        password: 'my_password',
-        validationfactors: {
-           validationFactors: [
-              {
-                 name: 'remote_address',
-                 value: '127.0.0.1'
-              }
-           ]
-        }
-      },
-      result: {
-        dato1: 'Prueba',
-        dato2: 'test',
-        dato3: 'prueba 2',
-        dato4: 'chao de aqui',
-      },
-      Observacion: 'Observación de prueba',
-    },
-    {
-      id: 3,
-      status: '403 - Forbidden',
-      title: 'Creación de usuarios',
-      verb: 'PATCH',
-      statusCode: '403',
-      creationAt: '2024-08-01',
-      timeAt: '10:30 AM',
-      user: 'Aldair Guerrero',
-      role: 'Admin',
-      payload: {
-        username: 'my_username',
-        password: 'my_password',
-        validationfactors: {
-           validationFactors: [
-              {
-                 name: 'remote_address',
-                 value: '127.0.0.1'
-              }
-           ]
-        }
-      },
-      result: {
-        dato1: 'Prueba',
-        dato2: 'test',
-        dato3: 'prueba 2',
-        dato4: 'chao de aqui',
-      },
-    },
-    {
-      id: 1,
-      status: '200 - Ok',
-      verb: 'POST',
-      title: 'Creación de usuarios',
-      statusCode: '200',
-      creationAt: '2024-08-01',
-      timeAt: '10:30 AM',
-      user: 'Aldair Guerrero',
-      role: 'Admin',
-      payload: {
-        username: 'my_username',
-        password: 'my_password',
-        validationfactors: {
-           validationFactors: [
-              {
-                 name: 'remote_address',
-                 value: '127.0.0.1'
-              }
-           ]
-        }
-      },
-      response: {
-        dato1: 'Prueba',
-        dato2: 'test',
-        dato3: 'prueba 2',
-        dato4: 'chao de aqui',
-      },
-    },
-    {
-      Id: 2,
-      status: '500 - Internal Server Error',
-      title: 'Creación de usuarios',
-      verb: 'POST',
-      statusCode: '500',
-      creationAt: '2024-08-01',
-      timeAt: '10:30 AM',
-      user: 'Aldair Guerrero',
-      role: 'Admin',
-      payload: {
-        username: 'my_username',
-        password: 'my_password',
-        validationfactors: {
-           validationFactors: [
-              {
-                 name: 'remote_address',
-                 value: '127.0.0.1'
-              }
-           ]
-        }
-      },
-      result: {
-        dato1: 'Prueba',
-        dato2: 'test',
-        dato3: 'prueba 2',
-        dato4: 'chao de aqui',
-      },
-      Observacion: 'Observación de prueba',
-    },
-    {
-      id: 3,
-      status: '403 - Forbidden',
-      title: 'Creación de usuarios',
-      verb: 'PATCH',
-      statusCode: '403',
-      creationAt: '2024-08-01',
-      timeAt: '10:30 AM',
-      user: 'Aldair Guerrero',
-      role: 'Admin',
-      payload: {
-        username: 'my_username',
-        password: 'my_password',
-        validationfactors: {
-           validationFactors: [
-              {
-                 name: 'remote_address',
-                 value: '127.0.0.1'
-              }
-           ]
-        }
-      },
-      result: {
-        dato1: 'Prueba',
-        dato2: 'test',
-        dato3: 'prueba 2',
-        dato4: 'chao de aqui',
-      },
-    },
-    {
-      id: 1,
-      status: '200 - Ok',
-      verb: 'POST',
-      title: 'Creación de usuarios',
-      statusCode: '200',
-      creationAt: '2024-08-01',
-      timeAt: '10:30 AM',
-      user: 'Aldair Guerrero',
-      role: 'Admin',
-      payload: {
-        username: 'my_username',
-        password: 'my_password',
-        validationfactors: {
-           validationFactors: [
-              {
-                 name: 'remote_address',
-                 value: '127.0.0.1'
-              }
-           ]
-        }
-      },
-      response: {
-        dato1: 'Prueba',
-        dato2: 'test',
-        dato3: 'prueba 2',
-        dato4: 'chao de aqui',
-      },
-    },
-    {
-      Id: 2,
-      status: '500 - Internal Server Error',
-      title: 'Creación de usuarios',
-      verb: 'POST',
-      statusCode: '500',
-      creationAt: '2024-08-01',
-      timeAt: '10:30 AM',
-      user: 'Aldair Guerrero',
-      role: 'Admin',
-      payload: {
-        username: 'my_username',
-        password: 'my_password',
-        validationfactors: {
-           validationFactors: [
-              {
-                 name: 'remote_address',
-                 value: '127.0.0.1'
-              }
-           ]
-        }
-      },
-      result: {
-        dato1: 'Prueba',
-        dato2: 'test',
-        dato3: 'prueba 2',
-        dato4: 'chao de aqui',
-      },
-      Observacion: 'Observación de prueba',
-    },
-    {
-      id: 3,
-      status: '403 - Forbidden',
-      title: 'Creación de usuarios',
-      verb: 'PATCH',
-      statusCode: '403',
-      creationAt: '2024-08-01',
-      timeAt: '10:30 AM',
-      user: 'Aldair Guerrero',
-      role: 'Admin',
-      payload: {
-        username: 'my_username',
-        password: 'my_password',
-        validationfactors: {
-           validationFactors: [
-              {
-                 name: 'remote_address',
-                 value: '127.0.0.1'
-              }
-           ]
-        }
-      },
-      result: {
         dato1: 'Prueba',
         dato2: 'test',
         dato3: 'prueba 2',
@@ -300,18 +65,16 @@ export class RequestLogsComponent {
   ) {}
 
   ngOnInit(): void {
-    this.selectData();
+    this.getAudists();
   }
-  selectData(): void {
-    forkJoin({
-      users: this._Service.getAudits(),
-    }).subscribe({
-      next: (data: any ) => {
-        //this.listData = data.items;
-        console.log(this.listData);
+
+  getAudists(): void {
+    this._Service.getAudits().subscribe({
+      next: (response: any) => {
+        this.listData = response.data.items;
       },
       error: (error: any) => {
-        console.error('Error al obtener datos:', error);
+        console.error('Error al crear usuario:', error);
       },
     });
   }

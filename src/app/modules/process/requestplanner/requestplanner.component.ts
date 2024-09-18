@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/core/services/api/api.service';
+import { ToastService } from 'src/app/core/services/toast.service';
 declare var $: any;
 @Component({
   selector: 'wlrd-requestplanner',
@@ -9,8 +10,8 @@ declare var $: any;
 })
 export class RequestplannerComponent implements OnInit {
 
+  collectionRequestId = '';
   formRequest: any = {
-    collectionRequestId: 0,
     routeStatusId: 0,
     name: '',
     description: '',
@@ -22,19 +23,9 @@ export class RequestplannerComponent implements OnInit {
     plate: '',
     truckTypeId: 0,
     deliveryDateToCollectionSite: '',
+    transporterId: 0
   }
-  listsrequest: any[] = [
-    {
-      id:1,
-      dateRequest:'01/08/2024',
-      acopiCenter:'La esperanza',
-      count:100,
-      place:'Oficinas Autoland',
-      customer:'Autoland',
-      transporter:'camiones la union',
-      status: true,
-    }
-  ];
+  listsrequest: any[] = [];
   requestId: string = '';
   action: any = {
     icon:'',
@@ -44,21 +35,23 @@ export class RequestplannerComponent implements OnInit {
   };
   lists: any = {
     listTruckType: [],
+    listTransporters: [],
   }
 
-  constructor(private _router: Router, private api: ApiService) {
+  constructor(private _router: Router, private api: ApiService, private _toast: ToastService) {
 
   }
 
   ngOnInit(): void {
     this.getRequests();
     this.getList('TIPO_CAMION', 'listTruckType');
+    this.getTransporters();
   }
 
   getRequests(){
-    this.api.get(`collection-request`).subscribe({
+    this.api.get(`collection-request?status=1`).subscribe({
       next: (response: any) => {
-        this.listsrequest = response.data.items;
+        this.listsrequest = response.data.items;//.filter((x: any)=> x.requestStatusId === 1);
       },
       error: (error: any) => {
         console.error('Error:', error);
@@ -77,12 +70,23 @@ export class RequestplannerComponent implements OnInit {
     });
   }
 
+  getTransporters(){
+    this.api.get(`transporters`).subscribe({
+      next: (response: any) => {
+        this.lists['listTransporters'] = response.data.items;
+      },
+      error: (error: any) => {
+        console.error('Error al crear usuario:', error);
+      },
+    });
+  }
+
   viewDetail(item: any) {
     this._router.navigateByUrl(`main/requestplanner/${item.id}`);
   }
 
   editRequest(item: any){
-    this.formRequest.collectionRequestId = item.id;
+    this.collectionRequestId = item.id;
     $("#modalplaner").modal({backdrop: 'static', keyboard: false});
   }
 
@@ -94,13 +98,13 @@ export class RequestplannerComponent implements OnInit {
     $("#modalconfirm").modal({backdrop: 'static', keyboard: false, opacity:false});
   }
 
-  actionConfirm(){
-    switch (this.action.value) {
+  actionConfirm(action: string){
+    switch (action) {
       case 'confirm':
         this.save();
       break;
       case 'reject':
-        //this.save();
+        this.reject();
       break;
       default:
         break;
@@ -111,15 +115,22 @@ export class RequestplannerComponent implements OnInit {
     const data = {
       ...this.formRequest
     };
-    this.api.post(`routes`, data).subscribe({
+    this.api.post(`collection-request/${this.collectionRequestId}/routes`, data).subscribe({
       next: (response: any) => {
-        //this.listKey();
+        this.getRequests();
+        this._toast.success('Completado','Ruta registrada exitosamente')
         $("#modalplaner").modal("hide");
-      },
-      error: (error: any) => {
-        console.error('Error al crear usuario:', error);
       },
     });
   }
 
+  reject(){
+    this.api.post(`collection-request/${this.collectionRequestId}/reject`, {}).subscribe({
+      next: (response: any) => {
+        this.getRequests();
+        this._toast.success('Completado','solicitud rechazada correctamente')
+        $("#modalplaner").modal("hide");
+      },
+    });
+  }
 }
