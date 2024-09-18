@@ -34,10 +34,10 @@
                     <tbody style="background-color: white;">
                         <tr *ngFor="let item of listsrequest" style="font-size: smaller;">
                             <td class="text-center"> {{item.id}} </td>
-                            <td class="text-center"> {{item.dateRequest | date:'shortdate'}} </td>
+                            <td class="text-center"> {{item.createdAt | date:'short'}} </td>
                             <td class="text-left"> {{item.acopiCenter }} </td>
-                            <td class="text-center"> {{item.count }} </td>
-                            <td class="text-center"> {{item.place }} </td>
+                            <td class="text-center"> {{item.estimatedQuantity }} </td>
+                            <td class="text-center"> {{item.estimatedPickUpDate}} {{item.estimatedPickUpTime}} </td>
                             <td class="text-left"> {{item.customer }} </td>
                             <td class="text-left"> {{item.transporter }} </td>
                             <td class="text-center">
@@ -73,7 +73,7 @@
                               <div class="row mb-3">
                                 <div class="col-md-4">
                                     <label for="" class="pricolor">Fecha de Recogida</label>
-                                    <input type="date" class="form-control" name="datesdelivery" [(ngModel)]="formRequest.confirmedPickUpDate" autocomplete="off" required>
+                                    <input type="date" class="form-control" name="dateinit" [(ngModel)]="formRequest.confirmedPickUpDate" autocomplete="off" required>
                                 </div>
                               </div>
                               <div class="row mb-3">
@@ -83,7 +83,7 @@
                                 </div>
                                 <div class="col-md-3">
                                   <label for="" class="pricolor">Hora Apertura</label>
-                                  <input type="time" class="form-control" name="datestart" [(ngModel)]="formRequest.tripStartTime" autocomplete="off" required>
+                                  <input type="time" class="form-control" name="datetimestart" [(ngModel)]="formRequest.tripStartTime" autocomplete="off" required>
                                 </div>
                                 <div class="col-md-3">
                                   <label for="" class="pricolor">Cierre de viaje</label>
@@ -91,7 +91,7 @@
                                 </div>
                                 <div class="col-md-3">
                                   <label for="" class="pricolor">Hora Apertura</label>
-                                  <input type="time" class="form-control" name="datestart" [(ngModel)]="formRequest.tripEndTime" autocomplete="off" required>
+                                  <input type="time" class="form-control" name="datetimeend" [(ngModel)]="formRequest.tripEndTime" autocomplete="off" required>
                                 </div>
                               </div>
                               <div class="row">
@@ -110,16 +110,16 @@
                                 </div>
                                 <div class="col-md-4">
                                   <label for="" class="pricolor">Fecha Entrega</label>
-                                  <input type="date" class="form-control" name="date" [(ngModel)]="formRequest.deliveryDateToCollectionSite" autocomplete="off" required>
+                                  <input type="date" class="form-control" name="datedelivery" [(ngModel)]="formRequest.deliveryDateToCollectionSite" autocomplete="off" required>
                                 </div>
                               </div>
                               <div class="row">
                                 <div class="col-md-12">
                                   <label for="basic-url" class="pricolor">Conductor</label>
                                   <div class="input-group mb-3">
-                                      <select class="form-control form-select" name="parent" [(ngModel)]="formRequest.typetruck" required>
+                                      <select class="form-control form-select" name="parent" [(ngModel)]="formRequest.transporterId" required>
                                           <option value="" selected>Seleccionar</option>
-                                          <option *ngFor="let opt of [{id:00,name:'kdkd'}]" value="{{opt.id}}">{{opt.name}}</option>
+                                          <option *ngFor="let opt of lists.listTransporters" value="{{opt.id}}">{{opt.name}}</option>
                                       </select>
                                   </div>
                                 </div>
@@ -142,8 +142,8 @@
                                 </div>
                               </div>
                               <div class="col-md-12 d-flex flex-rows gap-10 justify-content-around position-a">
-                                <button class="btn btn-md bg-success2 text-white" (click)="actionConfirm()"> Confirmar </button>
-                                <button class="btn btn-md bg-danger text-white" (click)="actionConfirm()"> Rechazar </button>
+                                <button class="btn btn-md bg-success2 text-white" (click)="actionConfirm('confirm')"> Confirmar </button>
+                                <button class="btn btn-md bg-danger text-white" (click)="actionConfirm('reject')"> Rechazar </button>
                                  <!-- <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false " (click)="update()"> Actualizar </button> -->
                                 <button class="btn btn-md btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
                               </div>
