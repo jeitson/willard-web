@@ -29,32 +29,44 @@
                 <tr>
                   <th class="text-center">Id</th>
                   <th class="text-center">Fecha</th>
-                  <th class="text-left">Sede</th>
+                  <th class="text-left">Acopio</th>
                   <th class="text-center">Cantidad</th>
                   <th class="text-left">Recogida</th>
                   <th class="text-left">Cliente</th>
                   <th class="text-center">Transportadora</th>
                   <th class="text-center">Estado</th>
-                  <th class="text-center">Acciones</th>
+                  <th class="text-center"></th>
                 </tr>
               </thead>
               <tbody style="background-color: white">
-                <tr *ngFor="let item of [1, 2, 3]" style="font-size: smaller">
-                  <td class="text-center">1</td>
-                  <td class="text-center">1</td>
-                  <td class="text-left">1</td>
-                  <td class="text-center">1</td>
-                  <td class="text-center">1</td>
-                  <td class="text-left">1</td>
-                  <td class="text-left">1</td>
+                <tr
+                  *ngFor="let item of listsrequest"
+                  style="font-size: smaller"
+                >
+                  <td class="text-center">{{ item.id }}</td>
                   <td class="text-center">
-                    <h5 style="color: white">
+                    {{ item.createdAt | date : "short" }}
+                  </td>
+                  <td class="text-left">{{ item.acopiCenter }}</td>
+                  <td class="text-center">{{ item.estimatedQuantity }}</td>
+                  <td class="text-center">
+                    {{ item.estimatedPickUpDate }}
+                    {{ item.estimatedPickUpTime }}
+                  </td>
+                  <td class="text-left">{{ item.customer }}</td>
+                  <td class="text-left">{{ item.transporter }}</td>
+                  <td class="text-center">
+                    <h5 *ngIf="item.status == true" style="color: white">
                       <span class="badge bg-success2">Activo</span>
+                    </h5>
+                    <h5 *ngIf="item.status == false" style="color: white">
+                      <span class="badge bg-danger">Inactivo</span>
                     </h5>
                   </td>
                   <td class="text-center">
-                    <i class="fa-solid f-larger pointer fa-pencil"></i>
-          
+                    <i class="fa-solid f-larger pointer fa-pencil" (click)="updateRequest(item)"></i>
+                    <i class="fa-solid f-larger pointer fa-eye"></i>
+                    <!--<i class="fa-solid f-larger pointer fa-trash" (click)="removeItem(item.id)"></i> -->
                   </td>
                 </tr>
               </tbody>
@@ -74,24 +86,72 @@
     aria-labelledby="modalRequestLabel"
     aria-hidden="true"
   >
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <h5 class="modal-title pricolor" id="modalRequestLabel">
-          {{ action.name | uppercase }} SOLICITUD
-        </h5>
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h5 class="modal-title pricolor" id="modalRequestLabel">
+            {{ action.name | uppercase }} SOLICITUD
+          </h5>
       
-      </div>
+        </div>
 
-      <div class="modal-body">
-        <div class="row">
+        <!-- Modal Body -->
+        <div class="modal-body">
           <div class="row g-3">
-            <!-- Datos de Solicitud -->
-            <h6 class="fw-bold text-uppercase mb-3">Datos de Solicitud</h6>
-      
             <!-- Descripción -->
-            <div class="col-12 mb-2">
+            <div class="col-6">
+                <div class="mb-3">
+                  <label for="clientId" class="form-label">Cliente</label>
+                  <select
+                    class="form-select"
+                    id="clientId"
+                    [(ngModel)]="request.clientId"
+                    name="clientId"
+                    required
+                    (change)="
+                      selectItem(request.clientId, listClient, 'selectedClient')
+                    "
+                  >
+                    <option value="" disabled selected>
+                      Seleccione un cliente
+                    </option>
+                    <option
+                      *ngFor="let client of listClient"
+                      [value]="client.id"
+                    >
+                      {{ client.name }}
+                    </option>
+                  </select>
+                </div>
+                <!-- Mostrar la información del cliente seleccionado -->
+                <div *ngIf="selectedClient" class="border p-2 rounded bg-light">
+                  <div class="ft d-flex justify-content-between mb-2">
+                    <strong>NIT:</strong>
+                    <span>{{ selectedClient.documentNumber }}</span>
+                  </div>
+                  <div class="ft d-flex justify-content-between mb-2">
+                    <strong>Agencia:</strong>
+                    <span>{{ selectedClient.businessName }}</span>
+                  </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+              <label for="requestDate" class="form-label"
+              >Nombre</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              [(ngModel)]="request.name"
+              name="name"
+              required
+            />
+            </div>
+
+            <div class="col-12">
               <label for="description" class="form-label">Descripción</label>
               <textarea
                 class="form-control"
@@ -103,10 +163,12 @@
                 required
               ></textarea>
             </div>
-      
+
             <!-- Fecha y Hora de Solicitud -->
-            <div class="col-md-3 mb-2">
-              <label for="requestDate" class="form-label">Fecha de Solicitud</label>
+            <div class="col-md-6">
+              <label for="requestDate" class="form-label"
+                >Fecha de Solicitud</label
+              >
               <input
                 type="date"
                 class="form-control"
@@ -116,9 +178,11 @@
                 required
               />
             </div>
-      
-            <div class="col-md-3 mb-2">
-              <label for="requestTime" class="form-label">Hora de Solicitud</label>
+
+            <div class="col-md-6">
+              <label for="requestTime" class="form-label"
+                >Hora de Solicitud</label
+              >
               <input
                 type="time"
                 class="form-control"
@@ -128,10 +192,12 @@
                 required
               />
             </div>
-      
+
             <!-- Cantidad y Peso Estimados -->
-            <div class="col-md-3 mb-2">
-              <label for="estimatedQuantity" class="form-label">Cantidad Estimada</label>
+            <div class="col-md-6">
+              <label for="estimatedQuantity" class="form-label"
+                >Cantidad Estimada</label
+              >
               <input
                 type="number"
                 class="form-control"
@@ -143,9 +209,11 @@
                 required
               />
             </div>
-      
-            <div class="col-md-3 mb-2">
-              <label for="estimatedKG" class="form-label">Peso Estimado (KG)</label>
+
+            <div class="col-md-6">
+              <label for="estimatedKG" class="form-label"
+                >Peso Estimado (KG)</label
+              >
               <input
                 type="number"
                 class="form-control"
@@ -156,12 +224,11 @@
                 min="0"
                 step="0.01"
                 required
-                [attr.disabled]="request.isSpecial ? true : null"
               />
             </div>
-      
+
             <!-- Es Especial -->
-            <div [ngClass]="{'col-md-2': !request.isSpecial, 'col-md-1': request.isSpecial}" >
+            <div class="col-md-6">
               <label class="form-label">¿Es Especial?</label>
               <div class="form-check form-switch">
                 <input
@@ -170,219 +237,70 @@
                   id="isSpecial"
                   [(ngModel)]="request.isSpecial"
                   name="isSpecial"
-                  (change)="isSpecial(request.isSpecial)"
                 />
                 <label class="form-check-label" for="isSpecial">No / Sí</label>
               </div>
             </div>
-      
-            <!-- Estado de Solicitud -->
-            <div class="col-md-3 mb-2" *ngIf="request.isSpecial">
-              <label for="requestStatusId" class="form-label">Estado de la Solicitud</label>
+
+            <!-- Lugar de Recogida -->
+            <div class="col-12">
+              <label for="pickUpLocationId" class="form-label"
+                >Lugar de Recogida</label
+              >
               <select
                 class="form-select"
-                id="requestStatusId"
-                [(ngModel)]="request.requestStatusId"
-                name="requestStatusId"
+                id="pickUpLocationId"
+                [(ngModel)]="request.pickUpLocationId"
+                name="pickUpLocationId"
                 required
               >
-                <option value="" disabled selected>Seleccione un estado</option>
-                <option *ngFor="let status of requestStatuses" [value]="status.id">
-                  {{ status.name }}
+                <option value="" disabled selected>
+                  Seleccione un lugar de recogida
+                </option>
+                <option
+                  *ngFor="let location of listTipos"
+                  [value]="location.id"
+                >
+                  {{ location.name }}
                 </option>
               </select>
             </div>
-      
-            <!-- Fecha y Hora de Recogida Estimada -->
-            <div [ngClass]="{'col-md-5': !request.isSpecial, 'col-md-4': request.isSpecial}" class="mb-2">
-              <label for="estimatedPickUpDate" class="form-label">Fecha de Recogida Estimada</label>
-              <input
-                type="date"
-                class="form-control"
-                id="estimatedPickUpDate"
-                [(ngModel)]="request.estimatedPickUpDate"
-                name="estimatedPickUpDate"
-                required
-              />
-            </div>
-      
-            <div [ngClass]="{'col-md-5': !request.isSpecial, 'col-md-4': request.isSpecial}" class="mb-2">
-              <label for="estimatedPickUpTime" class="form-label">Hora de Recogida Estimada</label>
-              <input
-                type="time"
-                class="form-control"
-                id="estimatedPickUpTime"
-                [(ngModel)]="request.estimatedPickUpTime"
-                name="estimatedPickUpTime"
-                required
-              />
-            </div>
-      
-            <!-- Datos del Cliente y Recogida -->
-            <div class="row mt-3">
-                <!-- Datos del Cliente -->
-                <div class="col-md-3 mb-3">
-                  <h6 class="fw-bold text-uppercase mb-2">Datos del Cliente</h6>
-                  <div class="mb-3">
-                    <label for="clientId" class="form-label">Cliente</label>
-                    <select 
-                      class="form-select"
-                      id="clientId"
-                      [(ngModel)]="request.clientId"
-                      name="clientId"
-                      required
-                      (change)="selectItem(request.clientId, listClient, 'selectedClient')"
-                    >
-                      <option value="" disabled selected>Seleccione un cliente</option>
-                      <option *ngFor="let client of listClient" [value]="client.id">
-                        {{ client.name }}
-                      </option>
-                    </select>
-                  </div>
-               <!-- Mostrar la información del cliente seleccionado -->
-                  <div *ngIf="selectedClient" class="border p-2 rounded bg-light">
-                    <div class="ft d-flex justify-content-between mb-2">
-                      <strong>NIT:</strong>
-                      <span>{{ selectedClient.documentNumber }}</span>
-                    </div>
-                    <div class="ft d-flex justify-content-between mb-2">
-                      <strong>Agencia:</strong>
-                      <span>{{ selectedClient.businessName }}</span>
-                    </div>
-                  </div>
-                </div>
-              
-                <!-- Datos Transportadora -->
-                <div class="col-md-3 mb-3" *ngIf="!request.isSpecial">
-                  <h6 class="fw-bold text-uppercase mb-2">Datos Transportadora</h6>
-                  <div class="mb-3">
-                    <label for="transportadoraId" class="form-label">Transportadora</label>
-                    <select
-                      class="form-select"
-                      id="transportadoraId"
-                      [(ngModel)]="request.transportadoraId"
-                      name="transportadoraId"
-                      required
-                      (change)="selectItem(request.transportadoraId, listTransportador, 'selectedTransportador')"
-                    >
-                      <option value="" disabled selected>Seleccione una transportadora</option>
-                      <option *ngFor="let transport of listTransportador" [value]="transport.id">
-                        {{ transport.name }}
-                      </option>
-                    </select>
-                  </div>
-                  <div class="border p-2 rounded bg-light" *ngIf="selectedTransportador">
-                    <div class="ft d-flex justify-content-between mb-2">
-                      <strong>NIT:</strong>
-                      <span>{{ selectedTransportador.taxId }}</span>
-                    </div>
-                    <div class="ft d-flex justify-content-between mb-2">
-                      <strong>Contacto:</strong>
-                      <span>{{ selectedTransportador.contactName }}</span>
-                    </div>
-                    <div class="ft d-flex justify-content-between mb-2">
-                      <strong>Teléfono:</strong>
-                      <span>{{ selectedTransportador.referencePH }}</span>
-                    </div>
-                  </div>
-                  
-                </div>
-              
-                <!-- Datos de Recogida -->
-                <div class="col-md-6 mb-3">
-                  <h6 class="fw-bold text-uppercase mb-2">Datos de Recogida</h6>
-                  <div class="mb-3">
-                    <label for="pickUpLocationId" class="form-label">Lugar de Recogida</label>
-                    <select
-                      class="form-select"
-                      id="pickUpLocationId"
-                      [(ngModel)]="request.pickUpLocationId"
-                      name="pickUpLocationId"
-                      required
-                      (change)="selectItem(request.pickUpLocationId, listTipos, 'selectedTipo')"
-                    >
-                      <option value="" disabled selected>Seleccione un lugar de recogida</option>
-                      <option *ngFor="let location of listTipos" [value]="location.id">
-                        {{ location.name }}
-                      </option>
-                    </select>
-                  </div>
-                  <div class="border p-2 rounded bg-light" *ngIf="selectedTipo">
-                    <div class="row">
-                      <div class="col-6 mb-2">
-                        <div class="d-flex flex-column">
-                          <span class="ft"><strong>Dirección:</strong> {{ selectedTipo.address }}</span>
-                          <span class="ft"><strong>País:</strong> {{ selectedTipo.country || 'Desconocido' }}</span>
-                          <span class="ft"><strong>Teléfono:</strong> {{ selectedTipo.contactPhone }}</span>
-                          <span class="ft"><strong>Zona:</strong> {{ selectedTipo.zoneId || 'Desconocido' }}</span>
-                        </div>
-                      </div>
-                      <div class="col-6 mb-2">
-                        <div class="d-flex flex-column">
-                          <span class="ft"><strong>Ciudad:</strong> {{ selectedTipo.cityId || 'Desconocido' }}</span>
-                          <span class="ft"><strong>Contacto:</strong> {{ selectedTipo.contactName }}</span>
-                          <span class="ft"><strong>Correo:</strong> {{ selectedTipo.contactEmail }}</span>
-                          <span class="ft"><strong>Estado:</strong> {{ selectedTipo.status ? 'Activo' : 'Inactivo' }}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                </div>
-              </div>
-              
-      
-            <!-- Datos del Transportador -->
 
-            <div class="row">
-                        <!-- Observaciones y Recomendaciones -->
-            <div class="col-12 mt-3 mb-2">
-                <h6 class="fw-bold text-uppercase mb-2">Observaciones y Recomendaciones</h6>
-              </div>
-        
-              <div class="col-md-12 mb-2">
-                <label for="observations" class="form-label">Observaciones</label>
-                <textarea
-                  class="form-control"
-                  id="observations"
-                  [(ngModel)]="request.observations"
-                  name="observations"
-                  rows="2"
-                  placeholder="Observaciones adicionales"
-                ></textarea>
-              </div>
-        
-              <div class="col-md-12 mb-2">
-                <label for="recommendations" class="form-label">Recomendaciones</label>
-                <textarea
-                  class="form-control"
-                  id="recommendations"
-                  [(ngModel)]="request.recommendations"
-                  name="recommendations"
-                  rows="2"
-                  placeholder="Recomendaciones"
-                ></textarea>
-              </div>
+            <!-- Observaciones y Recomendaciones -->
+            <div class="col-12">
+              <label for="observations" class="form-label">Observaciones</label>
+              <textarea
+                class="form-control"
+                id="observations"
+                [(ngModel)]="request.observations"
+                name="observations"
+                rows="2"
+                placeholder="Observaciones adicionales"
+              ></textarea>
+            </div>
+
+            <div class="col-12">
+              <label for="recommendations" class="form-label"
+                >Recomendaciones</label
+              >
+              <textarea
+                class="form-control"
+                id="recommendations"
+                [(ngModel)]="request.recommendations"
+                name="recommendations"
+                rows="2"
+                placeholder="Recomendaciones"
+              ></textarea>
             </div>
           </div>
         </div>
 
-        <div class="row mt-5">
-          <div class="col-md-12 d-flex flex-rows gap-10 justify-content-end ">
-            <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
-            <button class="btn btn-sm btn-success" > Crear </button>
-          </div>
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <button class="btn btn-md btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
+          <button type="button" class="btn btn-primary" (click)="saveRequest()">Guardar</button>
         </div>
       </div>
-      
-
-      <!-- Modal Footer -->
-      <!-- <div class="modal-footer">
-        <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
-        <button type="submit" class="btn btn-primary">Guardar</button>
-      </div> -->
     </div>
   </div>
-</div>
-
 </div>
