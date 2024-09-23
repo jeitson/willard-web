@@ -27,34 +27,46 @@
                   <tr>
                     <th class="text-center">Id</th>
                     <th class="text-center">Fecha</th>
-                    <th class="text-left">Sede</th>
+                    <th class="text-left">Acopio</th>
                     <th class="text-center">Cantidad</th>
                     <th class="text-left">Recogida</th>
                     <th class="text-left">Cliente</th>
                     <th class="text-center">Transportadora</th>
                     <th class="text-center">Estado</th>
-                    <th class="text-center">Acciones</th>
+                    <th class="text-center"></th>
                   </tr>
                 </thead>
                 <tbody style="background-color: white">
-                  <tr *ngFor="let item of [1]" style="font-size: smaller">
-                    <td class="text-center">1</td>
-                    <td class="text-center">1</td>
-                    <td class="text-left">1</td>
-                    <td class="text-center">1</td>
-                    <td class="text-center">1</td>
-                    <td class="text-left">1</td>
-                    <td class="text-left">1</td>
+                  <tr
+                    *ngFor="let item of listsrequest"
+                    style="font-size: smaller"
+                  >
+                    <td class="text-center">{{ item.id }}</td>
                     <td class="text-center">
-                      <h5 style="color: white">
+                      {{ item.createdAt | date : "short" }}
+                    </td>
+                    <td class="text-left">{{ item.acopiCenter }}</td>
+                    <td class="text-center">{{ item.estimatedQuantity }}</td>
+                    <td class="text-center">
+                      {{ item.estimatedPickUpDate }}
+                      {{ item.estimatedPickUpTime }}
+                    </td>
+                    <td class="text-left">{{ item.customer }}</td>
+                    <td class="text-left">{{ item.transporter }}</td>
+                    <td class="text-center">
+                      <h5 *ngIf="item.status == true" style="color: white">
                         <span class="badge bg-success2">Activo</span>
+                      </h5>
+                      <h5 *ngIf="item.status == false" style="color: white">
+                        <span class="badge bg-danger">Inactivo</span>
                       </h5>
                     </td>
                     <td class="text-center">
-                      <i class="fa-solid f-larger pointer fa-pencil" (click)="createRequest()"></i>
-                      <!-- <i class="fa-solid f-larger pointer fa-pencil" (click)="viewDetail(item)"></i> -->
-                      <i class="fa-solid f-larger pointer fa-eye" (click)="viewRequest()"></i>
-                      <!--<i class="fa-solid f-larger pointer fa-trash" (click)="removeItem(item.id)"></i> -->
+                      <!-- <i
+                        class="fa-solid f-larger pointer fa-pencil"
+                        (click)="updateRequest(item)"
+                      ></i> -->
+                      <i class="fa-solid f-larger pointer fa-eye" [routerLink]="['32983283']"></i>
                     </td>
                   </tr>
                 </tbody>

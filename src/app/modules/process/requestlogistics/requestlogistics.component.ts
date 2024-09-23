@@ -1,4 +1,9 @@
 import { Component } from '@angular/core';
+import { ConvenyorService } from 'src/app/core/services/process/convenyor.service';
+import { CustomersService } from 'src/app/core/services/process/customers.service';
+import { RequestsService } from 'src/app/core/services/requests/requests.service';
+import { PickuplocationService } from 'src/app/core/services/settings/pickuplocation.service';
+import { SettingsService } from 'src/app/core/services/settings/settings.service';
 declare var $: any;
 
 @Component({
@@ -45,9 +50,24 @@ export class RequestlogisticsComponent {
     { name: 'Conductor 3', id: 3 },
     // Agrega más conductores según sea necesario
   ];
-
+  listsrequest: any[] = [];
   action = {name: 'LOGISTICA'}
-
+  constructor(
+    private _Customers: CustomersService,
+    private _Conveyor: ConvenyorService,
+    private _Settings: SettingsService,
+    private _requests: RequestsService,
+    private _pickUp: PickuplocationService
+  ) {}
+  ngOnInit(): void {
+    this.getRequest();
+  }
+  getRequest() {
+    this._requests.listSolicitudes('3').subscribe((response: any) => {
+      console.log(response.data.items);
+      this.listsrequest = response.data.items;
+    });
+  }
   createRequest() {
     // Lógica para crear la solicitud
     $('#modalRequest').modal({ backdrop: 'static', keyboard: false });

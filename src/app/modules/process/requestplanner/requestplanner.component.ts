@@ -49,7 +49,7 @@ export class RequestplannerComponent implements OnInit {
   }
 
   getRequests(){
-    this.api.get(`collection-request?status=1`).subscribe({
+    this.api.get(`collection-request?rol=2`).subscribe({
       next: (response: any) => {
         this.listsrequest = response.data.items;//.filter((x: any)=> x.requestStatusId === 1);
       },

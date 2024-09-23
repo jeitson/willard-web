@@ -22,6 +22,8 @@ export class RequestagencyComponent {
     name: '',
     requestDate: '',
     requestTime: '',
+    estimatedPickUpDate: '',
+    estimatedPickUpTime: '',
     estimatedQuantity: '',
     estimatedKG: '',
     isSpecial: false,
@@ -115,27 +117,29 @@ export class RequestagencyComponent {
     console.log('Creando solicitud:', this.request);
   }
 
-  updateRequest(item: any) {
-    console.log(item);
-    this.actionSave = true;
-    $('#modalRequest').modal({ backdrop: 'static', keyboard: false });
-    // Lógica para actualizar la solicitud
-    this.dataId = item;
-    this.request = {
-      clientId: item.client,
-      description: item.description,
-      name: item.name,
-      requestDate: item.requestDate,
-      requestTime: item.requestTime,
-      estimatedQuantity: item.estimatedQuantity,
-      estimatedKG: item.estimatedKG,
-      isSpecial: item.isSpecial,
-      pickUpLocationId: item.pickUpLocation,
-      observations: item.observations,
-      recommendations: item.recommendations,
-    };
-    console.log('Actualizando solicitud:', this.request);
-  }
+  // updateRequest(item: any) {
+  //   console.log(item);
+  //   this.actionSave = true;
+  //   $('#modalRequest').modal({ backdrop: 'static', keyboard: false });
+  //   // Lógica para actualizar la solicitud
+  //   this.dataId = item;
+  //   this.request = {
+  //     clientId: item.client,
+  //     description: item.description,
+  //     name: item.name,
+  //     requestDate: item.requestDate,
+  //     requestTime: item.requestTime,
+  //     estimatedPickUpDate: '',
+  //     estimatedPickUpTime: '',
+  //     estimatedQuantity: item.estimatedQuantity,
+  //     estimatedKG: item.estimatedKG,
+  //     isSpecial: item.isSpecial,
+  //     pickUpLocationId: item.pickUpLocation,
+  //     observations: item.observations,
+  //     recommendations: item.recommendations,
+  //   };
+  //   console.log('Actualizando solicitud:', this.request);
+  // }
 
   selectItem(
     id: string,
@@ -161,21 +165,24 @@ export class RequestagencyComponent {
     action.subscribe((response: any) => {
       if (response.success) {
         // Si la respuesta es positiva
-        $('#modalRequest').modal('hide'); // Cerrar el modal
-        this.dataId =  []; // Limpiar los objetos
+        $('#modalRequest').modal('hide');
+
+        this.dataId = []; // Limpiar los objetos
         this.clearData();
       }
       console.log(response, this.request);
     });
   }
 
-  clearData(){
+  clearData() {
     this.request = {
       clientId: '',
       description: '',
       name: '',
       requestDate: '',
       requestTime: '',
+      estimatedPickUpDate: '',
+      estimatedPickUpTime: '',
       estimatedQuantity: '',
       estimatedKG: '',
       isSpecial: false,

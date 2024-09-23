@@ -64,9 +64,11 @@
                     </h5>
                   </td>
                   <td class="text-center">
-                    <i class="fa-solid f-larger pointer fa-pencil" (click)="updateRequest(item)"></i>
-                    <i class="fa-solid f-larger pointer fa-eye"></i>
-                    <!--<i class="fa-solid f-larger pointer fa-trash" (click)="removeItem(item.id)"></i> -->
+                    <!-- <i
+                      class="fa-solid f-larger pointer fa-pencil"
+                      (click)="updateRequest(item)"
+                    ></i> -->
+                    <i class="fa-solid f-larger pointer fa-eye" [routerLink]="['32983283']"></i>
                   </td>
                 </tr>
               </tbody>
@@ -83,17 +85,16 @@
     data-bs-backdrop="static"
     data-bs-keyboard="false"
     tabindex="-1"
-    aria-labelledby="modalRequestLabel"
+    aria-labelledby="modalRequest"
     aria-hidden="true"
   >
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h5 class="modal-title pricolor" id="modalRequestLabel">
+          <h5 class="modal-title pricolor" id="modalRequest">
             {{ action.name | uppercase }} SOLICITUD
           </h5>
-      
         </div>
 
         <!-- Modal Body -->
@@ -101,54 +102,49 @@
           <div class="row g-3">
             <!-- Descripción -->
             <div class="col-6">
-                <div class="mb-3">
-                  <label for="clientId" class="form-label">Cliente</label>
-                  <select
-                    class="form-select"
-                    id="clientId"
-                    [(ngModel)]="request.clientId"
-                    name="clientId"
-                    required
-                    (change)="
-                      selectItem(request.clientId, listClient, 'selectedClient')
-                    "
-                  >
-                    <option value="" disabled selected>
-                      Seleccione un cliente
-                    </option>
-                    <option
-                      *ngFor="let client of listClient"
-                      [value]="client.id"
-                    >
-                      {{ client.name }}
-                    </option>
-                  </select>
+              <div class="mb-3">
+                <label for="clientId" class="form-label">Cliente</label>
+                <select
+                  class="form-select"
+                  id="clientId"
+                  [(ngModel)]="request.clientId"
+                  name="clientId"
+                  required
+                  (change)="
+                    selectItem(request.clientId, listClient, 'selectedClient')
+                  "
+                >
+                  <option value="" disabled selected>
+                    Seleccione un cliente
+                  </option>
+                  <option *ngFor="let client of listClient" [value]="client.id">
+                    {{ client.name }}
+                  </option>
+                </select>
+              </div>
+              <!-- Mostrar la información del cliente seleccionado -->
+              <div *ngIf="selectedClient" class="border p-2 rounded bg-light">
+                <div class="ft d-flex justify-content-between mb-2">
+                  <strong>NIT:</strong>
+                  <span>{{ selectedClient.documentNumber }}</span>
                 </div>
-                <!-- Mostrar la información del cliente seleccionado -->
-                <div *ngIf="selectedClient" class="border p-2 rounded bg-light">
-                  <div class="ft d-flex justify-content-between mb-2">
-                    <strong>NIT:</strong>
-                    <span>{{ selectedClient.documentNumber }}</span>
-                  </div>
-                  <div class="ft d-flex justify-content-between mb-2">
-                    <strong>Agencia:</strong>
-                    <span>{{ selectedClient.businessName }}</span>
-                  </div>
+                <div class="ft d-flex justify-content-between mb-2">
+                  <strong>Agencia:</strong>
+                  <span>{{ selectedClient.businessName }}</span>
                 </div>
+              </div>
             </div>
 
             <div class="col-6">
-              <label for="requestDate" class="form-label"
-              >Nombre</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              id="name"
-              [(ngModel)]="request.name"
-              name="name"
-              required
-            />
+              <label for="requestDate" class="form-label">Nombre</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                [(ngModel)]="request.name"
+                name="name"
+                required
+              />
             </div>
 
             <div class="col-12">
@@ -192,7 +188,34 @@
                 required
               />
             </div>
+            <!-- Fecha y Hora de recogida -->
+            <div class="col-md-6">
+              <label for="requestDate" class="form-label"
+                >Fecha estimada de recogida</label
+              >
+              <input
+                type="date"
+                class="form-control"
+                id="requestDate"
+                [(ngModel)]="request.estimatedPickUpDate"
+                name="requestDate"
+                required
+              />
+            </div>
 
+            <div class="col-md-6">
+              <label for="requestTime" class="form-label"
+                >Hora estimada de recogida</label
+              >
+              <input
+                type="time"
+                class="form-control"
+                id="requestTime"
+                [(ngModel)]="request.estimatedPickUpTime"
+                name="requestTime"
+                required
+              />
+            </div>
             <!-- Cantidad y Peso Estimados -->
             <div class="col-md-6">
               <label for="estimatedQuantity" class="form-label"
@@ -297,8 +320,16 @@
 
         <!-- Modal Footer -->
         <div class="modal-footer">
-          <button class="btn btn-md btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
-          <button type="button" class="btn btn-primary" (click)="saveRequest()">Guardar</button>
+          <button
+            class="btn btn-md btn-dark"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-primary" (click)="saveRequest()">
+            Guardar
+          </button>
         </div>
       </div>
     </div>
