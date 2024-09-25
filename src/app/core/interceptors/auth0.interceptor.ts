@@ -9,12 +9,12 @@ export class Auth0Interceptor implements HttpInterceptor {
   constructor(private auth: AuthService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return from(this.auth.getAccessTokenSilently()).pipe(
+    return from(this.auth.idTokenClaims$).pipe(
       switchMap((token) => {
         console.log(token);
         const tokenizedRequest = request.clone({
           setHeaders: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token?.__raw}`,
           },
         });
         return next.handle(tokenizedRequest);

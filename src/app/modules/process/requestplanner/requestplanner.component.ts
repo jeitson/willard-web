@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '@auth0/auth0-angular';
 import { ApiService } from 'src/app/core/services/api/api.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 declare var $: any;
@@ -38,7 +39,7 @@ export class RequestplannerComponent implements OnInit {
     listTransporters: [],
   }
 
-  constructor(private _router: Router, private api: ApiService, private _toast: ToastService) {
+  constructor(private _router: Router, private api: ApiService, private _toast: ToastService, private auth: AuthService) {
 
   }
 
@@ -46,6 +47,14 @@ export class RequestplannerComponent implements OnInit {
     this.getRequests();
     this.getList('TIPO_CAMION', 'listTruckType');
     this.getTransporters();
+
+    this.auth.user$.subscribe((user: any) => {
+      if (user && user.sub) {
+        const userId = user.sub;
+        console.log('User ID:', userId);
+        // Aquí puedes realizar cualquier otra operación con el ID del usuario
+      }
+    });
   }
 
   getRequests(){
@@ -87,7 +96,7 @@ export class RequestplannerComponent implements OnInit {
 
   editRequest(item: any){
     this.collectionRequestId = item.id;
-    $("#modalplaner").modal({backdrop: 'static', keyboard: false});
+    $("#turnCalling").modal({backdrop: 'static', keyboard: false});
   }
 
   confirmRequest(){
