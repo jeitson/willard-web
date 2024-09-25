@@ -66,7 +66,7 @@
                         class="fa-solid f-larger pointer fa-pencil"
                         (click)="createRequest(item)"
                       ></i>
-                      <i class="fa-solid f-larger pointer fa-eye" [routerLink]="['32983283']"></i>
+                      <i class="fa-solid f-larger pointer fa-eye" ></i>
                     </td>
                   </tr>
                 </tbody>
@@ -113,7 +113,7 @@
             <div class="mb-3">
               <label for="transporter" class="form-label">Seleccionar lugar de recogidas</label>
               <select class="form-select" id="transporter" [(ngModel)]="data.collectionSiteId">
-                <option *ngFor="let typeCollection of listData" [value]="typeCollection.id">{{ typeCollection.name }}</option>
+                <option *ngFor="let typeCollection of listTipos" [value]="typeCollection.id">{{ typeCollection.name }}</option>
               </select>
             </div>
 

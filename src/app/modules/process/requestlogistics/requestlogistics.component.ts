@@ -16,7 +16,6 @@ declare var $: any;
   styleUrls: ['./requestlogistics.component.scss'],
 })
 export class RequestlogisticsComponent {
-
   request = {
     specialPlanner: '',
     changeRetriever: '',
@@ -31,8 +30,7 @@ export class RequestlogisticsComponent {
     collectionSiteId: '',
     consultantId: '',
     transporterId: '',
-  }
-
+  };
 
   listsrequest: any[] = [];
   listTransportador: any[] = [];
@@ -40,8 +38,7 @@ export class RequestlogisticsComponent {
   listTipos: any[] = [];
   listData: any[] = [];
 
-
-  action = {name: 'LOGISTICA'}
+  action = { name: 'LOGISTICA' };
   constructor(
     private _Customers: CustomersService,
     private _Conveyor: ConvenyorService,
@@ -50,7 +47,7 @@ export class RequestlogisticsComponent {
     private _adviser: AdviserService,
     private _pickUp: PickuplocationService,
     private _toast: ToastService,
-    private _Service: CentersService,
+    private _Service: CentersService
   ) {}
   ngOnInit(): void {
     this.getRequest();
@@ -61,31 +58,25 @@ export class RequestlogisticsComponent {
       console.log(response.data.items);
       this.listsrequest = response.data.items;
     });
-    
   }
 
   getData() {
+    console.log('dataa111')
     forkJoin({
       transportadores: this._Conveyor.getTransportadores(),
       dataAdviser: this._adviser.getConsultants(),
       centers: this._Service.getCollectionSites(),
     }).subscribe({
-      next: ({
-        transportadores,
-        dataAdviser,
-        centers
-      }) => {
-        // this.listData = list.data.items;
-        this.listTransportador = transportadores.data.items;
-        this.adviser = dataAdviser.data.items;
-        this.listData = centers.data.items;
-
+      next: ({ transportadores, dataAdviser, centers }) => {
+        console.log('dataa')
+        console.log(transportadores, dataAdviser, centers);
       },
       error: (error: any) => {
         console.error('Error al obtener datos:', error);
       },
     });
   }
+
   createRequest(item: any) {
     // Lógica para crear la solicitud
     console.log(item);
@@ -94,28 +85,29 @@ export class RequestlogisticsComponent {
       collectionSiteId: item.collectionSite,
       consultantId: item.consultant,
       transporterId: item.transporter,
-    }
-  
+    };
+
     $('#modalRequest').modal({ backdrop: 'static', keyboard: false });
     console.log('Creando solicitud:', this.request);
   }
-  viewRequest(){
+  viewRequest() {
     $('#modalDetail').modal({ backdrop: 'static', keyboard: false });
     console.log('Creando solicitud:', this.request);
   }
 
-
   saveData() {
-this._requests.updateSolicitud(this.data.id, {
-          collectionSiteId: this.data.collectionSiteId,
-          consultantId: this.data.consultantId,
-          transporterId: this.data.transporterId,
-        }).subscribe((x: any) =>{
-          this._toast.success('Completado','Ruta registrada exitosamente')
-          // Si la respuesta es positiva
-          $('#modalRequest').modal('hide');
-          this.clearData();
-        })
+    this._requests
+      .updateSolicitud(this.data.id, {
+        collectionSiteId: this.data.collectionSiteId,
+        consultantId: this.data.consultantId,
+        transporterId: this.data.transporterId,
+      })
+      .subscribe((x: any) => {
+        this._toast.success('Completado', 'Ruta Actualizada exitosamente');
+        // Si la respuesta es positiva
+        $('#modalRequest').modal('hide');
+        this.clearData();
+      });
   }
 
   clearData() {
@@ -124,6 +116,6 @@ this._requests.updateSolicitud(this.data.id, {
       collectionSiteId: '',
       consultantId: '',
       transporterId: '',
-    }
+    };
   }
 }
