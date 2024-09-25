@@ -51,7 +51,6 @@ export class RequestplannerComponent implements OnInit {
     this.auth.user$.subscribe((user: any) => {
       if (user && user.sub) {
         const userId = user.sub;
-        console.log('User ID:', userId);
         // Aquí puedes realizar cualquier otra operación con el ID del usuario
       }
     });
@@ -96,7 +95,7 @@ export class RequestplannerComponent implements OnInit {
 
   editRequest(item: any){
     this.collectionRequestId = item.id;
-    $("#turnCalling").modal({backdrop: 'static', keyboard: false});
+    $("#modalplaner").modal({backdrop: 'static', keyboard: false});
   }
 
   confirmRequest(){

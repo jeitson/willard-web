@@ -33,10 +33,9 @@ export class RequestlogisticsComponent {
   };
 
   listsrequest: any[] = [];
-  listTransportador: any[] = [];
-  adviser: any[] = [];
-  listTipos: any[] = [];
-  listData: any[] = [];
+  listTransportadores: any[] = [];
+  listDataAdviser: any[] = [];
+  listCenters: any[] = [];
 
   action = { name: 'LOGISTICA' };
   constructor(
@@ -55,31 +54,50 @@ export class RequestlogisticsComponent {
   }
   getRequest() {
     this._requests.listSolicitudes('3').subscribe((response: any) => {
-      console.log(response.data.items);
       this.listsrequest = response.data.items;
     });
   }
 
   getData() {
-    console.log('dataa111')
-    forkJoin({
-      transportadores: this._Conveyor.getTransportadores(),
-      dataAdviser: this._adviser.getConsultants(),
-      centers: this._Service.getCollectionSites(),
-    }).subscribe({
-      next: ({ transportadores, dataAdviser, centers }) => {
-        console.log('dataa')
-        console.log(transportadores, dataAdviser, centers);
+
+    // Obtener transportadores
+    this._Conveyor.getTransportadores().subscribe({
+      next: (transportadoresResponse: any) => {
+        const transportadores = transportadoresResponse.data.items;
+
+        // Obtener asesores
+        this._adviser.getConsultants().subscribe({
+          next: (dataAdviserResponse: any) => {
+            const dataAdviser = dataAdviserResponse.data.items;
+
+            // Obtener centros
+            this._Service.getCollectionSites().subscribe({
+              next: (centersResponse: any) => {
+                const centers = centersResponse.data.items;
+
+                // Puedes almacenar los datos en las variables de la clase si es necesario
+                this.listTransportadores = transportadores;
+                this.listDataAdviser = dataAdviser;
+                this.listCenters = centers;
+              },
+              error: (error: any) => {
+                console.error('Error al obtener centros:', error);
+              },
+            });
+          },
+          error: (error: any) => {
+            console.error('Error al obtener asesores:', error);
+          },
+        });
       },
       error: (error: any) => {
-        console.error('Error al obtener datos:', error);
+        console.error('Error al obtener transportadores:', error);
       },
     });
   }
 
   createRequest(item: any) {
     // Lógica para crear la solicitud
-    console.log(item);
     this.data = {
       id: item.id,
       collectionSiteId: item.collectionSite,
@@ -88,11 +106,9 @@ export class RequestlogisticsComponent {
     };
 
     $('#modalRequest').modal({ backdrop: 'static', keyboard: false });
-    console.log('Creando solicitud:', this.request);
   }
   viewRequest() {
     $('#modalDetail').modal({ backdrop: 'static', keyboard: false });
-    console.log('Creando solicitud:', this.request);
   }
 
   saveData() {

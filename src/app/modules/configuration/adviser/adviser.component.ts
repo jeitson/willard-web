@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { forkJoin } from 'rxjs';
 import { AdviserService } from 'src/app/core/services/process/adviser.service';
 declare var $: any;
 @Component({
@@ -33,11 +32,9 @@ export class AdviserComponent {
   }
 
   selectData(): void {
-    forkJoin({
-      adviser: this._Service.getConsultants(),
-    }).subscribe({
-      next: (data: any) => {
-        this.listData = data.adviser.data.items;
+    this._Service.getConsultants().subscribe({
+      next: (response: any) => {
+        this.listData = response.data.items;
       },
       error: (error: any) => {
         console.error('Error al obtener datos:', error);
@@ -79,22 +76,24 @@ export class AdviserComponent {
     $('#modalconveyor').modal('hide');
   }
 
- 
-
   updateAdviser(): void {
     if (this.adviser.id) {
-      this._Service.updateConsultant(this.adviser.id, this.getadviserPayload()).subscribe({
-        next: (response: any) => this.handleSuccess(response),
-        error: (error: any) => console.error('Error al actualizar el registro:', error),
-      });
+      this._Service
+        .updateConsultant(this.adviser.id, this.getadviserPayload())
+        .subscribe({
+          next: (response: any) => this.handleSuccess(response),
+          error: (error: any) =>
+            console.error('Error al actualizar el registro:', error),
+        });
     }
   }
-  
+
   createAdviser(): void {
     if (!this.adviser.id) {
       this._Service.createConsultant(this.getadviserPayload()).subscribe({
         next: (response: any) => this.handleSuccess(response),
-        error: (error: any) => console.error('Error al crear el registro:', error),
+        error: (error: any) =>
+          console.error('Error al crear el registro:', error),
       });
     }
   }
@@ -103,11 +102,10 @@ export class AdviserComponent {
     return { name, email, phone, description, referencePH };
   }
   private handleSuccess(response: any): void {
-    console.log(response);
     this.selectData();
     this.close();
   }
-  
+
   removeItem(id: string) {
     this.itemId = id;
     this.action.name = 'Eliminar';

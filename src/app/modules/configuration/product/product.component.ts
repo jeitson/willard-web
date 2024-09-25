@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { forkJoin } from 'rxjs';
 import { ProductsService } from 'src/app/core/services/process/products.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
 declare var $: any;
@@ -43,25 +42,38 @@ export class ProductComponent {
   ngOnInit(): void {
     this.selectData();
   }
-
   selectData(): void {
-    forkJoin({
-      products: this._Service.getProducts(),
-      typeProduct: this._settings.getCatalogChildrenByKey('TIPO_PRODUCTO'),
-      medidas: this._settings.getCatalogChildrenByKey('UNIDAD_MEDIDA'),
-
-    }).subscribe({
-      next: (data: any) => {
-        this.listData = data.products.data.items;
-        this.listProduct = data.typeProduct.data
-        this.Measure = data.medidas.data
-
+    // Obtener productos
+    this._Service.getProducts().subscribe({
+      next: (productsResponse: any) => {
+        this.listData = productsResponse.data.items;
+  
+        // Obtener tipo de producto
+        this._settings.getCatalogChildrenByKey('TIPO_PRODUCTO').subscribe({
+          next: (typeProductResponse: any) => {
+            this.listProduct = typeProductResponse.data;
+  
+            // Obtener medidas
+            this._settings.getCatalogChildrenByKey('UNIDAD_MEDIDA').subscribe({
+              next: (medidasResponse: any) => {
+                this.Measure = medidasResponse.data;
+              },
+              error: (error: any) => {
+                console.error('Error al obtener medidas:', error);
+              },
+            });
+          },
+          error: (error: any) => {
+            console.error('Error al obtener tipo de producto:', error);
+          },
+        });
       },
       error: (error: any) => {
-        console.error('Error al obtener datos:', error);
+        console.error('Error al obtener productos:', error);
       },
     });
   }
+  
 
   createOrUpdateproduct(item: any | null): void {
     this.resetUser();
@@ -169,7 +181,6 @@ export class ProductComponent {
   }
 
    handleSuccess(response: any): void {
-    console.log(response);
     this.selectData();
     this.close();
   }

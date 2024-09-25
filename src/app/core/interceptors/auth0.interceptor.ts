@@ -11,7 +11,6 @@ export class Auth0Interceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return from(this.auth.idTokenClaims$).pipe(
       switchMap((token) => {
-        console.log(token);
         const tokenizedRequest = request.clone({
           setHeaders: {
             Authorization: `Bearer ${token?.__raw}`,

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { forkJoin } from 'rxjs';
 import { ConvenyorService } from 'src/app/core/services/process/convenyor.service';
 import { CustomersService } from 'src/app/core/services/process/customers.service';
 import { RequestsService } from 'src/app/core/services/requests/requests.service';
@@ -83,34 +82,60 @@ export class RequestagencyComponent {
     });
   }
   getData() {
-    forkJoin({
-      transportadores: this._Conveyor.getTransportadores(),
-      listClientes: this._Customers.getClients(),
-      listTipos: this._pickUp.getPickUpLocations(),
-      listSedes: this._Settings.getCatalogChildrenByKey('TIPOS_SEDES_ACOPIO'),
-      listCiudades: this._Settings.getCatalogChildrenByKey('CIUDAD'),
-      listZonas: this._Settings.getCatalogChildrenByKey('ZONA'),
-    }).subscribe({
-      next: ({
-        transportadores,
-        listClientes,
-        listTipos,
-        listSedes,
-        listCiudades,
-        listZonas,
-      }) => {
-        // this.listData = list.data.items;
-        this.listTransportador = transportadores.data.items;
-        this.listClient = listClientes.data.items;
-        this.listTipos = listTipos.data.items;
-        this.listSedes = listSedes.data;
-        this.listCiudades = listCiudades.data;
-        this.listZonas = listZonas.data;
-      },
-      error: (error: any) => {
-        console.error('Error al obtener datos:', error);
-      },
-    });
+      this._Conveyor.getTransportadores().subscribe({
+        next: (response: any) => {
+          this.listTransportador = response.data.items;
+        },
+        error: (error: any) => {
+          console.error('Error al obtener transportadores:', error);
+        },
+      });
+    
+      this._Customers.getClients().subscribe({
+        next: (response: any) => {
+          this.listClient = response.data.items;
+        },
+        error: (error: any) => {
+          console.error('Error al obtener clientes:', error);
+        },
+      });
+    
+      this._pickUp.getPickUpLocations().subscribe({
+        next: (response: any) => {
+          this.listTipos = response.data.items;
+        },
+        error: (error: any) => {
+          console.error('Error al obtener tipos de recogida:', error);
+        },
+      });
+    
+      this._Settings.getCatalogChildrenByKey('TIPOS_SEDES_ACOPIO').subscribe({
+        next: (response: any) => {
+          this.listSedes = response.data;
+        },
+        error: (error: any) => {
+          console.error('Error al obtener tipos de sedes:', error);
+        },
+      });
+    
+      this._Settings.getCatalogChildrenByKey('CIUDAD').subscribe({
+        next: (response: any) => {
+          this.listCiudades = response.data;
+        },
+        error: (error: any) => {
+          console.error('Error al obtener ciudades:', error);
+        },
+      });
+    
+      this._Settings.getCatalogChildrenByKey('ZONA').subscribe({
+        next: (response: any) => {
+          this.listZonas = response.data;
+        },
+        error: (error: any) => {
+          console.error('Error al obtener zonas:', error);
+        },
+      });
+    
   }
   createRequest() {
     this.actionSave = false;
@@ -151,10 +176,6 @@ export class RequestagencyComponent {
     this[target] = list.find((item: any) => item.id === id);
   }
 
-  isSpecial(boolean: boolean) {
-    console.log(boolean);
-  }
-
   saveRequest() {
     const action = this.actionSave
       ? this._requests.updateSolicitud(this.dataId.id, {
@@ -165,7 +186,6 @@ export class RequestagencyComponent {
       : this._requests.createSolicitud(this.request);
 
     action.subscribe((response: any) => {
-      console.log(response);
       this._toast.success('Completado','Ruta registrada exitosamente')
         // Si la respuesta es positiva
         $('#modalRequest').modal('hide');
@@ -173,7 +193,6 @@ export class RequestagencyComponent {
         this.dataId = []; // Limpiar los objetos
         this.clearData();
         this.getRequest();
-      console.log(response, this.request);
     });
   }
 

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { forkJoin } from 'rxjs';
 import { ConvenyorService } from 'src/app/core/services/process/convenyor.service';
 declare var $: any;
 @Component({
@@ -37,17 +36,16 @@ export class ConveyorComponent {
   }
 
   selectData(): void {
-    forkJoin({
-      transportadores: this._Service.getTransportadores(),
-    }).subscribe({
-      next: (data: any) => {
-        this.listData = data.transportadores.data.items;
+    this._Service.getTransportadores().subscribe({
+      next: (response: any) => {
+        this.listData = response.data.items;
       },
       error: (error: any) => {
-        console.error('Error al obtener datos:', error);
+        console.error('Error al obtener transportadores:', error);
       },
     });
   }
+  
 
   createOrUpdateconveyor(item: any | null): void {
     this.resetconveyor();
@@ -137,7 +135,6 @@ export class ConveyorComponent {
     };
   }
    handleSuccess(response: any): void {
-    console.log(response);
     this.selectData();
     this.close();
   }

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { forkJoin } from 'rxjs';
 import { RequestService } from 'src/app/core/services/security/request.service';
 
 @Component({

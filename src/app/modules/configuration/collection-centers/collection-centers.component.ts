@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { forkJoin } from 'rxjs';
 import { CentersService } from 'src/app/core/services/process/centers.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
 declare var $: any;
@@ -49,24 +48,43 @@ export class CollectionCentersComponent {
   }
 
   selectData(): void {
-    forkJoin({
-      centers: this._Service.getCollectionSites(),
-      countries: this._settings.getCatalogChildrenByKey('PAIS'),
-      cities: this._settings.getCatalogChildrenByKey('CIUDAD'),
-      typeCenters: this._settings.getCatalogChildrenByKey('TIPOS_SEDES_ACOPIO'),
-    }).subscribe({
-      next: (data: any) => {
-        this.listData = data.centers.data.items;
-        this.countries = data.countries.data;
-        this.cities = data.cities.data;
-        this.typeCenters = data.typeCenters.data;
-
+    this._Service.getCollectionSites().subscribe({
+      next: (response: any) => {
+        this.listData = response.data.items;
       },
       error: (error: any) => {
-        console.error('Error al obtener datos:', error);
+        console.error('Error al obtener centros de recolección:', error);
+      },
+    });
+  
+    this._settings.getCatalogChildrenByKey('PAIS').subscribe({
+      next: (response: any) => {
+        this.countries = response.data;
+      },
+      error: (error: any) => {
+        console.error('Error al obtener países:', error);
+      },
+    });
+  
+    this._settings.getCatalogChildrenByKey('CIUDAD').subscribe({
+      next: (response: any) => {
+        this.cities = response.data;
+      },
+      error: (error: any) => {
+        console.error('Error al obtener ciudades:', error);
+      },
+    });
+  
+    this._settings.getCatalogChildrenByKey('TIPOS_SEDES_ACOPIO').subscribe({
+      next: (response: any) => {
+        this.typeCenters = response.data;
+      },
+      error: (error: any) => {
+        console.error('Error al obtener tipos de sedes:', error);
       },
     });
   }
+  
 
   createOrUpdateCenter(item: any | null): void {
     this.resetCenter();
@@ -182,7 +200,6 @@ export class CollectionCentersComponent {
     };
   }
    handleSuccess(response: any): void {
-    console.log(response);
     this.selectData();
     this.close();
   }

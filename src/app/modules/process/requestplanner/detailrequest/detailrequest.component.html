@@ -6,26 +6,28 @@
       </div>
       <div>
         <div class="d-flex flex-rows justify-content-between gap-10">
-          <span><strong>Codigo:</strong> PHA-2424</span>
-          <span><strong>Fecha:</strong> 30-05-2024</span>
-          <h5 class="text-white"><span class="badge bg-success2">Confirmada</span></h5>
+          <span><strong>Codigo:</strong> PHA-{{ listData?.id }}</span>
+          <span><strong>Fecha:</strong> {{ listData?.requestDate }}</span>
+          <h5 class="text-white">
+            <span class="badge bg-success2">{{ listData?.status ? 'Confirmada' : 'Pendiente' }}</span>
+          </h5>
         </div>
         <div class="d-flex flex-rows gap-10">
-          <span><strong>Recuperador Asignado:</strong> Fabrica Union </span>
-          <span><strong>Planeador Asignado:</strong> Leo Messi</span>
+          <span><strong>Recuperador Asignado:</strong> {{ listData?.transporter?.name || 'No asignado' }}</span>
+          <span><strong>Planeador Asignado:</strong> {{ listData?.consultant?.name || 'No asignado' }}</span>
         </div>
       </div>
     </div>
     <div class="divider"></div>
     <div class="w-100">
       <h5>Datos de solicitud</h5>
-      <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ea numquam et consequatur eos neque accusantium repudiandae, facilis sapiente. Voluptatum incidunt repudiandae vitae perferendis laborum dolorem amet excepturi modi, culpa placeat.</p>
+      <p>{{ listData?.description }}</p>
       <div class="d-flex flex-rows gap-10 justify-content-lg-start">
         <div class="card bg-success2">
           <div class="card-body">
             <div class="d-flex flex-column text-center">
               <span>Tipo Solicitud</span>
-              <span>Especial</span>
+              <span>{{ listData?.isSpecial ? 'Especial' : 'No Especial' }}</span>
             </div>
           </div>
         </div>
@@ -33,7 +35,7 @@
           <div class="card-body">
             <div class="d-flex flex-column text-center">
               <span>Fecha Estimado</span>
-              <span>06-08-2024</span>
+              <span>{{ listData?.estimatedPickUpDate }}</span>
             </div>
           </div>
         </div>
@@ -41,7 +43,7 @@
           <div class="card-body">
             <div class="d-flex flex-column text-center">
               <span>Hora Estimado</span>
-              <span>3:00 PM</span>
+              <span>{{ listData?.estimatedPickUpTime }}</span>
             </div>
           </div>
         </div>
@@ -49,7 +51,7 @@
           <div class="card-body">
             <div class="d-flex flex-column text-center">
               <span>Cantidad Estimada</span>
-              <span>600</span>
+              <span>{{ listData?.estimatedQuantity }}</span>
             </div>
           </div>
         </div>
@@ -57,7 +59,7 @@
           <div class="card-body">
             <div class="d-flex flex-column text-center">
               <span>Kilos Estimados</span>
-              <span>1200</span>
+              <span>{{ listData?.estimatedKG }}</span>
             </div>
           </div>
         </div>
@@ -70,16 +72,16 @@
             <div class="col-md-12 mb-3">
               <h5>Datos Cliente</h5>
               <div class="divider"></div>
-              <span><strong>Nit:</strong> 900600259</span><br>
-              <span><strong>Razon Social:</strong> Autoland del caribe SAS</span><br>
+              <span><strong>Nit:</strong> {{ listData?.client?.taxId || 'No disponible' }}</span><br>
+              <span><strong>Razon Social:</strong> {{ listData?.client?.businessName || 'No disponible' }}</span><br>
             </div>
             <div class="col-md-12">
               <h5>Observación y Recomendaciones</h5>
               <div class="divider"></div>
               <span><strong>Observación:</strong></span><br>
-              <span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, itaque. Assumenda in eum sed autem dolorum, cupiditate laboriosam aspernatur fugit, sunt consectetur, commodi ex tempore doloremque. Architecto neque velit quod.</span><br>
+              <span>{{ listData?.observations }}</span><br>
               <span><strong>Recomendaciones:</strong></span><br>
-              <span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti, itaque. Assumenda in eum sed autem dolorum, cupiditate laboriosam aspernatur fugit, sunt consectetur, commodi ex tempore doloremque. Architecto neque velit quod.</span><br>
+              <span>{{ listData?.recommendations }}</span><br>
             </div>
           </div>
         </div>
@@ -88,21 +90,21 @@
             <div class="col-md-12 mb-3">
               <h5>Datos Recogida</h5>
               <div class="divider"></div>
-              <span><strong>Dirección:</strong> Cra 4B # 28 - 40</span><br>
-              <span><strong>Ciudad:</strong> Juan Mina</span><br>
-              <span><strong>Pais:</strong> Colombia</span><br>
-              <span><strong>Contacto:</strong> James Rodriguez</span><br>
-              <span><strong>Telefono:</strong> 3178902922</span><br>
-              <span><strong>Email:</strong> aldairguerrerobarajasmail.com</span><br>
-              <span><strong>Aprobado:</strong> Pibe Valderrama</span><br>
+              <span><strong>Dirección:</strong> {{ listData?.pickUpLocation || 'No disponible' }}</span><br>
+              <span><strong>Ciudad:</strong> {{ listData?.city || 'No disponible' }}</span><br>
+              <span><strong>Pais:</strong> {{ listData?.country || 'No disponible' }}</span><br>
+              <span><strong>Contacto:</strong> {{ listData?.transporter?.contactName || 'No disponible' }}</span><br>
+              <span><strong>Telefono:</strong> {{ listData?.transporter?.referencePH || 'No disponible' }}</span><br>
+              <span><strong>Email:</strong> {{ listData?.transporter?.contactEmail || 'No disponible' }}</span><br>
+              <span><strong>Aprobado:</strong> {{ listData?.transporter?.modifiedBy || 'No disponible' }}</span><br>
             </div>
             <div class="col-md-12">
               <h5>Datos Transportadora</h5>
               <div class="divider"></div>
-              <span><strong>Nit:</strong> 900600259</span><br>
-              <span><strong>Contacto:</strong> Jeitson </span><br>
-              <span><strong>Telefono:</strong> 3209807888</span><br>
-              <span><strong>Email:</strong> aldairguerrerobarajasmail.com</span><br>
+              <span><strong>Nit:</strong> {{ listData?.transporter?.taxId }}</span><br>
+              <span><strong>Contacto:</strong> {{ listData?.transporter?.contactName }}</span><br>
+              <span><strong>Telefono:</strong> {{ listData?.transporter?.referencePH }}</span><br>
+              <span><strong>Email:</strong> {{ listData?.transporter?.contactEmail }}</span><br>
             </div>
           </div>
         </div>

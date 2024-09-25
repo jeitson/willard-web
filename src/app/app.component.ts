@@ -16,7 +16,6 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {}
   ngOnInit(): void {
     this.eventModeDarkSub = this.eventBusService.on('woo|darkMode', () => {
-      console.log('darkMode::', this.storageService.DarkModeActive);
       this.storageService.isDarkModeActive = this.storageService.DarkModeActive;
     });
   }

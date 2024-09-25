@@ -54,7 +54,7 @@
                     {{ item.estimatedPickUpTime }}
                   </td>
                   <td class="text-left">{{ item.customer }}</td>
-                  <td class="text-left">{{ item.transporter }}</td>
+                  <td class="text-left"> {{ item.transporter?.name }} </td>
                   <td class="text-center">
                     <h5 *ngIf="item.status == true" style="color: white">
                       <span class="badge bg-success2">Activo</span>
@@ -68,7 +68,8 @@
                       class="fa-solid f-larger pointer fa-pencil"
                       (click)="updateRequest(item)"
                     ></i> -->
-                    <i class="fa-solid f-larger pointer fa-eye" [routerLink]="['32983283']"></i>
+                    <i class="fa-solid f-larger pointer fa-eye" [routerLink]="['/main/process/requestplanner', item.id]"></i>
+
                   </td>
                 </tr>
               </tbody>
@@ -320,7 +321,7 @@
 
         <!-- Modal Footer -->
         <div class="modal-footer">
-          <button
+          <!-- <button
             class="btn btn-md btn-dark"
             data-dismiss="modal"
             aria-label="Close"
@@ -329,8 +330,15 @@
           </button>
           <button type="button" class="btn btn-primary" (click)="saveRequest()">
             Guardar
-          </button>
+          </button> -->
+
+          <div class="col-md-12 d-flex flex-row gap-10 justify-content-end">
+            <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close">Cancelar</button>
+            <button class="btn btn-sm btn-success"  (click)="saveRequest()">Actualizar</button>
+          </div>
+          
         </div>
+      
       </div>
     </div>
   </div>

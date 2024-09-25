@@ -53,7 +53,6 @@ export class TopbarComponent implements AfterViewInit, OnInit, OnDestroy {
   async ngAfterViewInit() {
     this.auth0Service.getUser().subscribe(user => {
       this.user = user;
-      console.log(this.user);
     });
     if (!(await this.auth0Service.isAuthenticated())) {
       this._login();
@@ -94,7 +93,6 @@ export class TopbarComponent implements AfterViewInit, OnInit, OnDestroy {
    * Toggle the menu bar when having mobile screen
    */
   toggleMobileMenu(event: any) {
-    console.log('toggleMobileMenu::', event);
     event.preventDefault();
     this.mobileMenuButtonClicked.emit();
   }

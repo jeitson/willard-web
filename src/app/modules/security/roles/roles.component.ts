@@ -101,7 +101,6 @@ export class RolesComponent implements OnInit {
   }
 
   handleSuccess(response: any): void {
-    console.log(response);
     this.selectData();
     this.close();
   }

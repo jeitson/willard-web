@@ -40,21 +40,29 @@ export class UsersComponent {
   }
 
   selectData(): void {
-    forkJoin({
-      users: this.userService.allUsers(),
-      roles: this.rolesService.allRoles(),
-    }).subscribe({
-      next: ({ users, roles }) => {
-        console.log(users);
-        console.log(roles);
-        this.users = users.data.items;
-        this.listData = roles.data.items;
+    // Obtener todos los usuarios
+    this.userService.allUsers().subscribe({
+      next: (usersResponse: any) => {
+        const users = usersResponse.data.items;
+        this.users = users;
+  
+        // Obtener todos los roles
+        this.rolesService.allRoles().subscribe({
+          next: (rolesResponse: any) => {
+            const roles = rolesResponse.data.items;
+            this.listData = roles;
+          },
+          error: (error: any) => {
+            console.error('Error loading roles:', error);
+          },
+        });
       },
       error: (error: any) => {
-        console.error('Error loading data:', error);
+        console.error('Error loading users:', error);
       },
     });
   }
+  
 
 
   createOrUpdateUser(item: any | null): void {
@@ -110,7 +118,6 @@ export class UsersComponent {
   }
 
   handleSuccess(response: any): void {
-    console.log(response);
     this.selectData();
     this.close();
   }

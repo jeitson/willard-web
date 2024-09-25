@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { forkJoin } from 'rxjs';
 import { CustomersService } from 'src/app/core/services/process/customers.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
 declare var $: any;
@@ -46,25 +45,37 @@ export class CustomersComponent {
   }
 
   selectData(): void {
-    forkJoin({
-      clientes: this._Service.getClients(),
-      typeDocuments: this._settings.getCatalogChildrenByKey('TIPO_DOCUMENTO'),
-      pais: this._settings.getCatalogChildrenByKey('PAIS'),
-    }).subscribe({
-      next: (data: any) => {
-        this.listData = data.clientes.data.items;
-        console.log(this.listData);
-        this.typeDocuments = data.typeDocuments.data;
-        this.paisData = data.pais.data;
+    this._Service.getClients().subscribe({
+      next: (response: any) => {
+        this.listData = response.data.items;
+        
+        // Llamadas individuales a los otros servicios
+        this._settings.getCatalogChildrenByKey('TIPO_DOCUMENTO').subscribe({
+          next: (docResponse: any) => {
+            this.typeDocuments = docResponse.data;
+          },
+          error: (error: any) => {
+            console.error('Error al obtener tipos de documento:', error);
+          },
+        });
+  
+        this._settings.getCatalogChildrenByKey('PAIS').subscribe({
+          next: (countryResponse: any) => {
+            this.paisData = countryResponse.data;
+          },
+          error: (error: any) => {
+            console.error('Error al obtener países:', error);
+          },
+        });
       },
       error: (error: any) => {
-        console.error('Error al obtener datos:', error);
+        console.error('Error al obtener clientes:', error);
       },
     });
   }
+  
 
   createOrUpdateclient(item: any | null): void {
-    console.log(item);
     this.resetUser();
     this.action.name = 'Crear';
     this.viewoptions = true;
@@ -154,7 +165,6 @@ export class CustomersComponent {
   }
 
    handleSuccess(response: any): void {
-    console.log(response);
     this.selectData();
     this.close();
   }

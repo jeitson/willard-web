@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { forkJoin } from 'rxjs';
 import { AdviserService } from 'src/app/core/services/process/adviser.service';
 import { CustomersService } from 'src/app/core/services/process/customers.service';
 import { PickuplocationService } from 'src/app/core/services/settings/pickuplocation.service';
@@ -42,7 +41,7 @@ export class PickuplocationComponent {
     referenceWLL: '',
     referencePH: '',
   };
-  
+
   listClientes: any = [];
   listAsesores: any = [];
   listTipos: any = [];
@@ -64,33 +63,85 @@ export class PickuplocationComponent {
   }
 
   selectData(): void {
-    forkJoin({
-      list: this._Service.getPickUpLocations(),
-      listClientes: this._Customers.getClients(),
-      listAsesores: this._Adviser.getConsultants(),
-      listTipos: this._Settings.getCatalogChildrenByKey('TIPO_LUGAR_RECOGIDA'),
-      listSedes: this._Settings.getCatalogChildrenByKey('TIPOS_SEDES_ACOPIO'),
-      listCiudades: this._Settings.getCatalogChildrenByKey('CIUDAD'),
-      listZonas: this._Settings.getCatalogChildrenByKey('ZONA'),
-    }).subscribe({
-      next: ({
-        list,
-        listClientes,
-        listAsesores,
-        listTipos,
-        listSedes,
-        listCiudades,
-        listZonas,
-      }) => {
-        this.listData = list.data.items;
-        this.listClientes = listClientes.data.items;
-        this.listAsesores = listAsesores.data.items;
-        this.listTipos = listTipos.data;
-        this.listSedes = listSedes.data;
-        this.listCiudades = listCiudades.data;
-        this.listZonas = listZonas.data;
+    this._Service.getPickUpLocations().subscribe({
+      next: (response: any) => {
+        this.listData = response.data.items;
+
+        // Llamadas individuales a los otros servicios
+        this._Customers.getClients().subscribe({
+          next: (clientesResponse: any) => {
+            this.listClientes = clientesResponse.data.items;
+
+            this._Adviser.getConsultants().subscribe({
+              next: (asesoresResponse: any) => {
+                this.listAsesores = asesoresResponse.data.items;
+
+                this._Settings
+                  .getCatalogChildrenByKey('TIPO_LUGAR_RECOGIDA')
+                  .subscribe({
+                    next: (tiposResponse: any) => {
+                      this.listTipos = tiposResponse.data;
+
+                      this._Settings
+                        .getCatalogChildrenByKey('TIPOS_SEDES_ACOPIO')
+                        .subscribe({
+                          next: (sedesResponse: any) => {
+                            this.listSedes = sedesResponse.data;
+
+                            this._Settings
+                              .getCatalogChildrenByKey('CIUDAD')
+                              .subscribe({
+                                next: (ciudadesResponse: any) => {
+                                  this.listCiudades = ciudadesResponse.data;
+
+                                  this._Settings
+                                    .getCatalogChildrenByKey('ZONA')
+                                    .subscribe({
+                                      next: (zonasResponse: any) => {
+                                        this.listZonas = zonasResponse.data;
+                                      },
+                                      error: (error: any) => {
+                                        console.error(
+                                          'Error al obtener zonas:',
+                                          error
+                                        );
+                                      },
+                                    });
+                                },
+                                error: (error: any) => {
+                                  console.error(
+                                    'Error al obtener ciudades:',
+                                    error
+                                  );
+                                },
+                              });
+                          },
+                          error: (error: any) => {
+                            console.error('Error al obtener sedes:', error);
+                          },
+                        });
+                    },
+                    error: (error: any) => {
+                      console.error(
+                        'Error al obtener tipos de lugar de recogida:',
+                        error
+                      );
+                    },
+                  });
+              },
+              error: (error: any) => {
+                console.error('Error al obtener asesores:', error);
+              },
+            });
+          },
+          error: (error: any) => {
+            console.error('Error al obtener clientes:', error);
+          },
+        });
       },
-      error: (error) => console.error('Error al obtener datos:', error),
+      error: (error: any) => {
+        console.error('Error al obtener lugares de recogida:', error);
+      },
     });
   }
 

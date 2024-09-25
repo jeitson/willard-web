@@ -52,7 +52,7 @@
                       {{ item.estimatedPickUpTime }}
                     </td>
                     <td class="text-left">{{ item.customer }}</td>
-                    <td class="text-left">{{ item.transporter }}</td>
+                    <td class="text-left"> {{ item.transporter?.name }} </td>
                     <td class="text-center">
                       <h5 *ngIf="item.status == true" style="color: white">
                         <span class="badge bg-success2">Activo</span>
@@ -66,7 +66,8 @@
                         class="fa-solid f-larger pointer fa-pencil"
                         (click)="createRequest(item)"
                       ></i>
-                      <i class="fa-solid f-larger pointer fa-eye" ></i>
+                      <i class="fa-solid f-larger pointer fa-eye" [routerLink]="['/main/process/requestplanner', item.id]"></i>
+
                     </td>
                   </tr>
                 </tbody>
@@ -93,7 +94,7 @@
                  <div class="mb-3">
                    <label for="changeRetriever" class="form-label">Seleccionar Asesor</label>
                    <select class="form-select" id="changeRetriever" [(ngModel)]="data.consultantId">
-                     <option *ngFor="let retriever of adviser" [value]="retriever.id">{{ retriever.name }}</option>
+                     <option *ngFor="let retriever of listDataAdviser" [value]="retriever.id">{{ retriever.name }}</option>
                    </select>
                  </div>
 
@@ -103,7 +104,7 @@
               <div class="mb-3">
                 <label for="transporter" class="form-label">Seleccionar Transportador</label>
                 <select class="form-select" id="transporter" [(ngModel)]="data.transporterId">
-                  <option *ngFor="let transporter of listTransportador" [value]="transporter.id">{{ transporter.name }}</option>
+                  <option *ngFor="let transporter of listTransportadores" [value]="transporter.id">{{ transporter.name }}</option>
                 </select>
               </div>
 
@@ -113,7 +114,7 @@
             <div class="mb-3">
               <label for="transporter" class="form-label">Seleccionar lugar de recogidas</label>
               <select class="form-select" id="transporter" [(ngModel)]="data.collectionSiteId">
-                <option *ngFor="let typeCollection of listTipos" [value]="typeCollection.id">{{ typeCollection.name }}</option>
+                <option *ngFor="let typeCollection of listCenters" [value]="typeCollection.id">{{ typeCollection.name }}</option>
               </select>
             </div>
 

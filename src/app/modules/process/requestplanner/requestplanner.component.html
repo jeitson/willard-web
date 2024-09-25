@@ -39,7 +39,7 @@
                             <td class="text-center"> {{item.estimatedQuantity }} </td>
                             <td class="text-center"> {{item.estimatedPickUpDate}} {{item.estimatedPickUpTime}} </td>
                             <td class="text-left"> {{item.customer }} </td>
-                            <td class="text-left"> {{item.transporter }} </td>
+                            <td class="text-left"> {{ item.transporter?.name }} </td>
                             <td class="text-center">
                                 <h5 *ngIf="item.status == true" style="color: white;"><span class="badge bg-success2">Activo</span></h5>
                                 <h5 *ngIf="item.status == false" style="color: white;"><span class="badge bg-danger">Inactivo</span></h5>
@@ -47,7 +47,7 @@
                             <td class="text-center">
                               <i class="fa-solid f-larger pointer fa-pencil" (click)="editRequest(item)"></i>
                               <!-- <i class="fa-solid f-larger pointer fa-pencil" (click)="viewDetail(item)"></i> -->
-                              <i class="fa-solid f-larger pointer fa-eye" [routerLink]="['32983283']"></i>
+                              <i class="fa-solid f-larger pointer fa-eye" [routerLink]="[item.id]"></i>
                               <!--<i class="fa-solid f-larger pointer fa-trash" (click)="removeItem(item.id)"></i> -->
                             </td>
                         </tr>
