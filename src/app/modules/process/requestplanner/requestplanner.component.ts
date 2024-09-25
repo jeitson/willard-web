@@ -96,7 +96,7 @@ export class RequestplannerComponent implements OnInit {
 
   editRequest(item: any){
     this.collectionRequestId = item.id;
-    $("#modalplaner").modal({backdrop: 'static', keyboard: false});
+    $("#turnCalling").modal({backdrop: 'static', keyboard: false});
   }
 
   confirmRequest(){
