@@ -8,6 +8,20 @@ const routes: Routes = [
 			import('../process/requestplanner/requestplanner.module').then(
 				({ RequestplannerModule }) => RequestplannerModule,
 			),
+	},
+	{
+		path: 'requestagency',
+		loadChildren: () =>
+			import('../process/requestagency/requestagency.module').then(
+				({ RequestagencyModule }) => RequestagencyModule,
+			),
+	},
+	{
+		path: 'requestlogistics',
+		loadChildren: () =>
+			import('../process/requestlogistics/requestlogistics.module').then(
+				({ RequestlogisticsModule }) => RequestlogisticsModule,
+			),
 	}
 ];
 

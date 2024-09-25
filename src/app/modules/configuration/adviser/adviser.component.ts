@@ -34,10 +34,10 @@ export class AdviserComponent {
 
   selectData(): void {
     forkJoin({
-      transportadores: this._Service.getConsultants(),
+      adviser: this._Service.getConsultants(),
     }).subscribe({
       next: (data: any) => {
-        this.listData = data.transportadores.data.items;
+        this.listData = data.adviser.data.items;
       },
       error: (error: any) => {
         console.error('Error al obtener datos:', error);

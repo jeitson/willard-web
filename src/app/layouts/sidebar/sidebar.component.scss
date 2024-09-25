@@ -46,7 +46,7 @@ ul {
 .submenu {
   padding-left: 14px;
   max-height: 0;
-  overflow: hidden;
+  overflow: hidden; /* Mantén el overflow oculto por defecto */
   transition: max-height 0.3s ease;
 }
 

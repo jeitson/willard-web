@@ -1,0 +1,248 @@
+<div class="container">
+    <div class="page-header">
+      <div class="d-flex flex-column">
+        <h3 class="primary title noselect">Lugares de Recogida</h3>
+        <p class="secundary mb-1">En este modulo podras configurar lugares de recogida realizando
+          acciones como: crear | editar | eliminar | cambiar estado </p>
+      </div>
+      <div class="d-flex flex-rows gap-10">
+        <button type="button" class="btn btn-sm bg-add" (click)="createOrUpdatepickup(null)">Agregar <i class="fa-solid fa-add"></i></button>
+        <button type="button" class="btn btn-sm btn-dark" (click)="selectData()">Recargar <i class="fa-solid fa-rotate-right"></i></button>
+      </div>
+    </div>
+    <div class="page-divider  mb-3">
+      <hr class="mt-1 mb-1">
+    </div>
+    <div class="page-body">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead class="bg-white">
+                  <tr>
+                    <th class="text-left"> Nombre</th>
+                    <th class="text-center"> Fecha Creación </th>
+                    <th class="text-center"> Fecha Actualización </th>
+  
+                    <th class="text-center"> Estado </th>
+                    <th class="text-center"> Acciones</th>
+                  </tr>
+                </thead>
+                <tbody style="background-color: white;">
+                  <tr *ngFor="let item of listData; let i = index"
+                    style="font-size: smaller;">
+                    <td class="text-left"> {{item.name}} </td>
+                    <td class="text-center"> {{item.createdAt |
+                      date:'EEEE dd MMM yyyy'}} </td>
+                           <td class="text-center"> {{item.updatedAt |
+                      date:'EEEE dd MMM yyyy'}} </td>
+                    <td class="text-center">
+                      <h5 *ngIf="item.status == true" style="color: white;"><span
+                          class="badge bg-success2">Activo</span></h5>
+                      <h5 *ngIf="item.status == false" style="color: white;"><span
+                          class="badge bg-danger">Inactivo</span></h5>
+                    </td>
+                    <td class="text-center">
+                      <i class="fa-solid f-larger pointer fa-pencil"
+                        (click)="createOrUpdatepickup(item)"></i>
+                      <i class="fa-solid f-larger pointer fa-sync"
+                        (click)="editState(item.id)"></i>
+                      <i class="fa-solid f-larger pointer fa-trash"
+                        (click)="removeItem(item.id)"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  
+    <div class="modal fade" id="modalconfirm" tabindex="-1" role="dialog"
+      aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="col-md-12 text-center pb5">
+              <i class="{{action.icon}} noselect f-xx-large"
+                [style.color]="action.color"></i>
+            </div>
+            <div class="col-md-12 mt-4">
+              <div class="row">
+                <div class="col-md-12 text-center">
+                  <h6><strong>¿Esta seguro que desea {{action.name | lowercase}}
+                      este item?</strong></h6>
+                  <p><small>Esta acción no se podra deshacer</small></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 d-flex justify-content-around">
+              <button class="btn btn-sm text-white btn-dark" data-dismiss="modal"
+                aria-label="Close"> Cancelar </button>
+              <button class="btn btn-sm text-white"
+                [style.background]="action.color" (click)="actionConfirm()">
+                Confirmar </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal fade" id="modalPickup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalPickupTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title pricolor" id="modalPickupTitle">{{ action.name | uppercase }} LUGAR DE RECOGIDA</h5>
+            </div>
+            <div class="modal-body">
+              <div class="col-md-12 pb-3">
+                <div class="row">
+                  <!-- First Row: TipoLugarId and ClienteId -->
+                  <div class="col-md-4">
+                    <label for="tipoLugarId" class="form-label text-black">Tipo de Lugar</label>
+                    <div class="input-group mb-3">
+                      <select class="form-select h-46" name="tipoLugarId" id="tipoLugarId" [(ngModel)]="lugar.placeTypeId">
+                        <option *ngFor="let tipo of listTipos" [value]="tipo.id">{{ tipo.name }}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="clienteId" class="form-label text-black">Cliente</label>
+                    <div class="input-group mb-3">
+                      <select class="form-select h-46" name="clienteId" id="clienteId" [(ngModel)]="lugar.clientId">
+                        <option *ngFor="let cliente of listClientes" [value]="cliente.id">{{ cliente.name }}</option>
+                      </select>
+                    </div>
+                  </div>
+      
+                  <!-- Second Row: SedeAcopioId and AsesorId -->
+                  <div class="col-md-4">
+                    <label for="sedeAcopioId" class="form-label text-black">Sede de Acopio</label>
+                    <div class="input-group mb-3">
+                      <select class="form-select h-46" name="sedeAcopioId" id="sedeAcopioId" [(ngModel)]="lugar.collectionSiteId">
+                        <option *ngFor="let sede of listSedes" [value]="sede.id">{{ sede.name }}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="asesorId" class="form-label text-black">Asesor</label>
+                    <div class="input-group mb-3">
+                      <select class="form-select h-46" name="asesorId" id="asesorId" [(ngModel)]="lugar.consultantId">
+                        <option *ngFor="let asesor of listAsesores" [value]="asesor.id">{{ asesor.name }}</option>
+                      </select>
+                    </div>
+                  </div>
+      
+                  <!-- Third Row: CiudadId and ZonaId -->
+                  <div class="col-md-4">
+                    <label for="ciudadId" class="form-label text-black">Ciudad</label>
+                    <div class="input-group mb-3">
+                      <select class="form-select h-46" name="ciudadId" id="ciudadId" [(ngModel)]="lugar.cityId">
+                        <option *ngFor="let ciudad of listCiudades" [value]="ciudad.id">{{ ciudad.name }}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="zonaId" class="form-label text-black">Zona</label>
+                    <div class="input-group mb-3">
+                      <select class="form-select h-46" name="zonaId" id="zonaId" [(ngModel)]="lugar.zoneId">
+                        <option *ngFor="let zona of listZonas" [value]="zona.id">{{ zona.name }}</option>
+                      </select>
+                    </div>
+                  </div>
+      
+                  <!-- Fourth Row: Nombre and Descripcion -->
+                  <div class="col-md-4">
+                    <label for="nombre" class="form-label text-black">Nombre</label>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control h-46" placeholder="Nombre" autocomplete="off" name="nombre" id="nombre" [(ngModel)]="lugar.name" />
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="descripcion" class="form-label text-black">Descripción</label>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control h-46" placeholder="Descripción" autocomplete="off" name="descripcion" id="descripcion" [(ngModel)]="lugar.description" />
+                    </div>
+                  </div>
+      
+                  <!-- Fifth Row: Neighborhood and Address -->
+                  <div class="col-md-4">
+                    <label for="neighborhood" class="form-label text-black">Barrio</label>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control h-46" placeholder="Barrio" autocomplete="off" name="neighborhood" id="neighborhood" [(ngModel)]="lugar.neighborhood" />
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="address" class="form-label text-black">Dirección</label>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control h-46" placeholder="Dirección" autocomplete="off" name="address" id="address" [(ngModel)]="lugar.address" />
+                    </div>
+                  </div>
+      
+                  <!-- Sixth Row: Latitude and Longitude -->
+                  <div class="col-md-4">
+                    <label for="latitude" class="form-label text-black">Latitud</label>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control h-46" placeholder="Latitud" autocomplete="off" name="latitude" id="latitude" [(ngModel)]="lugar.latitude" />
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="longitude" class="form-label text-black">Longitud</label>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control h-46" placeholder="Longitud" autocomplete="off" name="longitude" id="longitude" [(ngModel)]="lugar.longitude" />
+                    </div>
+                  </div>
+      
+                  <!-- Seventh Row: Contact Name, Email, and Phone -->
+                  <div class="col-md-4">
+                    <label for="contactName" class="form-label text-black">Nombre de Contacto</label>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control h-46" placeholder="Nombre de Contacto" autocomplete="off" name="contactName" id="contactName" [(ngModel)]="lugar.contactName" />
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="contactEmail" class="form-label text-black">Correo Electrónico</label>
+                    <div class="input-group mb-3">
+                      <input type="email" class="form-control h-46" placeholder="Correo Electrónico" autocomplete="off" name="contactEmail" id="contactEmail" [(ngModel)]="lugar.contactEmail" />
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="contactPhone" class="form-label text-black">Teléfono de Contacto</label>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control h-46" placeholder="Teléfono de Contacto" autocomplete="off" name="contactPhone" id="contactPhone" [(ngModel)]="lugar.contactPhone" />
+                    </div>
+                  </div>
+      
+                  <!-- Eighth Row: ReferenciaWLL and ReferenciaPH -->
+                  <div class="col-md-4">
+                    <label for="referenceWLL" class="form-label text-black">Referencia WLL</label>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control h-46" placeholder="Referencia WLL" autocomplete="off" name="referenceWLL" id="referenceWLL" [(ngModel)]="lugar.referenceWLL" />
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="referencePH" class="form-label text-black">Referencia PH</label>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control h-46" placeholder="Referencia PH" autocomplete="off" name="referencePH" id="referencePH" [(ngModel)]="lugar.referencePH" />
+                    </div>
+                  </div>
+                </div>
+                <div class="row mt-5">
+                  <div class="col-md-12 d-flex flex-rows gap-10">
+                    <button class="btn btn-sm btn-success" *ngIf="viewoptions === true" (click)="createLugar()"> Crear </button>
+                    <button class="btn btn-sm btn-warning" *ngIf="viewoptions === false" (click)="updateLugar()"> Actualizar </button>
+                    <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+  </div>
+  
+  

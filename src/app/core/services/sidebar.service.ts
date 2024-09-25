@@ -93,6 +93,10 @@ export class SidebarService {
         {
           title: 'Asesor',
           link: 'settings/adviser'
+        },
+        {
+          title: 'Lugares de Recogida',
+          link: 'settings/pickuplocation'
         }
       ]
     },
@@ -104,6 +108,14 @@ export class SidebarService {
         {
           title: 'Solicitudes (planeador)',
           link: 'process/requestplanner'
+        },
+        {
+          title: 'Solicitudes (Agencia)',
+          link: 'process/requestagency'
+        },
+        {
+          title: 'Solicitudes (logistics)',
+          link: 'process/requestlogistics'
         }
       ]
     },
