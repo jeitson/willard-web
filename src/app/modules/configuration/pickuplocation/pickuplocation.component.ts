@@ -265,7 +265,6 @@ export class PickuplocationComponent {
     };
   }
   handleSuccess(response: any): void {
-    console.log(response);
     this.selectData();
     this.close();
   }
