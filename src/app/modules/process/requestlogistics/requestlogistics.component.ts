@@ -121,6 +121,7 @@ export class RequestlogisticsComponent {
       .subscribe((x: any) => {
         this._toast.success('Completado', 'Ruta Actualizada exitosamente');
         // Si la respuesta es positiva
+        this.getRequest();
         $('#modalRequest').modal('hide');
         this.clearData();
       });
