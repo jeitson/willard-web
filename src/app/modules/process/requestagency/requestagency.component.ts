@@ -5,6 +5,7 @@ import { CustomersService } from 'src/app/core/services/process/customers.servic
 import { RequestsService } from 'src/app/core/services/requests/requests.service';
 import { PickuplocationService } from 'src/app/core/services/settings/pickuplocation.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
+import { ToastService } from 'src/app/core/services/toast.service';
 declare var $: any;
 @Component({
   selector: 'wlrd-requestagency',
@@ -67,7 +68,8 @@ export class RequestagencyComponent {
     private _Conveyor: ConvenyorService,
     private _Settings: SettingsService,
     private _requests: RequestsService,
-    private _pickUp: PickuplocationService
+    private _pickUp: PickuplocationService,
+    private _toast: ToastService
   ) {}
   ngOnInit(): void {
     this.getRequest();
@@ -163,13 +165,14 @@ export class RequestagencyComponent {
       : this._requests.createSolicitud(this.request);
 
     action.subscribe((response: any) => {
-      if (response.success) {
+      console.log(response);
+      this._toast.success('Completado','Ruta registrada exitosamente')
         // Si la respuesta es positiva
         $('#modalRequest').modal('hide');
 
         this.dataId = []; // Limpiar los objetos
         this.clearData();
-      }
+        this.getRequest();
       console.log(response, this.request);
     });
   }

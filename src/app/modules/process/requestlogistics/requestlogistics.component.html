@@ -62,10 +62,10 @@
                       </h5>
                     </td>
                     <td class="text-center">
-                      <!-- <i
+                      <i
                         class="fa-solid f-larger pointer fa-pencil"
-                        (click)="updateRequest(item)"
-                      ></i> -->
+                        (click)="createRequest(item)"
+                      ></i>
                       <i class="fa-solid f-larger pointer fa-eye" [routerLink]="['32983283']"></i>
                     </td>
                   </tr>
@@ -78,7 +78,7 @@
     </div>
 
     <div class="modal fade" id="modalRequest" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalRequestLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-sm">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title pricolor" id="modalRequestLabel">SOLICITUD {{ action.name | uppercase }}</h5>
@@ -87,58 +87,46 @@
               <h6 class="fw-bold text-uppercase mb-3">Datos de Logística</h6>
       
               <div class="row">
-             <div class="col-md-6">
-                 <div class="mb-3">
-                     <!-- Planeador Especial -->
-                     <label for="specialPlanner" class="form-label">Planeador Especial</label>
-                     <select class="form-select" id="specialPlanner" [(ngModel)]="request.specialPlanner">
-                       <option *ngFor="let planner of specialPlanners" [value]="planner.id">{{ planner.name }}</option>
-                     </select>
-                   </div>
 
-             </div>
-             <div class="col-md-6">
+             <div class="col-md-12">
                  <!-- Cambiar Recuperador -->
                  <div class="mb-3">
-                   <label for="changeRetriever" class="form-label">Cambiar Recuperador</label>
-                   <select class="form-select" id="changeRetriever" [(ngModel)]="request.changeRetriever">
-                     <option *ngFor="let retriever of retrievers" [value]="retriever.id">{{ retriever.name }}</option>
+                   <label for="changeRetriever" class="form-label">Seleccionar Asesor</label>
+                   <select class="form-select" id="changeRetriever" [(ngModel)]="data.consultantId">
+                     <option *ngFor="let retriever of adviser" [value]="retriever.id">{{ retriever.name }}</option>
                    </select>
                  </div>
 
              </div>
+             <div class="col-md-12">
+              <!-- Seleccionar Transportador -->
+              <div class="mb-3">
+                <label for="transporter" class="form-label">Seleccionar Transportador</label>
+                <select class="form-select" id="transporter" [(ngModel)]="data.transporterId">
+                  <option *ngFor="let transporter of listTransportador" [value]="transporter.id">{{ transporter.name }}</option>
+                </select>
+              </div>
+
+          </div>
+          <div class="col-md-12">
+            <!-- Seleccionar Transportador -->
+            <div class="mb-3">
+              <label for="transporter" class="form-label">Seleccionar lugar de recogidas</label>
+              <select class="form-select" id="transporter" [(ngModel)]="data.collectionSiteId">
+                <option *ngFor="let typeCollection of listData" [value]="typeCollection.id">{{ typeCollection.name }}</option>
+              </select>
+            </div>
+
+        </div>
 
               </div>
-      
-      
-              <div class="row">
-                <div class="col-md-6">
-                    <!-- Seleccionar Transportador -->
-                    <div class="mb-3">
-                      <label for="transporter" class="form-label">Seleccionar Transportador</label>
-                      <select class="form-select" id="transporter" [(ngModel)]="request.transporter">
-                        <option *ngFor="let transporter of transporters" [value]="transporter.id">{{ transporter.name }}</option>
-                      </select>
-                    </div>
-
-                </div>
-                <div class="col-md-6">
-                    <!-- Seleccionar Conductor -->
-                    <div class="mb-3">
-                      <label for="driver" class="form-label">Seleccionar Conductor</label>
-                      <select class="form-select" id="driver" [(ngModel)]="request.driver">
-                        <option *ngFor="let driver of drivers" [value]="driver.id">{{ driver.name }}</option>
-                      </select>
-                    </div>
-
-                </div>
-              </div>
+    
       
       
               <div class="row mt-5">
                 <div class="col-md-12 d-flex flex-row gap-10 justify-content-end">
                   <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close">Cancelar</button>
-                  <button class="btn btn-sm btn-success" >Crear</button>
+                  <button class="btn btn-sm btn-success"  (click)="saveData()">Actualizar</button>
                 </div>
               </div>
             </div>
@@ -146,313 +134,6 @@
         </div>
       </div>
       
-  
-    <!-- Modal -->
-    <div
-      class="modal fade"
-      id="modalDetail"
-      data-bs-backdrop="static"
-      data-bs-keyboard="false"
-      tabindex="-1"
-      aria-labelledby="modalDetailLabel"
-      aria-hidden="true"
-    >
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content">
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h5 class="modal-title pricolor" id="modalDetailLabel">
-            {{ action.name | uppercase }} SOLICITUD
-          </h5>
-        
-        </div>
-  
-        <div class="modal-body">
-          <div class="row">
-            <div class="row g-3">
-              <!-- Datos de Solicitud -->
-              <h6 class="fw-bold text-uppercase mb-3">Datos de Solicitud</h6>
-        
-              <!-- Descripción -->
-              <div class="col-12 mb-2">
-                <label for="description" class="form-label">Descripción</label>
-                <textarea
-                  class="form-control"
-                  id="description"
-                  disabled
-                  name="description"
-                  rows="2"
-                  placeholder="Descripción de la solicitud"
-                  required
-                ></textarea>
-              </div>
-        
-              <!-- Fecha y Hora de Solicitud -->
-              <div class="col-md-3 mb-2">
-                <label for="requestDate" class="form-label">Fecha de Solicitud</label>
-                <input
-                  type="date"
-                  class="form-control"
-                  id="requestDate"
-                  disabled
-                  name="requestDate"
-                  required
-                />
-              </div>
-        
-              <div class="col-md-3 mb-2">
-                <label for="requestTime" class="form-label">Hora de Solicitud</label>
-                <input
-                  type="time"
-                  class="form-control"
-                  id="requestTime"
-                  disabled
-                  name="requestTime"
-                  required
-                />
-              </div>
-        
-              <!-- Cantidad y Peso Estimados -->
-              <div class="col-md-3 mb-2">
-                <label for="estimatedQuantity" class="form-label">Cantidad Estimada</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="estimatedQuantity"
-                  disabled
-                  name="estimatedQuantity"
-                  placeholder="0"
-                  min="0"
-                  required
-                />
-              </div>
-        
-              <div class="col-md-3 mb-2">
-                <label for="estimatedKG" class="form-label">Peso Estimado (KG)</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="estimatedKG"
-                  disabled
-                  name="estimatedKG"
-                  placeholder="0"
-                  min="0"
-                  step="0.01"
-                  required
-                
-                />
-              </div>
-        
-              <!-- Es Especial -->
-              <div [ngClass]="{'col-md-2': !request.isSpecial, 'col-md-1': request.isSpecial}" >
-                <label class="form-label">¿Es Especial?</label>
-                <div class="form-check form-switch">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="isSpecial"
-                    [(ngModel)]="request.isSpecial"
-                    name="isSpecial"
-                    disabled
-                  />
-                  <label class="form-check-label" for="isSpecial">No / Sí</label>
-                </div>
-              </div>
-        
-              <!-- Estado de Solicitud -->
-              <div class="col-md-3 mb-2" *ngIf="request.isSpecial">
-                <label for="requestStatusId" class="form-label">Estado de la Solicitud</label>
-                <select
-                  class="form-select"
-                  id="requestStatusId"
-                  disabled
-                  name="requestStatusId"
-                  required
-                >
-                  <option value="" disabled selected>Seleccione un estado</option>
-                
-                </select>
-              </div>
-        
-              <!-- Fecha y Hora de Recogida Estimada -->
-              <div [ngClass]="{'col-md-5': !request.isSpecial, 'col-md-4': request.isSpecial}" class="mb-2">
-                <label for="estimatedPickUpDate" class="form-label">Fecha de Recogida Estimada</label>
-                <input
-                  type="date"
-                  class="form-control"
-                  id="estimatedPickUpDate"
-                  disabled
-                  name="estimatedPickUpDate"
-                  required
-                />
-              </div>
-        
-              <div [ngClass]="{'col-md-5': !request.isSpecial, 'col-md-4': request.isSpecial}" class="mb-2">
-                <label for="estimatedPickUpTime" class="form-label">Hora de Recogida Estimada</label>
-                <input
-                  type="time"
-                  class="form-control"
-                  id="estimatedPickUpTime"
-                  disabled
-                  name="estimatedPickUpTime"
-                  required
-                />
-              </div>
-        
-              <!-- Datos del Cliente y Recogida -->
-              <div class="row mt-3">
-                  <!-- Datos del Cliente -->
-                  <div class="col-md-3 mb-3">
-                    <h6 class="fw-bold text-uppercase mb-2">Datos del Cliente</h6>
-                    <div class="mb-3">
-                      <label for="clientId" class="form-label">Cliente</label>
-                      <select 
-                        class="form-select"
-                        id="clientId"
-                        disabled
-                        name="clientId"
-                        required
-                       
-                      >
-                        <option value="" disabled selected>Seleccione un cliente</option>
-                        
-                      </select>
-                    </div>
-                 <!-- Mostrar la información del cliente seleccionado -->
-                    <div  class="border p-2 rounded bg-light">
-                      <div class="ft d-flex justify-content-between mb-2">
-                        <strong>NIT:</strong>
-                        <span>prueba</span>
-                      </div>
-                      <div class="ft d-flex justify-content-between mb-2">
-                        <strong>Agencia:</strong>
-                        <span>prueba</span>
-                      </div>
-                    </div>
-                  </div>
-                
-                  <!-- Datos Transportadora -->
-                  <div class="col-md-3 mb-3">
-                    <h6 class="fw-bold text-uppercase mb-2">Datos Transportadora</h6>
-                    <div class="mb-3">
-                      <label for="transportadoraId" class="form-label">Transportadora</label>
-                      <select
-                        class="form-select"
-                        id="transportadoraId"
-                        disabled
-                        name="transportadoraId"
-                        required
-                      
-                      >
-                        <option value="" disabled selected>Seleccione una transportadora</option>
-                      
-                      </select>
-                    </div>
-                    <div class="border p-2 rounded bg-light" >
-                      <div class="ft d-flex justify-content-between mb-2">
-                        <strong>NIT:</strong>
-                        <span>prueba</span>
-                      </div>
-                      <div class="ft d-flex justify-content-between mb-2">
-                        <strong>Contacto:</strong>
-                        <span>prueba</span>
-                      </div>
-                      <div class="ft d-flex justify-content-between mb-2">
-                        <strong>Teléfono:</strong>
-                        <span>prueba</span>
-                      </div>
-                    </div>
-                    
-                  </div>
-                
-                  <!-- Datos de Recogida -->
-                  <div class="col-md-6 mb-3">
-                    <h6 class="fw-bold text-uppercase mb-2">Datos de Recogida</h6>
-                    <div class="mb-3">
-                      <label for="pickUpLocationId" class="form-label">Lugar de Recogida</label>
-                      <select
-                        class="form-select"
-                        id="pickUpLocationId"
-                        disabled
-                        name="pickUpLocationId"
-                        required
-                        
-                      >
-                        <option value="" disabled selected>Seleccione un lugar de recogida</option>
-                        <!-- <option *ngFor="let location of listTipos" [value]="location.id">
-                          {{ location.name }}
-                        </option> -->
-                      </select>
-                    </div>
-                    <div class="border p-2 rounded bg-light" >
-                      <div class="row">
-                        <div class="col-6 mb-2">
-                          <div class="d-flex flex-column">
-                            <span class="ft"><strong>Dirección:</strong> prueba</span>
-                            <span class="ft"><strong>País:</strong> prueba</span>
-                            <span class="ft"><strong>Teléfono:</strong> prueba</span>
-                            <span class="ft"><strong>Zona:</strong> prueba</span>
-                          </div>
-                        </div>
-                        <div class="col-6 mb-2">
-                          <div class="d-flex flex-column">
-                            <span class="ft"><strong>Ciudad:</strong> prueba</span>
-                            <span class="ft"><strong>Contacto:</strong> prueba</span>
-                            <span class="ft"><strong>Correo:</strong> prueba</span>
-                            <span class="ft"><strong>Estado:</strong> prueba</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                  </div>
-                </div>
-                
-        
-              <!-- Datos del Transportador -->
-  
-              <div class="row">
-                          <!-- Observaciones y Recomendaciones -->
-              <div class="col-12 mt-3 mb-2">
-                  <h6 class="fw-bold text-uppercase mb-2">Observaciones y Recomendaciones</h6>
-                </div>
-          
-                <div class="col-md-12 mb-2">
-                  <label for="observations" class="form-label">Observaciones</label>
-                  <textarea
-                    class="form-control"
-                    id="observations"
-                    disabled
-                    name="observations"
-                    rows="2"
-                    placeholder="Observaciones adicionales"
-                  ></textarea>
-                </div>
-          
-                <div class="col-md-12 mb-2">
-                  <label for="recommendations" class="form-label">Recomendaciones</label>
-                  <textarea
-                    class="form-control"
-                    id="recommendations" 
-                    disabled
-                    name="recommendations"
-                    rows="2"
-                    placeholder="Recomendaciones"
-                  ></textarea>
-                </div>
-              </div>
-            </div>
-          </div>
-  
-          <div class="row mt-5">
-            <div class="col-md-12 d-flex flex-rows gap-10 justify-content-end ">
-              <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
   
   </div>
   

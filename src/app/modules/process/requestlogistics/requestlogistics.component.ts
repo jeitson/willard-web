@@ -1,9 +1,13 @@
 import { Component } from '@angular/core';
+import { forkJoin } from 'rxjs';
+import { AdviserService } from 'src/app/core/services/process/adviser.service';
+import { CentersService } from 'src/app/core/services/process/centers.service';
 import { ConvenyorService } from 'src/app/core/services/process/convenyor.service';
 import { CustomersService } from 'src/app/core/services/process/customers.service';
 import { RequestsService } from 'src/app/core/services/requests/requests.service';
 import { PickuplocationService } from 'src/app/core/services/settings/pickuplocation.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
+import { ToastService } from 'src/app/core/services/toast.service';
 declare var $: any;
 
 @Component({
@@ -22,59 +26,104 @@ export class RequestlogisticsComponent {
     isSpecial: false, // Asegúrate de que este valor se actualice según sea necesario en tu aplicación
   };
 
+  data = {
+    id: '',
+    collectionSiteId: '',
+    consultantId: '',
+    transporterId: '',
+  }
 
-  specialPlanners = [
-    { name: 'Planeador 1', id: 1 },
-    { name: 'Planeador 2', id: 2 },
-    { name: 'Planeador 3', id: 3 },
-    // Agrega más planeadores especiales según sea necesario
-  ];
 
-  retrievers = [
-    { name: 'Recuperador 1', id: 1 },
-    { name: 'Recuperador 2', id: 2 },
-    { name: 'Recuperador 3', id: 3 },
-    // Agrega más recuperadores según sea necesario
-  ];
-
-  transporters = [
-    { name: 'Transportador 1', id: 1 },
-    { name: 'Transportador 2', id: 2 },
-    { name: 'Transportador 3', id: 3 },
-    // Agrega más transportadores según sea necesario
-  ];
-
-  drivers = [
-    { name: 'Conductor 1', id: 1 },
-    { name: 'Conductor 2', id: 2 },
-    { name: 'Conductor 3', id: 3 },
-    // Agrega más conductores según sea necesario
-  ];
   listsrequest: any[] = [];
+  listTransportador: any[] = [];
+  adviser: any[] = [];
+  listTipos: any[] = [];
+  listData: any[] = [];
+
+
   action = {name: 'LOGISTICA'}
   constructor(
     private _Customers: CustomersService,
     private _Conveyor: ConvenyorService,
     private _Settings: SettingsService,
     private _requests: RequestsService,
-    private _pickUp: PickuplocationService
+    private _adviser: AdviserService,
+    private _pickUp: PickuplocationService,
+    private _toast: ToastService,
+    private _Service: CentersService,
   ) {}
   ngOnInit(): void {
     this.getRequest();
+    this.getData();
   }
   getRequest() {
     this._requests.listSolicitudes('3').subscribe((response: any) => {
       console.log(response.data.items);
       this.listsrequest = response.data.items;
     });
+    
   }
-  createRequest() {
+
+  getData() {
+    forkJoin({
+      transportadores: this._Conveyor.getTransportadores(),
+      dataAdviser: this._adviser.getConsultants(),
+      centers: this._Service.getCollectionSites(),
+    }).subscribe({
+      next: ({
+        transportadores,
+        dataAdviser,
+        centers
+      }) => {
+        // this.listData = list.data.items;
+        this.listTransportador = transportadores.data.items;
+        this.adviser = dataAdviser.data.items;
+        this.listData = centers.data.items;
+
+      },
+      error: (error: any) => {
+        console.error('Error al obtener datos:', error);
+      },
+    });
+  }
+  createRequest(item: any) {
     // Lógica para crear la solicitud
+    console.log(item);
+    this.data = {
+      id: item.id,
+      collectionSiteId: item.collectionSite,
+      consultantId: item.consultant,
+      transporterId: item.transporter,
+    }
+  
     $('#modalRequest').modal({ backdrop: 'static', keyboard: false });
     console.log('Creando solicitud:', this.request);
   }
   viewRequest(){
     $('#modalDetail').modal({ backdrop: 'static', keyboard: false });
     console.log('Creando solicitud:', this.request);
+  }
+
+
+  saveData() {
+this._requests.updateSolicitud(this.data.id, {
+          collectionSiteId: this.data.collectionSiteId,
+          consultantId: this.data.consultantId,
+          transporterId: this.data.transporterId,
+        }).subscribe((x: any) =>{
+          this._toast.success('Completado','Ruta registrada exitosamente')
+          // Si la respuesta es positiva
+          $('#modalRequest').modal('hide');
+          this.clearData();
+        })
+  }
+
+  clearData() {
+    this.data = {
+      id: '',
+      collectionSiteId: '',
+      consultantId: '',
+      transporterId: '',
+    }
   }
 }
