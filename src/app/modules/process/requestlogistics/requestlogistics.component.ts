@@ -53,7 +53,7 @@ export class RequestlogisticsComponent {
     this.getData();
   }
   getRequest() {
-    this._requests.listSolicitudes('3').subscribe((response: any) => {
+    this._requests.listSolicitudes().subscribe((response: any) => {
       this.listsrequest = response.data.items;
     });
   }

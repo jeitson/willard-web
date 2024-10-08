@@ -76,7 +76,7 @@ export class RequestagencyComponent {
   }
 
   getRequest() {
-    this._requests.listSolicitudes('1').subscribe((response: any) => {
+    this._requests.listSolicitudes().subscribe((response: any) => {
       console.log(response.data.items);
       this.listsrequest = response.data.items;
     });

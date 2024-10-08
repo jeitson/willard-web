@@ -14,8 +14,8 @@ export class RequestsService {
   }
 
   // Método para listar todas las solicitudes
-  listSolicitudes(rolId: any): Observable<any> {
-    return this._api.get(`collection-request?rol=${rolId}`);
+  listSolicitudes(): Observable<any> {
+    return this._api.get(`collection-request`);
   }
 
   // Método para obtener una solicitud por su ID
