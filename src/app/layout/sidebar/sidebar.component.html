@@ -11,7 +11,7 @@
     <!-- <small class="infouser text-white">{{role}}</small> -->
   </div>
   <ul class="menu">
-    <li *ngFor="let menu of itemsMenu">
+    <li *ngFor="let menu of items">
       <a [routerLink]="menu.route" routerLinkActive="active" *ngIf="menu.type === 'link'">
         <i class="{{menu.icon}}"></i>
         <p>{{menu.name}}</p>

@@ -205,6 +205,15 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.name = JSON.parse(sessionStorage.getItem("profileData") || '{}')?.roles[0].role.name;
     this.role = JSON.parse(sessionStorage.getItem("RoleId") || '');
+    // this.authSubscription = this.authService.currentUser$.subscribe(
+    //   (user: User | null) => {
+    //     if (user) {
+    //       this.loadMenuForRole(user.role);
+    //     } else {
+    //       this.menuItems = []; // O un menú para invitados
+    //     }
+    //   }
+    // );
     this.cargarMenu(this.role);
   }
 
@@ -495,6 +504,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
         ]));
       break;
       default:
+        this.items = [];
         break;
     };
   }

@@ -12,6 +12,8 @@ import * as moment from 'moment';
   providedIn: 'root',
 })
 export class Auth0Service {
+  private currentUserSubject: BehaviorSubject<any | null>;
+  public currentUser$: Observable<any | null>;
   private _accessTokenSubject = new BehaviorSubject<string | null>(null);
   private _auth0HeadersSubject = new BehaviorSubject<HttpHeaders | null>(null);
   private _auth0HeadersByFileSubject = new BehaviorSubject<HttpHeaders | null>(
@@ -22,6 +24,8 @@ export class Auth0Service {
   private _auth0HeadersByFile$: HttpHeaders | null = null;
 
   constructor(private auth: AuthService) {
+    this.currentUserSubject = new BehaviorSubject<any | null>(null);
+    this.currentUser$ = this.currentUserSubject.asObservable();
     // this.getUserDetails();
     // this.initializeAccessToken();
   }
@@ -127,11 +131,13 @@ export class Auth0Service {
     this.auth.logout({
       logoutParams: { returnTo: window.location.origin },
     });
+    this.currentUserSubject.next(null);
   }
 
   login() {
     this.auth.loginWithRedirect({
       appState: { target: window.location.origin },//environment.auth0.redirect_uri },
     });
+    this.currentUserSubject.next(this.auth.user$);
   }
 }
