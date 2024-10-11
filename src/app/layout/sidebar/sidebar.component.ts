@@ -2,6 +2,7 @@ import { AfterViewInit, Component, DoCheck, ElementRef, OnDestroy, OnInit, Rende
 import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { Auth0Service } from 'src/app/core/services/auth0.service';
+import { UsersService } from 'src/app/core/services/security/users.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -198,13 +199,30 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
     private renderer: Renderer2,
     private router: Router,
     private authService: Auth0Service,
-    private route: ActivatedRoute) {
+    private route: ActivatedRoute,
+    private _users: UsersService) {
 
   }
 
   ngOnInit(): void {
-    this.name = JSON.parse(sessionStorage.getItem("profileData") || '{}')?.roles[0].role.name;
-    this.role = JSON.parse(sessionStorage.getItem("RoleId") || '');
+    this.authService.getUser().subscribe({
+      next: () => {
+        this.cargarMenu('0');
+        this._users.getProfile().subscribe({
+          next: response => {
+            if (response?.data) {
+              const roleId = response?.data.roles?.[0]?.roleId || null;
+              // Convertir el objeto data a una cadena JSON y guardarlo en sessionStorage
+              sessionStorage.setItem('profileData', JSON.stringify(response.data));
+              sessionStorage.setItem('RoleId', roleId);
+              this.name = JSON.parse(sessionStorage.getItem("profileData") || '{}')?.roles[0].role.name;
+              this.role = JSON.parse(sessionStorage.getItem("RoleId") || '');
+              this.cargarMenu(this.role);
+            }
+          }
+        });
+      }
+    })
     // this.authSubscription = this.authService.currentUser$.subscribe(
     //   (user: User | null) => {
     //     if (user) {
@@ -214,7 +232,6 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
     //     }
     //   }
     // );
-    this.cargarMenu(this.role);
   }
 
   ngOnDestroy(): void {
@@ -504,7 +521,16 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
         ]));
       break;
       default:
-        this.items = [];
+        this.items = [
+          {
+            route: 'dashboard',
+            short_label: 'D',
+            name: 'Inicio',
+            type: 'link',
+            status: true,
+            icon: 'ai-dashboard'
+          }
+        ];
         break;
     };
   }
