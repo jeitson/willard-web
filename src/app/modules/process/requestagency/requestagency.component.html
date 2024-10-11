@@ -127,20 +127,10 @@
                           </div>
                         </div>
                       </div>
-          
-                      <div class="col-6">
-                        <label for="requestDate" class="form-label">Nombre</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="name"
-                          [(ngModel)]="request.name"
-                          name="name"
-                          required
-                        />
-                      </div>
+
+
                       <!-- Producto -->
-                      <div class="col-12">
+                      <div class="col-6">
                         <label for="productoId" class="form-label">Producto</label>
                         <select
                           class="form-select"
@@ -160,7 +150,7 @@
                           </option>
                         </select>
                       </div>
-          
+
                       <div class="col-12">
                         <label for="description" class="form-label">Descripción</label>
                         <textarea
@@ -173,35 +163,11 @@
                           required
                         ></textarea>
                       </div>
-          
+
                       <!-- Fecha y Hora de Solicitud -->
-                      <div class="col-md-6">
-                        <label for="requestDate" class="form-label"
-                          >Fecha de Solicitud</label
-                        >
-                        <input
-                          type="date"
-                          class="form-control"
-                          id="requestDate"
-                          [(ngModel)]="request.requestDate"
-                          name="requestDate"
-                          required
-                        />
-                      </div>
-          
-                      <div class="col-md-6">
-                        <label for="requestTime" class="form-label"
-                          >Hora de Solicitud</label
-                        >
-                        <input
-                          type="time"
-                          class="form-control"
-                          id="requestTime"
-                          [(ngModel)]="request.requestTime"
-                          name="requestTime"
-                          required
-                        />
-                      </div>
+
+
+
                       <!-- Fecha y Hora de recogida -->
                       <div class="col-md-6">
                         <label for="requestDate" class="form-label"
@@ -216,7 +182,7 @@
                           required
                         />
                       </div>
-          
+
                       <div class="col-md-6">
                         <label for="requestTime" class="form-label"
                           >Hora estimada de recogida</label
@@ -246,7 +212,7 @@
                           required
                         />
                       </div>
-          
+
                       <div class="col-md-6">
                         <label for="estimatedKG" class="form-label"
                           >Peso Estimado (KG)</label
@@ -263,7 +229,7 @@
                           required
                         />
                       </div>
-          
+
                       <!-- Es Especial -->
                       <div class="col-md-2">
                         <label class="form-label">¿Es Especial?</label>
@@ -279,7 +245,7 @@
                           <label class="form-check-label" for="isSpecial">No / Sí</label>
                         </div>
                       </div>
-          
+
                            <!-- Es Especial -->
                            <div class="col-md-10" *ngIf="isSpecialDisabled || request.isSpecial">
                               <label for="pickUpLocationId" class="form-label"
@@ -303,9 +269,31 @@
                                 </option>
                               </select>
                             </div>
-          
+                          <!-- Transportadora -->
+                          <div class="col-12" *ngIf="!request.isSpecial">
+                            <label for="pickUpLocationId" class="form-label"
+                              >Trasportadora</label
+                            >
+                            <select
+                              class="form-select"
+                              id="pickUpLocationId"
+                              [(ngModel)]="request.transporterId"
+                              name="pickUpLocationId"
+                              required
+                            >
+                              <option value="" disabled selected>
+                                Seleccione una Transportadora
+                              </option>
+                              <option
+                                *ngFor="let location of listTransportador"
+                                [value]="location.id"
+                              >
+                                {{ location.name }}
+                              </option>
+                            </select>
+                          </div>
                       <!-- Lugar de Recogida -->
-                      <div class="col-12">
+                      <div class="col-12" >
                         <label for="pickUpLocationId" class="form-label"
                           >Lugar de Recogida</label
                         >
@@ -327,7 +315,7 @@
                           </option>
                         </select>
                       </div>
-          
+
                       <!-- Observaciones y Recomendaciones -->
                       <div class="col-12">
                         <label for="observations" class="form-label">Observaciones</label>
@@ -340,7 +328,7 @@
                           placeholder="Observaciones adicionales"
                         ></textarea>
                       </div>
-          
+
                       <div class="col-12">
                         <label for="recommendations" class="form-label"
                           >Recomendaciones</label
@@ -355,7 +343,7 @@
                         ></textarea>
                       </div>
                     </div>
-               
+
                     <div class="row">
                       <div class="col-md-12 d-flex flex-rows gap-2 justify-content-end mt-5">
                         <button class="btn btn-md btn-dark" data-bs-dismiss="modal"> <i class="fa-solid fa-circle-xmark"></i> Cancelar </button>
@@ -363,7 +351,7 @@
                       </div>
                     </div>
                 </div>
-                
+
               </div>
             </div>
         </div>

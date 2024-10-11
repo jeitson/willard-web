@@ -20,16 +20,14 @@ export class RequestagencyComponent {
   request = {
     clientId: '',
     description: '',
-    name: '',
     productTypeId: '',
-    requestDate: '',
-    requestTime: '',
     estimatedPickUpDate: '',
     estimatedPickUpTime: '',
     estimatedQuantity: '',
     estimatedKG: '',
     isSpecial: false,
     motiveSpecialId: '',
+    transporterId: '',
     pickUpLocationId: '',
     observations: '',
     recommendations: '',
@@ -51,7 +49,7 @@ export class RequestagencyComponent {
   dataId: any;
   actionSave = false;
   roleId: any;
-  isSpecialDisabled: boolean = false;
+  isSpecialDisabled = false;
   typeProduct: any = [];
   constructor(
     private _Customers: CustomersService,
@@ -84,6 +82,7 @@ export class RequestagencyComponent {
       this._Conveyor.getTransportadores().subscribe({
         next: (response: any) => {
           this.listTransportador = response.data.items;
+          console.log(this.listTransportador);
         },
         error: (error: any) => {
           console.error('Error al obtener transportadores:', error);
@@ -177,16 +176,14 @@ export class RequestagencyComponent {
     this.request = {
       clientId: item.client.id, // Cambiado de item.clientId a item.client.businessName
       description: item.description,
-      name: item.name,
       productTypeId: item.productTypeId,
-      requestDate: item.requestDate,
-      requestTime: item.requestTime,
       estimatedPickUpDate: item.estimatedPickUpDate,
       estimatedPickUpTime: item.estimatedPickUpTime,
       estimatedQuantity: item.estimatedQuantity,
       estimatedKG: item.estimatedKG,
       isSpecial: item.isSpecial,
       motiveSpecialId: item.motiveSpecial?.id,
+      transporterId: '',
       pickUpLocationId: item.pickUpLocation.id, // Aquí se obtiene el ID de la ubicación de recogida
       observations: item.observations,
       recommendations: item.recommendations,
@@ -222,16 +219,14 @@ export class RequestagencyComponent {
     this.request = {
       clientId: '',
       description: '',
-      name: '',
       productTypeId: '',
-      requestDate: '',
-      requestTime: '',
       estimatedPickUpDate: '',
       estimatedPickUpTime: '',
       estimatedQuantity: '',
       estimatedKG: '',
       isSpecial: this.isSpecialDisabled ? true : false,
       motiveSpecialId: '',
+      transporterId: '',
       pickUpLocationId: '',
       observations: '',
       recommendations: '',
