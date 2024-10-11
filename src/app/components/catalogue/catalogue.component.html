@@ -1,7 +1,7 @@
 <div class="container">
   <div class="page-header">
     <div class="d-flex flex-column">
-      <h3 class="primary title noselect">CONFIGURACIÓN DE {{keypluralspanish | uppercase}}</h3>
+      <h5 class="primary title noselect">CONFIGURACIÓN DE {{keypluralspanish | uppercase}}</h5>
       <p class="secundary mb-1">En este modulo podras configurar {{keypluralspanish | lowercase}}, realizando acciones como: crear | editar | eliminar | cambiar estado </p>
     </div>
     <div class="d-flex flex-rows gap-10">
@@ -39,8 +39,8 @@
                             <td class="text-left"> {{item.description}} </td>
                             <td class="text-center"> {{item.createdAt | date:'EEEE dd MMM yyyy'}} </td>
                             <td class="text-center">
-                                <h5 *ngIf="item.status == true" style="color: white;"><span class="badge bg-success2">Activo</span></h5>
-                                <h5 *ngIf="item.status == false" style="color: white;"><span class="badge bg-danger">Inactivo</span></h5>
+                                <h5 *ngIf="item.status == true" style="color: white;"><span class="badge bg-success2 t-small">Activo</span></h5>
+                                <h5 *ngIf="item.status == false" style="color: white;"><span class="badge bg-danger t-small">Inactivo</span></h5>
                             </td>
                             <td class="text-center">
                               <i class="fa-solid f-larger pointer fa-pencil" (click)="editItem(item)"></i>
@@ -90,7 +90,7 @@
                                 <div class="col-md-12 d-flex flex-rows gap-10">
                                   <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="save()"> Crear </button>
                                   <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false " (click)="update()"> Actualizar </button>
-                                  <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
+                                  <button class="btn btn-sm btn-dark" data-bs-dismiss="modal"> Cancelar </button>
                                 </div>
                             </div>
                         </form>
@@ -116,7 +116,7 @@
                         </div>
                     </div>
                     <div class="col-md-12 d-flex justify-content-around">
-                        <button class="btn btn-sm text-white btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
+                        <button class="btn btn-sm text-white btn-dark" data-bs-dismiss="modal"> Cancelar </button>
                         <button class="btn btn-sm text-white" [style.background]="action.color" (click)="actionConfirm()"> Confirmar </button>
                     </div>
                 </div>

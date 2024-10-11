@@ -5,10 +5,11 @@ import { CentersService } from 'src/app/core/services/process/centers.service';
 import { ConvenyorService } from 'src/app/core/services/process/convenyor.service';
 import { CustomersService } from 'src/app/core/services/process/customers.service';
 import { RequestsService } from 'src/app/core/services/requests/requests.service';
+import { UsersService } from 'src/app/core/services/security/users.service';
 import { PickuplocationService } from 'src/app/core/services/settings/pickuplocation.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
 import { ToastService } from 'src/app/core/services/toast.service';
-declare var $: any;
+declare var bootstrap: any;
 
 @Component({
   selector: 'wlrd-requestlogistics',
@@ -35,8 +36,10 @@ export class RequestlogisticsComponent {
   listsrequest: any[] = [];
   listTransportadores: any[] = [];
   listDataAdviser: any[] = [];
-  listCenters: any[] = [];
+  users: any[] = [];
 
+  listCenters: any[] = [];
+  modal: any;
   action = { name: 'LOGISTICA' };
   constructor(
     private _Customers: CustomersService,
@@ -46,49 +49,31 @@ export class RequestlogisticsComponent {
     private _adviser: AdviserService,
     private _pickUp: PickuplocationService,
     private _toast: ToastService,
-    private _Service: CentersService
+    private _Service: CentersService,
+    private userService: UsersService,
   ) {}
   ngOnInit(): void {
+    this.modal = new bootstrap.Modal(document.getElementById('modalRequestlogistics'), {backdrop: 'static', keyboard: false})
     this.getRequest();
     this.getData();
   }
   getRequest() {
-    this._requests.listSolicitudes('3').subscribe((response: any) => {
+    this._requests.listSolicitudes().subscribe((response: any) => {
       this.listsrequest = response.data.items;
     });
   }
 
   getData() {
+    this.getTransportadores();
+    this.getAsesores(); // Llamar al siguiente método
+    this.getCentros(); // Llamar al siguiente método
+  }
 
-    // Obtener transportadores
+  private getTransportadores() {
     this._Conveyor.getTransportadores().subscribe({
       next: (transportadoresResponse: any) => {
         const transportadores = transportadoresResponse.data.items;
-
-        // Obtener asesores
-        this._adviser.getConsultants().subscribe({
-          next: (dataAdviserResponse: any) => {
-            const dataAdviser = dataAdviserResponse.data.items;
-
-            // Obtener centros
-            this._Service.getCollectionSites().subscribe({
-              next: (centersResponse: any) => {
-                const centers = centersResponse.data.items;
-
-                // Puedes almacenar los datos en las variables de la clase si es necesario
-                this.listTransportadores = transportadores;
-                this.listDataAdviser = dataAdviser;
-                this.listCenters = centers;
-              },
-              error: (error: any) => {
-                console.error('Error al obtener centros:', error);
-              },
-            });
-          },
-          error: (error: any) => {
-            console.error('Error al obtener asesores:', error);
-          },
-        });
+        this.listTransportadores = transportadores; // Almacenar los transportadores
       },
       error: (error: any) => {
         console.error('Error al obtener transportadores:', error);
@@ -96,7 +81,40 @@ export class RequestlogisticsComponent {
     });
   }
 
+  private getAsesores() {
+    this.userService.getProfile().subscribe({
+      next: (dataAdviserResponse: any) => {
+        const dataAdviser = dataAdviserResponse.data;
+        console.log(dataAdviser);
+        this.listDataAdviser = dataAdviser; // Almacenar los asesores
+      },
+      error: (error: any) => {
+        console.error('Error al obtener asesores:', error);
+      },
+    });
+
+    this.userService.allUsers().subscribe({
+      next: (usersResponse: any) => {
+        const users = usersResponse.data.items;
+        this.users = users;
+      }
+    });
+  }
+
+  private getCentros() {
+    this._Service.getCollectionSites().subscribe({
+      next: (centersResponse: any) => {
+        const centers = centersResponse.data.items;
+        this.listCenters = centers; // Almacenar los centros
+      },
+      error: (error: any) => {
+        console.error('Error al obtener centros:', error);
+      },
+    });
+  }
+
   createRequest(item: any) {
+    console.log(item);
     // Lógica para crear la solicitud
     this.data = {
       id: item.id,
@@ -105,15 +123,13 @@ export class RequestlogisticsComponent {
       transporterId: item.transporter,
     };
 
-    $('#modalRequest').modal({ backdrop: 'static', keyboard: false });
+    this.modal.show();
   }
-  viewRequest() {
-    $('#modalDetail').modal({ backdrop: 'static', keyboard: false });
-  }
+
 
   saveData() {
     this._requests
-      .updateSolicitud(this.data.id, {
+      .completeSolicitud(this.data.id, {
         collectionSiteId: this.data.collectionSiteId,
         consultantId: this.data.consultantId,
         transporterId: this.data.transporterId,
@@ -122,7 +138,7 @@ export class RequestlogisticsComponent {
         this._toast.success('Completado', 'Ruta Actualizada exitosamente');
         // Si la respuesta es positiva
         this.getRequest();
-        $('#modalRequest').modal('hide');
+        this.modal.hide();
         this.clearData();
       });
   }

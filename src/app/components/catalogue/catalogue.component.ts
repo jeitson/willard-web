@@ -2,6 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/core/services/api/api.service';
 declare var $: any;
 
+declare var bootstrap: any;
+
 @Component({
   selector: 'wlrd-catalogue',
   templateUrl: './catalogue.component.html',
@@ -46,10 +48,13 @@ export class CatalogueComponent implements OnInit {
   }
   idparent:string = '';
   activeselect:boolean = true;
-
+  modal: any;
+  modalConfirm: any;
   constructor(private api: ApiService){}
 
   ngOnInit(): void {
+    this.modal = new bootstrap.Modal(document.getElementById('modallist'), {backdrop: 'static', keyboard: false})
+    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false})
     this.listKey();
     if(this.parent !== 'null'){
       this.listParent();
@@ -95,7 +100,7 @@ export class CatalogueComponent implements OnInit {
     }
     this.viewoptions = true;
     this.action.name = 'Crear';
-    $("#modallist").modal({backdrop: 'static', keyboard: false});
+    this.modal.show();
   }
 
   backToList(){
@@ -108,7 +113,7 @@ export class CatalogueComponent implements OnInit {
     }
     this.viewoptions = false;
     this.action.name = 'Actualizar';
-    $("#modallist").modal({backdrop: 'static', keyboard: false});
+    this.modal.show();
   }
 
   removeItem(id:string){
@@ -118,6 +123,7 @@ export class CatalogueComponent implements OnInit {
     this.action.color = '#dc3545';
     this.action.icon = 'fa-solid fa-trash';
     $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
+    this.modalConfirm.show();
   }
 
   editState(id:string){
@@ -127,6 +133,7 @@ export class CatalogueComponent implements OnInit {
     this.action.color = '#ffc107';
     this.action.icon = 'fa-solid fa-sync';
     $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
+    this.modalConfirm.show();
   }
 
   actionConfirm(){
@@ -149,7 +156,7 @@ export class CatalogueComponent implements OnInit {
     this.api.post(`catalogs`, data).subscribe({
       next: (response: any) => {
         this.listKey();
-        $("#modallist").modal("hide");
+        this.modal.hide();
       },
       error: (error: any) => {
         console.error('Error al crear usuario:', error);
@@ -164,7 +171,8 @@ export class CatalogueComponent implements OnInit {
     this.api.put(`catalogs/${this.item.id}`, data).subscribe({
       next: (response: any) => {
         this.listKey();
-        $("#modallist").modal("hide");
+        //$("#modallist").modal("hide");
+        this.modal.hide();
       },
       error: (error: any) => {
         console.error('Error al crear usuario:', error);
@@ -179,9 +187,11 @@ export class CatalogueComponent implements OnInit {
     this.api.put(`catalogs/${this.itemId}/change-status`, data).subscribe({
       next: (response: any) => {
         this.listKey();
+        this.modalConfirm.hide();
       },
       error: (error: any) => {
-        console.error('Error al crear usuario:', error);
+        console.error('Error al modificar el estado:', error);
+        this.modalConfirm.hide();
       },
     });
   }
@@ -190,33 +200,11 @@ export class CatalogueComponent implements OnInit {
     this.api.delete(`catalogs/${this.itemId}`).subscribe({
       next: (response: any) => {
         this.listKey();
-        $("#modalconfirm").modal("hide");
+        this.modalConfirm.hide();
       },
       error: (error: any) => {
-        console.error('Error al crear usuario:', error);
+        console.error('Error al eliminar catalogo:', error);
       },
     });
   }
-
-  noty(type:string,message:string){
-    // switch (type) {
-    //   case 'error':
-    //     this.toastr.error(message, `Error!`);
-    //   break;
-    //   case 'success':
-    //     this.toastr.success(message, `Completado!`);
-    //   break;
-    //   case 'info':
-    //     this.toastr.info(message, `Importante!`)
-    //   break;
-    //   case 'warning':
-    //     this.toastr.warning(message, `Advertencia!`)
-    //   break;
-
-    //   default:
-    //     break;
-    // }
-  }
-
-
 }

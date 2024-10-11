@@ -2,7 +2,7 @@
   <div class="container scroll">
     <div class="d-flex justify-content-between">
       <div>
-        <h3>Detalle de Solicitud</h3>
+        <h5>Detalle de Solicitud</h5>
       </div>
       <div>
         <div class="d-flex flex-rows justify-content-between gap-10">
@@ -59,13 +59,13 @@
           <div class="card-body">
             <div class="d-flex flex-column text-center">
               <span>Kilos Estimados</span>
-              <span>{{ listData?.estimatedKG }}</span>
+              <span>{{ listData?.estimatedKG | number}}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="w-100 mb-3">
+    <div class="w-100 mt-3">
       <div class="row">
         <div class="col-md-6">
           <div class="row">

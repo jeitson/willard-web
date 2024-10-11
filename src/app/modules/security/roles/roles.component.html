@@ -2,7 +2,7 @@
 <div class="container">
   <div class="page-header">
     <div class="d-flex flex-column">
-      <h3 class="primary title noselect">ROLES</h3>
+      <h5 class="primary title noselect">ROLES</h5>
       <p class="secundary mb-1">En este modulo podras configurar roles de acopio realizando
         acciones como: crear | editar | eliminar | cambiar estado </p>
     </div>
@@ -107,7 +107,7 @@
               <div class="col-md-12 d-flex flex-rows gap-10">
                 <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="createRole()"> Crear </button>
                 <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="updateRole()"> Actualizar </button>
-                <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
+                <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close" (click)="close()"> Cancelar </button>
               </div>
             </div>
           </div>

@@ -46,7 +46,7 @@ export class AdviserComponent {
     this.resetadviser();
     this.action.name = 'Crear';
     this.viewoptions = true;
-    $('#modalconveyor').modal({ backdrop: 'static', keyboard: false });
+    $('#modalconveyor').modal('show');
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
@@ -112,7 +112,7 @@ export class AdviserComponent {
     this.action.value = 'delete';
     this.action.color = '#dc3545';
     this.action.icon = 'fa-solid fa-trash';
-    $('#modalconfirm').modal({ backdrop: 'static', keyboard: false });
+    $('#modalconfirm').modal('show');
   }
 
   editState(id: string) {
@@ -121,7 +121,7 @@ export class AdviserComponent {
     this.action.value = 'changestatus';
     this.action.color = '#ffc107';
     this.action.icon = 'fa-solid fa-sync';
-    $('#modalconfirm').modal({ backdrop: 'static', keyboard: false });
+    $('#modalconfirm').modal('show');
   }
 
   actionConfirm() {

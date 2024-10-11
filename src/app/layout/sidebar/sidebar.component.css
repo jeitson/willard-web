@@ -1,0 +1,261 @@
+a {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sidebar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  width: 250px; /* Ancho del sidebar expandido */
+  border-radius: 0px 20px 20px 0px;
+  padding: 0 8px;
+  border: 1px solid rgb(255 255 255 / 8%);
+  background: #198754;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(-4px);
+  transition: width 0.4s ease;
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  width: 70px; /* Ancho del sidebar colapsado */
+}
+
+.sidebar.collapsed .arrow-chevron {
+  display: none;
+}
+
+.sidebar.collapsed:hover .arrow-chevron {
+  display: block;
+}
+
+.sidebar.collapsed:hover {
+  width: 250px; /* Ancho expandido temporalmente en hover */
+  /* padding-top: 0.7rem; */
+}
+
+.sidebar.collapsed:hover .burger-collapse {
+  display: none;
+}
+
+.menu{
+  overflow-y: auto;
+}
+
+.sidebar.collapsed:hover header {
+  opacity: 1;
+  height: auto;
+  overflow: visible;
+  transition: opacity 0.4s ease;
+  height: 72px;
+}
+
+.sidebar.collapsed:hover .profile{
+  opacity: 1;
+  height: auto;
+  overflow: visible;
+  transition: opacity 0.4s ease;
+}
+
+
+.sidebar header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 72px;
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  transition: opacity 0.4s ease;
+}
+
+.sidebar.collapsed header {
+  opacity: 0; /* Esconde el header cuando el sidebar está colapsado */
+  height: 0;
+  overflow: hidden;
+}
+
+.profile {
+  border-bottom: 1px dashed #838383;
+  transition: opacity 0.4s ease;
+}
+
+.sidebar.collapsed .profile .infouser{
+  opacity: 0;
+  height: 0;
+  overflow: hidden; /* Esconde el perfil cuando el sidebar está colapsado */
+}
+
+.sidebar.collapsed .avatar{
+  width: 2.8em;
+  height: 2.8em;
+  margin-bottom: 1rem;
+}
+
+.sidebar.collapsed:hover .profile .infouser{
+  opacity: 1;
+  height: auto;
+}
+
+.sidebar.collapsed:hover .avatar{
+  width: 8em;
+  height: 8em;
+}
+
+.avatar {
+  width: 8em;
+  height: 8em;
+  border-radius: 50%;
+  border: 1px solid #eebc0b;
+  margin-right: 10px;
+  vertical-align: middle;
+  filter: drop-shadow(-1px 0px 5px #fff);
+}
+
+.sidebar header a {
+  width: 52px;
+}
+
+.sidebar a {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  height: 50px;
+  width: 100%;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  padding: 0 16px;
+  color: rgb(255 255 255 / 95%);
+  text-decoration: none;
+  transition: padding 0.4s ease;
+}
+
+.sidebar.collapsed a {
+
+}
+
+.sidebar.collapsed a p {
+  display: none; /* Esconde los textos de los enlaces cuando el sidebar está colapsado */
+}
+
+.sidebar.collapsed:hover a p {
+  display: block; /* Muestra los textos cuando el sidebar se expande temporalmente */
+}
+
+.sidebar i {
+  font-size: 20px;
+  width: 20px;
+  max-width: 20px;
+  min-width: 20px;
+}
+
+.sub-menu a {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  height: 40px;
+  width: 100%;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  padding: 0 16px;
+  color: rgb(255 255 255 / 95%);
+}
+
+.sidebar a p:nth-child(2) {
+  flex: 1 1 auto;
+  margin-bottom: 0px;
+}
+
+.sidebar a:is(.active, :hover) {
+  background: rgb(0 0 0 / 30%);
+}
+
+.sidebar a i {
+  transition: 0.3s;
+}
+
+.sidebar a.active > i:nth-child(3) {
+  rotate: -180deg;
+}
+
+.sidebar a:not(.active):hover {
+  background: rgb(0 0 0 / 10%);
+}
+
+.sidebar ul {
+  display: grid;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.sub-menu {
+  position: relative;
+  overflow: hidden;
+  height: 0;
+  transition: height 0.5s;
+}
+
+.sub-menu ul {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+}
+
+.sub-menu a {
+  padding-left: 52px;
+}
+
+.sub-menu a::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 24px;
+  translate: 0 -50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: rgb(255 255 255 / 35%);
+}
+
+.sidebar.collapsed .sub-menu {
+  display: none; /* Esconde el submenú cuando el sidebar está colapsado */
+}
+
+.sidebar.collapsed:hover .sub-menu {
+  display: block; /* Muestra el submenú cuando el sidebar se expande temporalmente */
+}
+
+.sidebar.collapsed .sub-menu ul {
+  display: none; /* Esconde los ítems del submenú cuando el sidebar está colapsado */
+}
+
+.sidebar.collapsed:hover .sub-menu ul {
+  display: grid; /* Muestra los ítems del submenú cuando el sidebar se expande temporalmente */
+}
+
+.sidebar.collapsed .sidebar-burger i {
+  font-size: 24px; /* Ajusta el icono del menú cuando está colapsado */
+  margin: 8px auto;
+  display: block;
+}
+
+.sidebar.collapsed .sidebar-burger {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}

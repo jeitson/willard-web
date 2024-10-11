@@ -38,7 +38,7 @@ export const environment = {
   //   username: 'sistemas',
   //   password: 'willard1505',
   // },
-  api: 'https://willard-backend.onrender.com/api/',
+  api: 'https://willard-backend.onrender.com/',
 };
 
 /*

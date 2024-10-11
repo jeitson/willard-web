@@ -24,7 +24,7 @@ const routes: Routes = [
 					import('./../../modules/dashboard/dashboard.module').then(
 						({ DashboardModule }) => DashboardModule,
 				),
-        //canActivate: [canAccess],
+        // canActivate: [canAccess],
         // data: {
         //   expectedRoles: ['portalcli_client', 'none'],
         // },
@@ -62,13 +62,12 @@ const routes: Routes = [
         //   expectedRoles: ['portalcli_client', 'none'],
         // },
       },
-
 		],
 	},
 ];
 
 @NgModule({
-	imports: [RouterModule.forChild(routes)],
-	exports: [RouterModule],
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
 })
-export class MainRoutingModule {}
+export class MainRoutingModule { }

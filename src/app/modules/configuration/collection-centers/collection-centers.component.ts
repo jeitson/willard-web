@@ -90,7 +90,7 @@ export class CollectionCentersComponent {
     this.resetCenter();
     this.action.name = 'Crear';
     this.viewoptions = true;
-    $('#modalCenter').modal({ backdrop: 'static', keyboard: false });
+    $('#modalCenter').modal('show');
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
@@ -210,7 +210,7 @@ export class CollectionCentersComponent {
     this.action.value = 'delete';
     this.action.color = '#dc3545';
     this.action.icon = 'fa-solid fa-trash';
-    $('#modalconfirm').modal({ backdrop: 'static', keyboard: false });
+    $('#modalconfirm').modal('show');
   }
 
   editState(id: string) {
@@ -219,7 +219,7 @@ export class CollectionCentersComponent {
     this.action.value = 'changestatus';
     this.action.color = '#ffc107';
     this.action.icon = 'fa-solid fa-sync';
-    $('#modalconfirm').modal({ backdrop: 'static', keyboard: false });
+    $('#modalconfirm').modal('show');
   }
 
   actionConfirm() {

@@ -27,49 +27,49 @@
                   <tr>
                     <th class="text-center">Id</th>
                     <th class="text-center">Fecha</th>
-                    <th class="text-left">Acopio</th>
+                    <th class="text-center">Acopio</th>
                     <th class="text-center">Cantidad</th>
-                    <th class="text-left">Recogida</th>
-                    <th class="text-left">Cliente</th>
-                    <th class="text-center">Transportadora</th>
+                    <th class="text-center">Recogida</th>
+                    <th class="text-center">Cliente</th>
+                    <!-- <th class="text-center">Transportadora</th> -->
                     <th class="text-center">Estado</th>
-                    <th class="text-center"></th>
+                    <th class="text-center">Acciones</th>
                   </tr>
                 </thead>
                 <tbody style="background-color: white">
                   <tr
-                    *ngFor="let item of listsrequest"
-                    style="font-size: smaller"
-                  >
-                    <td class="text-center">{{ item.id }}</td>
-                    <td class="text-center">
-                      {{ item.createdAt | date : "short" }}
-                    </td>
-                    <td class="text-left">{{ item.acopiCenter }}</td>
-                    <td class="text-center">{{ item.estimatedQuantity }}</td>
-                    <td class="text-center">
-                      {{ item.estimatedPickUpDate }}
-                      {{ item.estimatedPickUpTime }}
-                    </td>
-                    <td class="text-left">{{ item.customer }}</td>
-                    <td class="text-left"> {{ item.transporter?.name }} </td>
-                    <td class="text-center">
-                      <h5 *ngIf="item.status == true" style="color: white">
-                        <span class="badge bg-success2">Activo</span>
-                      </h5>
-                      <h5 *ngIf="item.status == false" style="color: white">
-                        <span class="badge bg-danger">Inactivo</span>
-                      </h5>
-                    </td>
-                    <td class="text-center">
-                      <i
-                        class="fa-solid f-larger pointer fa-pencil"
-                        (click)="createRequest(item)"
-                      ></i>
-                      <i class="fa-solid f-larger pointer fa-eye" [routerLink]="['/main/process/requestplanner', item.id]"></i>
+                  *ngFor="let item of listsrequest"
+                  style="font-size: smaller"
+                >
+                  <td class="text-center">{{ item.id }}</td>
+                  <td class="text-center">
+                    {{ item.createdAt | date : "short" }}
+                  </td>
+                  <td class="text-center">{{ item.acopiCenter }}</td>
+                  <td class="text-center">{{ item.estimatedQuantity }}</td>
+                  <td class="text-center">
+                    {{ item.estimatedPickUpDate }}
+                    {{ item.estimatedPickUpTime }}
+                  </td>
+                  <td class="text-center">{{ item.client.businessName }}</td>
+                  <!-- <td class="text-left">{{ item.transporter?.name }}</td> -->
+                  <td class="text-center">
+                    <h5 *ngIf="item.status == true" style="color: white">
+                      <span class="badge bg-success2">Activo</span>
+                    </h5>
+                    <h5 *ngIf="item.status == false" style="color: white">
+                      <span class="badge bg-danger">Inactivo</span>
+                    </h5>
+                  </td>
+                  <td class="text-center">
+                    <i
+                      class="fa-solid f-larger pointer fa-pencil"
+                      (click)="createRequest(item)"
+                    ></i>
+                    <i class="fa-solid f-larger pointer fa-eye" [routerLink]="['/main/process/requestplanner', item.id]"></i>
 
-                    </td>
-                  </tr>
+                  </td>
+                </tr>
                 </tbody>
               </table>
             </div>
@@ -78,63 +78,66 @@
       </div>
     </div>
 
-    <div class="modal fade" id="modalRequest" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalRequestLabel" aria-hidden="true">
+
+      <div class="modal fade" id="modalRequestlogistics" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title pricolor" id="modalRequestLabel">SOLICITUD {{ action.name | uppercase }}</h5>
-            </div>
-            <div class="modal-body">
-              <h6 class="fw-bold text-uppercase mb-3">Datos de Logística</h6>
-      
-              <div class="row">
-
-             <div class="col-md-12">
-                 <!-- Cambiar Recuperador -->
-                 <div class="mb-3">
-                   <label for="changeRetriever" class="form-label">Seleccionar Asesor</label>
-                   <select class="form-select" id="changeRetriever" [(ngModel)]="data.consultantId">
-                     <option *ngFor="let retriever of listDataAdviser" [value]="retriever.id">{{ retriever.name }}</option>
-                   </select>
-                 </div>
-
-             </div>
-             <div class="col-md-12">
-              <!-- Seleccionar Transportador -->
-              <div class="mb-3">
-                <label for="transporter" class="form-label">Seleccionar Transportador</label>
-                <select class="form-select" id="transporter" [(ngModel)]="data.transporterId">
-                  <option *ngFor="let transporter of listTransportadores" [value]="transporter.id">{{ transporter.name }}</option>
-                </select>
-              </div>
-
-          </div>
-          <div class="col-md-12">
-            <!-- Seleccionar Transportador -->
-            <div class="mb-3">
-              <label for="transporter" class="form-label">Seleccionar lugar de recogidas</label>
-              <select class="form-select" id="transporter" [(ngModel)]="data.collectionSiteId">
-                <option *ngFor="let typeCollection of listCenters" [value]="typeCollection.id">{{ typeCollection.name }}</option>
-              </select>
-            </div>
-
-        </div>
-
-              </div>
-    
-      
-      
-              <div class="row mt-5">
-                <div class="col-md-12 d-flex flex-row gap-10 justify-content-end">
-                  <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close">Cancelar</button>
-                  <button class="btn btn-sm btn-success"  (click)="saveData()">Actualizar</button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title pricolor" id="modal-title-notification"> {{ action.name | uppercase }} SOLICITUD</h5>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <h6 class="fw-bold text-uppercase mb-3">Datos de Logística</h6>
       
+                      <div class="row">
+        
+                     <div class="col-md-12">
+                         <!-- Cambiar Recuperador -->
+                         <div class="mb-3">
+                           <label for="changeRetriever" class="form-label">Seleccionar Usuario</label>
+                           <select class="form-select" id="changeRetriever" [(ngModel)]="data.consultantId">
+                             <option *ngFor="let retriever of users" [value]="retriever.id">{{ retriever.name }}</option>
+                           </select>
+                         </div>
+        
+                     </div>
+                     <div class="col-md-12">
+                      <!-- Seleccionar Transportador -->
+                      <div class="mb-3">
+                        <label for="transporter" class="form-label">Seleccionar Transportador</label>
+                        <select class="form-select" id="transporter" [(ngModel)]="data.transporterId">
+                          <option *ngFor="let transporter of listTransportadores" [value]="transporter.id">{{ transporter.name }}</option>
+                        </select>
+                      </div>
+        
+                  </div>
+                  <div class="col-md-12">
+                    <!-- Seleccionar Transportador -->
+                    <div class="mb-3">
+                      <label for="transporter" class="form-label">Seleccionar lugar de recogidas</label>
+                      <select class="form-select" id="transporter" [(ngModel)]="data.collectionSiteId">
+                        <option *ngFor="let typeCollection of listCenters" [value]="typeCollection.id">{{ typeCollection.name }}</option>
+                      </select>
+                    </div>
+        
+                </div>
+        
+                      </div>
+                   
+                        <div class="row">
+                          <div class="col-md-12 d-flex flex-rows gap-2 justify-content-end mt-5">
+                            <button class="btn btn-md btn-dark" data-bs-dismiss="modal"> <i class="fa-solid fa-circle-xmark"></i> Cancelar </button>
+                            <button class="btn btn-md bg-success2 text-white" (click)="saveData()">Actualizar <i class="fa-solid fa-check"></i></button>
+                          </div>
+                        </div>
+                    </div>
+                    
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
   
   </div>
   

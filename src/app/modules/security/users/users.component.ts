@@ -2,14 +2,19 @@ import { Component } from '@angular/core';
 import { RolesService } from 'src/app/core/services/security/roles.service';
 import { UsersService } from 'src/app/core/services/security/users.service';
 import { Observable, Subject, forkJoin, fromEvent, identity } from 'rxjs';
+import { ToastService } from 'src/app/core/services/toast.service';
 
-declare var $: any;
+declare var bootstrap: any;
 @Component({
   selector: 'wlrd-users',
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss'],
 })
 export class UsersComponent {
+
+  p:number = 1;
+  totalItemsRender: number = 10;
+  pagination: any = {};
   currentSection: string = 'List';
   actionModal: string = '';
   showForm = false;
@@ -30,12 +35,15 @@ export class UsersComponent {
     value: '',
     color: '',
   };
+  modal: any;
   constructor(
     private userService: UsersService,
-    private rolesService: RolesService
+    private rolesService: RolesService,
+    private _toast: ToastService,
   ) {}
 
   ngOnInit(): void {
+    this.modal = new bootstrap.Modal(document.getElementById('userModal'), {backdrop: 'static', keyboard: false})
     this.selectData();
   }
 
@@ -45,7 +53,7 @@ export class UsersComponent {
       next: (usersResponse: any) => {
         const users = usersResponse.data.items;
         this.users = users;
-  
+        this.pagination.totalItems = users.length;
         // Obtener todos los roles
         this.rolesService.allRoles().subscribe({
           next: (rolesResponse: any) => {
@@ -62,14 +70,14 @@ export class UsersComponent {
       },
     });
   }
-  
+
 
 
   createOrUpdateUser(item: any | null): void {
     this.resetUser();
     this.action.name = 'Crear';
     this.viewoptions = true;
-    $('#userModal').modal({ backdrop: 'static', keyboard: false });
+    this.modal.show();
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
@@ -90,7 +98,11 @@ export class UsersComponent {
       this.userService
         .updateUser(this.user.id, this.geteUserPayload())
         .subscribe({
-          next: (response: any) => this.handleSuccess(response),
+          next: (response: any) => {
+            this.selectData();
+            this._toast.success('Completado','Usuario actualizado exitosamente');
+            this.modal.hide();
+          },
           error: (error: any) =>
             console.error('Error al actualizar el registro:', error),
         });
@@ -99,7 +111,11 @@ export class UsersComponent {
 
   createeUser(): void {
     this.userService.createUser(this.geteUserPayload()).subscribe({
-      next: (response: any) => this.handleSuccess(response),
+      next: (response: any) => {
+        this.selectData();
+        this.modal.hide();
+        this._toast.success('Completado','Usuario creado exitosamente')
+      },
       error: (error: any) =>
         console.error('Error al crear el registro:', error),
     });
@@ -107,23 +123,16 @@ export class UsersComponent {
 
   geteUserPayload() {
     const { id, authId, name, description, email, role } = this.user;
-  
+
     return {
       authId,
       name,
       description,
       email,
-      role: [Number(role)],
+      roles: [Number(role)],
     };
   }
 
-  handleSuccess(response: any): void {
-    this.selectData();
-    this.close();
-  }
-  close() {
-    $('#userModal').modal('hide');
-  }
   resetUser(): void {
     this.user = {
       id: null,

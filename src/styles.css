@@ -1,0 +1,281 @@
+.page-header{
+  display: flex;
+  align-items: start;
+  justify-content: space-between !important;
+}
+
+.gap-10{
+  gap: 10px;
+}
+
+.t-small{
+  font-size: small !important;
+}
+
+.table-sm{
+  font-size: smaller;
+}
+
+.f-larger{
+  font-size: larger;
+  margin-right: 20px;
+}
+
+.f-xx-large{
+  font-size: xxx-large;
+}
+
+.subtitle-header{
+  color: #4f5466;
+  font-weight: 100;
+  font-size: small;
+}
+
+.title-header{
+  color: #303549;
+  font-size: large;
+  font-weight: 400;
+  margin-bottom: 3px;
+}
+
+.content-action{
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.pointer{
+  cursor: pointer;
+}
+
+.ticket{
+  border-radius: 5px;
+  color: white !important;
+  font-size: smaller;
+  background: #547cd5;
+  border-color: #687dad;
+}
+
+.f-small{
+  font-size: small;
+}
+
+/* CSS bootstrap override */
+
+.nav-tabs .nav-link {
+  color: #8461bd;
+}
+
+.form-control:focus {
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  border-color: #bcbcbc;
+  outline: 0;
+  box-shadow: 0 0 3px 0rem rgb(212 212 212);
+}
+
+/* fin overide */
+
+
+.bg-normal{
+  background-color: rgb(48 53 73) !important;
+  color: white;
+}
+
+.bg-normal:hover{
+  background-color: rgba(48, 53, 73, 0.577) !important;
+  color: white;
+}
+.color-normal{
+  color: rgb(48 53 73) !important;
+}
+
+
+
+.gap-20{
+  gap: 20px;
+}
+
+.h-content{
+  height: calc(100vh - 250px);
+}
+
+.scroll{
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 100%;
+  height: 100%;
+}
+
+.bg-cancel{
+  background: #d25d80 !important;
+  border-color: #d67f89 !important;
+  color: white !important;
+}
+
+.bg-cancel:hover{
+  background: #a72e52 !important;
+  border-color: #d67f89 !important;
+  color: white !important;
+}
+
+.bg-cancel:active{
+  background: #a72e52 !important;
+  border-color: #d67f89 !important;
+  color: white !important;
+}
+
+.bg-reasign{
+  background: #e7ba26 !important;
+  border-color: #d4a973 !important;
+  color: #534e40 !important;
+}
+
+.bg-reasign:hover{
+  background: #c99e10 !important;
+  border-color: #d4a973 !important;
+  color: #534e40 !important;
+}
+
+.bg-reasign:active{
+  background: #c99e10 !important;
+  border-color: #d4a973 !important;
+  color: #534e40 !important;
+}
+
+.bg-transfer{
+  background: #547cd5 !important;
+  border-color: #687dad !important;
+  color: white !important;
+}
+
+.color-transfer{
+  color: #547cd5 !important;
+}
+
+.bg-transfer:hover{
+  background: #3a6cd7 !important;
+  border-color: #687dad !important;
+  color: white !important;
+}
+
+.bg-transfer:active{
+  background: #3a6cd7 !important;
+  border-color: #687dad !important;
+  color: white !important;
+}
+
+.bg-principal{
+  background: #8461bd !important;
+  border-color: #8461bd !important;
+  color: white !important;
+}
+
+.bg-principal:hover{
+  background: #7347ba !important;
+  border-color: #8461bd !important;
+  color: white !important;
+}
+
+.bg-principal:active{
+  background: #7347ba !important;
+  border-color: #8461bd !important;
+  color: white !important;
+}
+
+.bg-success2{
+  background: #198754 !important;
+  border-color: #167b4c !important;
+  color: white !important;
+}
+
+.bg-success2:hover{
+  background: #137045 !important;
+  border-color: #137045 !important;
+  color: white !important;
+}
+
+.bg-success2:active{
+  background: #5ba339 !important;
+  border-color: #5ba339 !important;
+  color: white !important;
+}
+
+
+.iconaction-yellow:hover {
+  color: #e7d800;
+}
+
+.iconaction-green:hover {
+  color: #5ba339;
+}
+
+.iconaction-blue:hover {
+  color: #547cd5;
+}
+
+.iconaction-primary:hover {
+  color: #7347ba;
+}
+
+.iconaction-dark:hover {
+  color: #303549;
+}
+
+
+
+
+
+
+/* Estilo para el scrollbar */
+.scroll::-webkit-scrollbar {
+  width: 12px; /* Ancho de la barra de desplazamiento */
+}
+
+/* Estilo para el track (fondo del scrollbar) */
+.scroll::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color de fondo */
+  border-radius: 10px; /* Bordes redondeados */
+}
+
+/* Estilo para el handle (parte que se desplaza) */
+.scroll::-webkit-scrollbar-thumb {
+  background: #888; /* Color del handle */
+  border-radius: 10px; /* Bordes redondeados */
+  border: 3px solid #f1f1f1; /* Espacio entre el handle y el track para resaltar el redondeado */
+}
+
+/* Estilo para el handle en hover */
+.scroll::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color del handle al pasar el ratón */
+}
+
+/* Ocultar las flechas del scrollbar */
+.scroll::-webkit-scrollbar-button {
+  display: none !important;
+}
+
+/* Estilo para Firefox */
+.scroll {
+  scrollbar-width: thin; /* Ancho del scrollbar */
+  scrollbar-color: #888 #f1f1f1; /* Color del handle y del track */
+}
+
+/* Estilo para el track en Firefox */
+.scroll::-moz-scrollbar-track {
+  background: #f1f1f1; /* Color de fondo */
+  border-radius: 10px; /* Bordes redondeados */
+}
+
+/* Estilo para el handle en Firefox */
+.scroll::-moz-scrollbar-thumb {
+  background: #888; /* Color del handle */
+  border-radius: 10px; /* Bordes redondeados */
+  border: 3px solid #f1f1f1; /* Espacio entre el handle y el track para resaltar el redondeado */
+}
+
+/* Estilo para el handle en hover en Firefox */
+.scroll::-moz-scrollbar-thumb:hover {
+  background: #555; /* Color del handle al pasar el ratón */
+}
+
