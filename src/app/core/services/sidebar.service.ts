@@ -6,8 +6,7 @@ import { Auth0Service } from './auth0.service';
 })
 export class SidebarService {
   private _menu: any[] = [];
-  private staticMenu =
-  [
+  private staticMenu = [
     {
       icon: 'fa-solid fa-home',
       title: 'Dashboard',

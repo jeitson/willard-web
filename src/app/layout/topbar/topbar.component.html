@@ -1,0 +1,24 @@
+<div class="topbar">
+  <div class="topbar-content">
+    <div class="topbar-actions">
+      <button class="notification-btn animate-bell">
+        <i class="ai-bell"></i>
+      </button>
+      <button class="fullscreen-btn">
+        <i class="ai-full-screen"></i>
+      </button>
+      <div class="profile-dropdown">
+        <button class="profile-btn">
+          <img src="{{ user?.picture || 'assets/images/users/avatar-5.jpg'  }}" alt="Avatar" class="avatar">
+          <span>{{ user?.nickname }}</span>
+          <i class="ai-chevron-down"></i>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="javascript:void(0)" (click)="_logout()">Cerrar sesión</a></li>
+          <!-- <li><a href="javascript:void(0)">Cambiar contraseña</a></li> -->
+          <!-- agregar más opciones aquí -->
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

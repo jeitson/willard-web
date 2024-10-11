@@ -3,7 +3,8 @@ import { Router } from '@angular/router';
 import { AuthService } from '@auth0/auth0-angular';
 import { ApiService } from 'src/app/core/services/api/api.service';
 import { ToastService } from 'src/app/core/services/toast.service';
-declare var $: any;
+declare var bootstrap: any;
+
 @Component({
   selector: 'wlrd-requestplanner',
   templateUrl: './requestplanner.component.html',
@@ -24,7 +25,13 @@ export class RequestplannerComponent implements OnInit {
     plate: '',
     truckTypeId: 0,
     deliveryDateToCollectionSite: '',
-    transporterId: 0
+    transporter: {
+      collectionRequestId:'',
+      name: '',
+      description: '',
+      email: '',
+      document: ''
+    }
   }
   listsrequest: any[] = [];
   requestId: string = '';
@@ -38,12 +45,14 @@ export class RequestplannerComponent implements OnInit {
     listTruckType: [],
     listTransporters: [],
   }
-
+  collectionRequestData: any = '';
+  modal: any;
   constructor(private _router: Router, private api: ApiService, private _toast: ToastService, private auth: AuthService) {
 
   }
 
   ngOnInit(): void {
+    this.modal = new bootstrap.Modal(document.getElementById('modalplaner'), {backdrop: 'static', keyboard: false})
     this.getRequests();
     this.getList('TIPO_CAMION', 'listTruckType');
     this.getTransporters();
@@ -57,7 +66,7 @@ export class RequestplannerComponent implements OnInit {
   }
 
   getRequests(){
-    this.api.get(`collection-request?rol=2`).subscribe({
+    this.api.get(`collection-request`).subscribe({
       next: (response: any) => {
         this.listsrequest = response.data.items;//.filter((x: any)=> x.requestStatusId === 1);
       },
@@ -73,7 +82,7 @@ export class RequestplannerComponent implements OnInit {
         this.lists[listName] = response.data;
       },
       error: (error: any) => {
-        console.error('Error al crear usuario:', error);
+        console.error('Error:', error);
       },
     });
   }
@@ -84,7 +93,7 @@ export class RequestplannerComponent implements OnInit {
         this.lists['listTransporters'] = response.data.items;
       },
       error: (error: any) => {
-        console.error('Error al crear usuario:', error);
+        console.error('Error:', error);
       },
     });
   }
@@ -94,8 +103,10 @@ export class RequestplannerComponent implements OnInit {
   }
 
   editRequest(item: any){
+    this.clearData();
     this.collectionRequestId = item.id;
-    $("#modalplaner").modal({backdrop: 'static', keyboard: false});
+    this.collectionRequestData = JSON.stringify(item);
+    this.modal.show();
   }
 
   confirmRequest(){
@@ -103,7 +114,7 @@ export class RequestplannerComponent implements OnInit {
     this.action.value = 'confirm';
     this.action.color = '#698e47';
     this.action.icon = 'fa-solid fa-check';
-    $("#modalconfirm").modal({backdrop: 'static', keyboard: false, opacity:false});
+    //$("#modalconfirm").modal({backdrop: 'static', keyboard: false, opacity:false});
   }
 
   actionConfirm(action: string){
@@ -127,7 +138,7 @@ export class RequestplannerComponent implements OnInit {
       next: (response: any) => {
         this.getRequests();
         this._toast.success('Completado','Ruta registrada exitosamente')
-        $("#modalplaner").modal("hide");
+        this.modal.hide();
       },
     });
   }
@@ -136,9 +147,33 @@ export class RequestplannerComponent implements OnInit {
     this.api.post(`collection-request/${this.collectionRequestId}/reject`, {}).subscribe({
       next: (response: any) => {
         this.getRequests();
-        this._toast.success('Completado','solicitud rechazada correctamente')
-        $("#modalplaner").modal("hide");
+        this._toast.success('Completado','solicitud rechazada correctamente');
+        this.modal.hide();
       },
     });
+  }
+
+  clearData(){
+    this.formRequest = {
+      routeStatusId: 0,
+      name: '',
+      description: '',
+      confirmedPickUpDate: '',
+      tripStartDate: '',
+      tripStartTime: '',
+      tripEndDate: '',
+      tripEndTime: '',
+      plate: '',
+      truckTypeId: 0,
+      deliveryDateToCollectionSite: '',
+      transporter: {
+        collectionRequestId:'',
+        name: '',
+        description: '',
+        email: '',
+        cellphone:'',
+        document: ''
+      }
+    }
   }
 }

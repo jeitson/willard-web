@@ -2,7 +2,7 @@
 <div class="container">
   <div class="page-header">
     <div class="d-flex flex-column">
-      <h3 class="primary title noselect">USUARIOS</h3>
+      <h5 class="primary title noselect">USUARIOS</h5>
       <p class="secundary mb-1">En este modulo podras configurar usuarios de acopio realizando
         acciones como: crear | editar | eliminar | cambiar estado </p>
     </div>
@@ -15,55 +15,63 @@
     <hr class="mt-1 mb-1">
   </div>
   <div class="page-body">
-    <div class="col-md-12">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="table-responsive">
-            <table class="table table-sm">
-              <thead class="bg-white">
-                <tr>
-                  <th class="text-left"> Nombre</th>
-                  <th class="text-center"> Fecha Creación </th>
-                  <th class="text-center"> Fecha Actualización </th>
+    <div class="row">
+      <div class="col-md-6">
+        <h6>Total {{pagination.totalItems}}</h6>
+      </div>
+      <div class="col-md-6 d-flex justify-content-end">
+        <pagination-controls class="pagination" (pageChange)="p = $event" [responsive]="true" previousLabel="Atras" nextLabel="Siguiente" [autoHide]="false"></pagination-controls>
+      </div>
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead class="bg-white">
+                  <tr>
+                    <th class="text-left"> Email</th>
+                    <th class="text-center"> Fecha Creación </th>
+                    <th class="text-center"> Fecha Actualización </th>
+                    <th class="text-center">Rol</th>
+                    <th class="text-center"> Estado </th>
+                    <th class="text-center"> Acciones</th>
+                  </tr>
+                </thead>
+                <tbody style="background-color: white;">
+                  <tr *ngFor="let item of users | paginate: { itemsPerPage: totalItemsRender, currentPage: p }; let i = index"
+                    style="font-size: smaller;">
+                    <td class="text-left"> {{item.email}} </td>
+                    <td class="text-center"> {{item.createdAt |
+                      date:'EEEE dd MMM yyyy'}} </td>
+                           <td class="text-center"> {{item.updatedAt |
+                      date:'EEEE dd MMM yyyy'}} </td>
+                      <td class="text-center">{{item.roles[0]?.role?.name || 'Sin Asignar'}}</td>
+                    <td class="text-center">
+                      <h5 *ngIf="item.status == true" style="color: white;"><span
+                          class="badge bg-success2 t-small">Activo</span></h5>
+                      <h5 *ngIf="item.status == false" style="color: white;"><span
+                          class="badge bg-danger t-small">Inactivo</span></h5>
+                    </td>
+                    <td class="text-center">
+                      <i class="fa-solid f-larger pointer fa-pencil"
+                        (click)="createOrUpdateUser(item)"></i>
 
-                  <th class="text-center"> Estado </th>
-                  <th class="text-center"> Acciones</th>
-                </tr>
-              </thead>
-              <tbody style="background-color: white;">
-                <tr *ngFor="let item of users; let i = index"
-                  style="font-size: smaller;">
-                  <td class="text-left"> {{item.email}} </td>
-                  <td class="text-center"> {{item.createdAt |
-                    date:'EEEE dd MMM yyyy'}} </td>
-                         <td class="text-center"> {{item.updatedAt |
-                    date:'EEEE dd MMM yyyy'}} </td>
-                  <td class="text-center">
-                    <h5 *ngIf="item.status == true" style="color: white;"><span
-                        class="badge bg-success2">Activo</span></h5>
-                    <h5 *ngIf="item.status == false" style="color: white;"><span
-                        class="badge bg-danger">Inactivo</span></h5>
-                  </td>
-                  <td class="text-center">
-                    <i class="fa-solid f-larger pointer fa-pencil"
-                      (click)="createOrUpdateUser(item)"></i>
-
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 
   <div class="modal fade" id="userModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title pricolor" id="modal-title-notification">{{ action.name | uppercase }} CENTRO</h5>
+          <h5 class="modal-title pricolor" id="modal-title-notification">{{ action.name | uppercase }} USUARIOS</h5>
         </div>
         <div class="modal-body">
           <div class="col-md-12 pb-3">
@@ -82,16 +90,16 @@
               </div>
               <div class="mb-3">
                 <label for="role" class="form-label">Rol</label>
-                <select class="form-control"  [(ngModel)]="user.role">
+                <select class="form-control form-select"  [(ngModel)]="user.role">
                   <option *ngFor="let item of listData" [value]="item.id">{{item.name}}</option>
                 </select>
               </div>
             </div>
-            <div class="row mt-5">
+            <div class="row mt-3">
               <div class="col-md-12 d-flex flex-rows gap-10">
                 <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="createeUser()"> Crear </button>
                 <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="updateeUser()"> Actualizar </button>
-                <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
+                <button class="btn btn-sm btn-dark" data-bs-dismiss="modal"> Cancelar </button>
               </div>
             </div>
           </div>
@@ -99,10 +107,6 @@
       </div>
     </div>
   </div>
-
-
-
-
 </div>
 
 

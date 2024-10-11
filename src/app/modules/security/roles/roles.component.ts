@@ -58,7 +58,7 @@ export class RolesComponent implements OnInit {
     this.clearDta();
     this.action.name = 'Crear';
     this.viewoptions = true;
-    $('#modalRol').modal({ backdrop: 'static', keyboard: false });
+    $('#modalRol').modal('show');
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;

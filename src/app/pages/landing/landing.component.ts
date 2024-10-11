@@ -15,17 +15,14 @@ export class LandingComponent implements AfterViewInit, OnInit {
 
   ngAfterViewInit(){
     this.auth.isAuthenticated$.subscribe(isAuthenticaded => {
-      if(isAuthenticaded){
+      if (isAuthenticaded) {
+        window.history.replaceState({}, document.title, window.location.pathname);
         this.router.navigate(['/main/dashboard']);
       }
     })
   }
 
   ngOnInit(): void {
-    // this.auth.user$.subscribe(r => {
-    //   console.log(r)
-    // })
-    // return;
   }
 
   login(){

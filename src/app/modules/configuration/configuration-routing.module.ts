@@ -31,6 +31,13 @@ const routes: Routes = [
 			),
 	},
   {
+		path: 'specialreason',
+		loadChildren: () =>
+			import('./special-reason/special-reason.module').then(
+				({ SpecialReasonModule }) => SpecialReasonModule,
+			),
+	},
+  {
 		path: 'locationdeparture',
 		loadChildren: () =>
 			import('./locationdeparture/locationdeparture.module').then(

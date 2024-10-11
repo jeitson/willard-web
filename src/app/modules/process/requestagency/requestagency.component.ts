@@ -5,7 +5,7 @@ import { RequestsService } from 'src/app/core/services/requests/requests.service
 import { PickuplocationService } from 'src/app/core/services/settings/pickuplocation.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
 import { ToastService } from 'src/app/core/services/toast.service';
-declare var $: any;
+declare var bootstrap: any;
 @Component({
   selector: 'wlrd-requestagency',
   templateUrl: './requestagency.component.html',
@@ -15,11 +15,13 @@ export class RequestagencyComponent {
   // constructor(private) {}
   action = { name: 'Crear' }; // o 'Actualizar' según el caso
   viewoptions = true; // true para crear, false para actualizar
-
+  modal: any;
+  
   request = {
     clientId: '',
     description: '',
     name: '',
+    productTypeId: '',
     requestDate: '',
     requestTime: '',
     estimatedPickUpDate: '',
@@ -27,6 +29,7 @@ export class RequestagencyComponent {
     estimatedQuantity: '',
     estimatedKG: '',
     isSpecial: false,
+    motiveSpecialId: '',
     pickUpLocationId: '',
     observations: '',
     recommendations: '',
@@ -42,26 +45,14 @@ export class RequestagencyComponent {
   listSedes: any = [];
   listCiudades: any = [];
   listZonas: any = [];
-  requestStatuses: any[] = [
-    {
-      name: 'Volumen (>700)',
-      status: 'Pendiente',
-      description: 'El volumen del pedido es mayor a 700 unidades.',
-    },
-    {
-      name: 'Ruta No Definida',
-      status: 'En Proceso',
-      description: 'La ruta para la entrega aún no ha sido definida.',
-    },
-    {
-      name: 'Cambio de Destino',
-      status: 'Confirmado',
-      description: 'El destino del pedido ha sido cambiado.',
-    },
-  ];
   listsrequest: any[] = [];
+  listmotive: any[] = [];
+
   dataId: any;
   actionSave = false;
+  roleId: any;
+  isSpecialDisabled: boolean = false; 
+  typeProduct: any = [];
   constructor(
     private _Customers: CustomersService,
     private _Conveyor: ConvenyorService,
@@ -73,10 +64,19 @@ export class RequestagencyComponent {
   ngOnInit(): void {
     this.getRequest();
     this.getData();
+    this.modal = new bootstrap.Modal(document.getElementById('modalRequestAgency'), {backdrop: 'static', keyboard: false})
+    this.roleId = sessionStorage.getItem('RoleId');
+    // Obtener el objeto guardado en sessionStorage
+      // Si el roleId es 16, deshabilita el checkbox
+      if (this.roleId === '16') {
+        this.isSpecialDisabled = true;
+        this.request.isSpecial = true;
+      }
   }
+  
 
   getRequest() {
-    this._requests.listSolicitudes('1').subscribe((response: any) => {
+    this._requests.listSolicitudes().subscribe((response: any) => {
       console.log(response.data.items);
       this.listsrequest = response.data.items;
     });
@@ -117,6 +117,14 @@ export class RequestagencyComponent {
           console.error('Error al obtener tipos de sedes:', error);
         },
       });
+      this._Settings.getCatalogChildrenByKey('TIPO_PRODUCTO').subscribe({
+        next: (response: any) => {
+          this.typeProduct = response.data;
+        },
+        error: (error: any) => {
+          console.error('Error al obtener ciudades:', error);
+        },
+      });
     
       this._Settings.getCatalogChildrenByKey('CIUDAD').subscribe({
         next: (response: any) => {
@@ -135,38 +143,59 @@ export class RequestagencyComponent {
           console.error('Error al obtener zonas:', error);
         },
       });
+
+      this._Settings.getCatalogChildrenByKey('ZONA').subscribe({
+        next: (response: any) => {
+          this.listZonas = response.data;
+        },
+        error: (error: any) => {
+          console.error('Error al obtener zonas:', error);
+        },
+      });
+      this._Settings.getCatalogChildrenByKey('MOTIVO_ESPECIAL').subscribe({
+        next: (response: any) => {
+          this.listmotive = response.data;
+        },
+        error: (error: any) => {
+          console.error('Error al obtener tipos de sedes:', error);
+        },
+      });
     
   }
   createRequest() {
+    this.clearData();
     this.actionSave = false;
     // Lógica para crear la solicitud
-    $('#modalRequest').modal({ backdrop: 'static', keyboard: false });
+    this.modal.show();
     console.log('Creando solicitud:', this.request);
   }
 
-  // updateRequest(item: any) {
-  //   console.log(item);
-  //   this.actionSave = true;
-  //   $('#modalRequest').modal({ backdrop: 'static', keyboard: false });
-  //   // Lógica para actualizar la solicitud
-  //   this.dataId = item;
-  //   this.request = {
-  //     clientId: item.client,
-  //     description: item.description,
-  //     name: item.name,
-  //     requestDate: item.requestDate,
-  //     requestTime: item.requestTime,
-  //     estimatedPickUpDate: '',
-  //     estimatedPickUpTime: '',
-  //     estimatedQuantity: item.estimatedQuantity,
-  //     estimatedKG: item.estimatedKG,
-  //     isSpecial: item.isSpecial,
-  //     pickUpLocationId: item.pickUpLocation,
-  //     observations: item.observations,
-  //     recommendations: item.recommendations,
-  //   };
-  //   console.log('Actualizando solicitud:', this.request);
-  // }
+  updateRequest(item: any) {
+    console.log(item);
+    this.actionSave = true;
+    this.modal.show();
+    // Lógica para actualizar la solicitud
+    this.dataId = item;
+    this.request = {
+      clientId: item.client.id, // Cambiado de item.clientId a item.client.businessName
+      description: item.description,
+      name: item.name,
+      productTypeId: item.productTypeId,
+      requestDate: item.requestDate,
+      requestTime: item.requestTime,
+      estimatedPickUpDate: item.estimatedPickUpDate,
+      estimatedPickUpTime: item.estimatedPickUpTime,
+      estimatedQuantity: item.estimatedQuantity,
+      estimatedKG: item.estimatedKG,
+      isSpecial: item.isSpecial,
+      motiveSpecialId: item.motiveSpecial?.id,
+      pickUpLocationId: item.pickUpLocation.id, // Aquí se obtiene el ID de la ubicación de recogida
+      observations: item.observations,
+      recommendations: item.recommendations,
+  };
+  
+    console.log('Actualizando solicitud:', this.request);
+  }
 
   selectItem(
     id: string,
@@ -178,17 +207,13 @@ export class RequestagencyComponent {
 
   saveRequest() {
     const action = this.actionSave
-      ? this._requests.updateSolicitud(this.dataId.id, {
-          collectionSiteId: this.dataId.collectionSite,
-          consultantId: this.dataId.consultant,
-          transporterId: this.dataId.transporter,
-        })
+      ? this._requests.updateSolicitud(this.dataId.id, this.request)
       : this._requests.createSolicitud(this.request);
 
     action.subscribe((response: any) => {
       this._toast.success('Completado','Ruta registrada exitosamente')
         // Si la respuesta es positiva
-        $('#modalRequest').modal('hide');
+        this.modal.hide();
 
         this.dataId = []; // Limpiar los objetos
         this.clearData();
@@ -201,16 +226,19 @@ export class RequestagencyComponent {
       clientId: '',
       description: '',
       name: '',
+      productTypeId: '',
       requestDate: '',
       requestTime: '',
       estimatedPickUpDate: '',
       estimatedPickUpTime: '',
       estimatedQuantity: '',
       estimatedKG: '',
-      isSpecial: false,
+      isSpecial: this.isSpecialDisabled ? true : false,
+      motiveSpecialId: '',
       pickUpLocationId: '',
       observations: '',
       recommendations: '',
     };
+    this.selectedClient = null;
   }
 }

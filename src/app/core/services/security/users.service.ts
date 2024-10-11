@@ -3,24 +3,27 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../api/api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UsersService {
-
   constructor(private _api: ApiService) {}
 
   allUsers(): Observable<any> {
-		return this._api.get('users');
-	}
+    return this._api.get('users');
+  }
 
   createUser(content: any): Observable<any> {
-		return this._api.post('users', content);
-	}
+    return this._api.post('users', content);
+  }
   listUserId(id: any): Observable<any> {
-		return this._api.get(`users/${id}`);
-	}
+    return this._api.get(`users/${id}`);
+  }
+
+  getProfile(): Observable<any> {
+    return this._api.get(`users/profile`);
+  }
 
   updateUser(id: any, content: any): Observable<any> {
-		return this._api.put(`users/${id}`, content);
-	}
+    return this._api.put(`users/${id}`, content);
+  }
 }

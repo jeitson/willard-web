@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { jwtDecode } from 'jwt-decode';
-import { BehaviorSubject, Observable, from, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, from, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { HttpHeaders } from '@angular/common/http';
@@ -17,7 +17,7 @@ export class Auth0Service {
   private _auth0HeadersByFileSubject = new BehaviorSubject<HttpHeaders | null>(
     null
   );
-
+  private rolSubject = new Subject<string>();
   private _auth0Headers$: HttpHeaders | null = null;
   private _auth0HeadersByFile$: HttpHeaders | null = null;
 

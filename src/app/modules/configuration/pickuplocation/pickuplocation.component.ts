@@ -149,7 +149,7 @@ export class PickuplocationComponent {
     this.resetUser();
     this.action.name = 'Crear';
     this.viewoptions = true;
-    $('#modalPickup').modal({ backdrop: 'static', keyboard: false });
+    $('#modalPickup').modal('show');
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
@@ -265,6 +265,7 @@ export class PickuplocationComponent {
     };
   }
   handleSuccess(response: any): void {
+    console.log(response);
     this.selectData();
     this.close();
   }
@@ -275,7 +276,7 @@ export class PickuplocationComponent {
     this.action.value = 'delete';
     this.action.color = '#dc3545';
     this.action.icon = 'fa-solid fa-trash';
-    $('#modalconfirm').modal({ backdrop: 'static', keyboard: false });
+    $('#modalconfirm').modal('show');
   }
 
   editState(id: string) {
@@ -284,7 +285,7 @@ export class PickuplocationComponent {
     this.action.value = 'changestatus';
     this.action.color = '#ffc107';
     this.action.icon = 'fa-solid fa-sync';
-    $('#modalconfirm').modal({ backdrop: 'static', keyboard: false });
+    $('#modalconfirm').modal('show');
   }
 
   actionConfirm() {
