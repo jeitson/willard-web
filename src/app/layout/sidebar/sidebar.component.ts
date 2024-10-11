@@ -9,7 +9,7 @@ import { UsersService } from 'src/app/core/services/security/users.service';
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
-export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
+export class SidebarComponent implements OnInit, OnDestroy {
 
   isCollapsed = false;
   itemsMenu: any[] = [
@@ -223,15 +223,6 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       }
     })
-    // this.authSubscription = this.authService.currentUser$.subscribe(
-    //   (user: User | null) => {
-    //     if (user) {
-    //       this.loadMenuForRole(user.role);
-    //     } else {
-    //       this.menuItems = []; // O un menú para invitados
-    //     }
-    //   }
-    // );
   }
 
   ngOnDestroy(): void {
@@ -242,18 +233,6 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
     return texto.toLowerCase().split(' ').map(palabra => {
       return palabra.charAt(0).toUpperCase() + palabra.slice(1);
     }).join(' ');
-  }
-
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      const subMenus = this.el.nativeElement.querySelectorAll(".sub-menu") as NodeListOf<HTMLElement>;
-      const buttons = this.el.nativeElement.querySelectorAll(".sidebar ul a") as NodeListOf<HTMLButtonElement>;
-
-      buttons.forEach(button => {
-        this.renderer.listen(button, 'click', () => this.clickIn(button, subMenus, buttons));
-      });
-      this.setActiveModuleOnLoad();
-    }, 100);
   }
 
   cargarMenu(rol: string) {
@@ -533,6 +512,16 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
         ];
         break;
     };
+
+    setTimeout(() => {
+      const subMenus = this.el.nativeElement.querySelectorAll(".sub-menu") as NodeListOf<HTMLElement>;
+    const buttons = this.el.nativeElement.querySelectorAll(".sidebar ul a") as NodeListOf<HTMLButtonElement>;
+
+    buttons.forEach(button => {
+      this.renderer.listen(button, 'click', () => this.clickIn(button, subMenus, buttons));
+    });
+    this.setActiveModuleOnLoad();
+    }, 100);
   }
 
   setActiveModuleOnLoad(): void {
