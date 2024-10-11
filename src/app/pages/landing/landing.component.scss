@@ -3,29 +3,29 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: calc(100vh - 100px);
     text-align: center;
     background-color: #f0f4f8;
     padding: 20px;
   }
-  
+
   .logo {
     width: 150px;
     margin-bottom: 20px;
   }
-  
+
   h1 {
     font-size: 1.5rem;
     color: #333;
     margin-bottom: 10px;
   }
-  
+
   h2 {
     font-size: 1rem;
     color: #555;
     margin-bottom: 30px;
   }
-  
+
   .login-button {
     background-color: #17d657;
     color: white;
@@ -36,8 +36,7 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
-  
+
   .login-button:hover {
     background-color: #1ef064;
   }
-  
