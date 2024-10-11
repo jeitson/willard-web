@@ -1,0 +1,100 @@
+.page-header{
+  display: flex;
+  align-items: start;
+  justify-content: space-between !important;
+}
+
+.gap-10{
+  gap: 10px;
+}
+
+.f-larger{
+  font-size: larger;
+  margin-right: 20px;
+}
+
+.custom-thead {
+  background-color: #4CAF50 !important; /* Cambia el color de fondo */
+  color: white !important; /* Cambia el color del texto */
+}
+
+
+.f-xx-large{
+  font-size: xxx-large;
+}
+
+.table{
+  --bs-table-bg: #ffffff;
+}
+
+.bg-add{
+  background: #ffffff;
+  border-color: #198754;
+  color: #343a40;
+}
+
+.bg-add:hover{
+  background: #198754;
+  color: white;
+}
+
+.bg-success{
+  background: #698e47 !important;
+}
+
+.table-responsive tbody {
+  display: block;
+  max-height: calc(99vh - 230px); /* Ajusta la altura máxima según tus necesidades */
+  overflow-y: auto;
+  background-color: white; /* Color de fondo para el cuerpo de la tabla */
+  scrollbar-width: thin; /* Estilo para Firefox */
+  scrollbar-color: #525a61 #f1f1f1/* Color de la barra y del fondo */
+}
+
+/* Estilo para navegadores basados en WebKit (Chrome, Safari) */
+.table-responsive tbody::-webkit-scrollbar {
+  width: 8px; /* Ancho de la barra de scroll */
+}
+
+.table-responsive tbody::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color del fondo de la barra de scroll */
+  border-radius: 20px; /* Redondea el track */
+}
+
+.table-responsive tbody::-webkit-scrollbar-thumb {
+  background-color: #525a61; /* Color de la barra de scroll */
+  border-radius: 10px; /* Redondea las puntas de la barra */
+  border: 2px solid #f1f1f1; /* Espacio entre la barra y el fondo */
+}
+
+.table-responsive tbody::-webkit-scrollbar-thumb:hover {
+  background-color: #42474c; /* Color al pasar el mouse por encima */
+}
+
+.table-responsive tbody::-webkit-scrollbar-corner {
+  background-color: transparent; /* Elimina la esquina inferior derecha */
+}
+
+/* Estilo para eliminar las flechas de la barra de desplazamiento en WebKit */
+.table-responsive tbody::-webkit-scrollbar-button {
+  display: none; /* Oculta las flechas de la barra de scroll */
+}
+
+/* Estructura de la tabla */
+.table-responsive thead, .table-responsive tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed; /* Asegura que las columnas del thead y tbody estén alineadas */
+}
+
+.table-responsive th, .table-responsive td {
+  padding: 8px 16px; /* Ajusta el padding si es necesario */
+  text-align: left;
+  border-bottom: 1px solid #dbdee2; /* Línea separadora entre las filas */
+}
+
+.table-responsive th {
+  background-color: #525a61; /* Color de fondo para la cabecera */
+  color: white;
+  font-weight: bold;
+}

@@ -1,0 +1,201 @@
+<div class="container">
+  <div class="page-header">
+    <div class="d-flex flex-column">
+      <h5 class="primary title noselect">SOLICITUDES</h5>
+      <p class="secundary mb-1">En este módulo podras planear y configurar la solicitud para que continue el proceso</p>
+    </div>
+    <div class="d-flex flex-rows gap-10">
+      <!-- <button type="button" class="btn btn-sm bg-add" (click)="addItem()">Agregar <i class="fa-solid fa-add"></i></button> -->
+      <button type="button" class="btn btn-sm btn-dark">Recargar <i class="fa-solid fa-rotate-right"></i></button>
+    </div>
+  </div>
+  <div class="page-divider mb-3">
+    <hr class="mt-1 mb-1">
+  </div>
+  <div class="page-body">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+              <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead class="bg-white">
+                        <tr>
+                            <th class="text-center"> Id</th>
+                            <th class="text-center"> Fecha </th>
+                            <th class="text-left"> Acopio </th>
+                            <th class="text-center"> Cantidad </th>
+                            <th class="text-left"> Recogida</th>
+                            <th class="text-left"> Cliente </th>
+                            <th class="text-center"> Transportadora </th>
+                            <th class="text-center"> Estado </th>
+                            <th class="text-center"> </th>
+                        </tr>
+                    </thead>
+                    <tbody style="background-color: white;">
+                        <tr *ngFor="let item of listsrequest">
+                            <td class="text-center"> {{item.id}} </td>
+                            <td class="text-center"> {{item.createdAt | date:'short'}} </td>
+                            <td class="text-left"> {{item.acopiCenter }} </td>
+                            <td class="text-center"> {{item.estimatedQuantity }} </td>
+                            <td class="text-left"> {{item.estimatedPickUpDate}} {{item.estimatedPickUpTime}} </td>
+                            <td class="text-left"> {{item.customer }} </td>
+                            <td class="text-left"> {{ item.transporter?.name }} </td>
+                            <td class="text-center">
+                                <h5 *ngIf="item.status == true" style="color: white;"><span class="badge bg-success2 t-small">Activo</span></h5>
+                                <h5 *ngIf="item.status == false" style="color: white;"><span class="badge bg-danger t-small">Inactivo</span></h5>
+                            </td>
+                            <td class="text-center">
+                              <i class="fa-solid f-larger pointer fa-pencil" (click)="editRequest(item)"></i>
+                              <i class="fa-solid f-larger pointer fa-eye" [routerLink]="[item.id]"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalplaner" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title pricolor" id="modal-title-notification">Planear Recogida</h5>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <h6 style="text-transform: none; font-weight: 300;">A través de esta funcionalidad podrá realizar el proceso de planeación para la recogida de los productos.</h6>
+                      <div class="col-md-12">
+                        <div class="row mb-3">
+                          <div class="col-md-4">
+                              <label for="" class="pricolor">Fecha de Recogida</label>
+                              <input type="date" class="form-control" name="dateinit" [(ngModel)]="formRequest.confirmedPickUpDate" autocomplete="off" required>
+                          </div>
+                          <div class="col-md-4">
+                            <label for="" class="pricolor">Fecha Entrega</label>
+                            <input type="date" class="form-control" name="datedelivery" [(ngModel)]="formRequest.deliveryDateToCollectionSite" autocomplete="off" required>
+                          </div>
+                        </div>
+                        <div class="row mb-3">
+                          <div class="col-md-3">
+                            <label for="" class="pricolor">Fecha Apertura</label>
+                            <input type="date" class="form-control" name="datestart" [(ngModel)]="formRequest.tripStartDate" autocomplete="off" required>
+                          </div>
+                          <div class="col-md-3">
+                            <label for="" class="pricolor">Hora Apertura</label>
+                            <input type="time" class="form-control" name="datetimestart" [(ngModel)]="formRequest.tripStartTime" autocomplete="off" required>
+                          </div>
+                          <div class="col-md-3">
+                            <label for="" class="pricolor">Cierre de viaje</label>
+                            <input type="date" class="form-control" name="dateend" [(ngModel)]="formRequest.tripEndDate" autocomplete="off" required>
+                          </div>
+                          <div class="col-md-3">
+                            <label for="" class="pricolor">Hora Apertura</label>
+                            <input type="time" class="form-control" name="datetimeend" [(ngModel)]="formRequest.tripEndTime" autocomplete="off" required>
+                          </div>
+                        </div>
+                        <div class="row">
+
+                          <div class="col-md-6">
+                            <label for="basic-url" class="pricolor">Nombre Conductor</label>
+                            <div class="input-group mb-3">
+                              <input type="text" class="form-control" name="datedelivery" [(ngModel)]="formRequest.transporter.name" autocomplete="off" required>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <label for="" class="pricolor">Placa</label>
+                            <input type="text" class="form-control" name="plate" [(ngModel)]="formRequest.plate" autocomplete="off" required>
+                          </div>
+                          <div class="col-md-3">
+                            <label for="basic-url" class="pricolor">Tipo de Camion</label>
+                            <div class="input-group mb-3">
+                                <select class="form-control form-select" name="typetrcuk" [(ngModel)]="formRequest.truckTypeId" required>
+                                    <option value="" selected>Seleccionar</option>
+                                    <option *ngFor="let opt of lists.listTruckType" value="{{opt.id}}">{{opt.name}}</option>
+                                </select>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <label for="basic-url" class="pricolor">Documento conductor</label>
+                            <div class="input-group mb-3">
+                              <input type="number" class="form-control" name="datedelivery" [(ngModel)]="formRequest.transporter.document" autocomplete="off" required>
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <label for="basic-url" class="pricolor">Celular Conductor</label>
+                            <div class="input-group mb-3">
+                              <input type="tel" class="form-control" name="datedelivery" [(ngModel)]="formRequest.transporter.cellphone" autocomplete="off" required>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <label for="basic-url" class="pricolor">Correo conductor</label>
+                            <div class="input-group mb-3">
+                              <input type="email" class="form-control" name="datedelivery" [(ngModel)]="formRequest.transporter.email" autocomplete="off" required>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="card">
+                              <div class="card-body">
+                                <div class="d-flex flex-rows gap-10">
+                                  <div class="avatar">
+                                    <img class="rounded-circle header-profile-user my-auto mx-0 m-auto" src="assets/images/conductor.png" alt="" srcset="">
+                                  </div>
+                                  <div class="d-flex flex-column">
+                                    <h6>{{formRequest.transporter.name}}</h6>
+                                    <span>{{formRequest.transporter.document}}</span>
+                                    <span>{{formRequest.transporter.cellphone}}</span>
+                                    <span>{{formRequest.transporter.email}}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- <div class="col-md-6">
+                      <wlrd-detailrequest [requestId]="collectionRequestId"></wlrd-detailrequest>
+                    </div> -->
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <div class="w-100">
+                    <div class="d-flex flex-rows gap-10 justify-content-start">
+                      <button class="btn btn-sm bg-success2 text-white" (click)="actionConfirm('confirm')"> Confirmar <i class="fa-solid fa-check"></i></button>
+                      <button class="btn btn-sm bg-danger text-white" (click)="actionConfirm('reject')"> Rechazar <i class="fa-solid fa-close"></i></button>
+                      <button class="btn btn-sm btn-dark" data-bs-dismiss="modal"> Cancelar <i class="fa-solid fa-circle-xmark"></i></button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalconfirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true"> -->
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="col-md-12 text-center pb5">
+                         <i class="{{action.icon}} noselect f-xx-large" [style.color]="action.color"></i>
+                    </div>
+                    <div class="col-md-12 mt-4">
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <h6><strong>¿Esta seguro que desea {{action.name | lowercase}} esta solicitud?</strong></h6>
+                                <p><small>Esta acción no se podra deshacer</small></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 d-flex justify-content-around">
+                        <button class="btn btn-sm text-white btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
+                        <button class="btn btn-sm text-white" [style.background]="action.color" > Confirmar </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>

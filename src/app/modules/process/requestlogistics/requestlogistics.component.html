@@ -1,0 +1,143 @@
+<div class="container">
+    <div class="page-header">
+      <div class="d-flex flex-column">
+        <h3 class="primary title noselect">SOLICITUDES LOGISTICA</h3>
+        <p class="secundary mb-1">
+          En este modulo podras planear y configurar la solicitud para que
+          continue el proceso
+        </p>
+      </div>
+      <div class="d-flex flex-rows gap-10">
+   
+        <button type="button" class="btn btn-sm btn-dark">
+          Recargar <i class="fa-solid fa-rotate-right"></i>
+        </button>
+      </div>
+    </div>
+    <div class="page-divider mb-3">
+      <hr class="mt-1 mb-1" />
+    </div>
+    <div class="page-body">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead class="bg-white">
+                  <tr>
+                    <th class="text-center">Id</th>
+                    <th class="text-center">Fecha</th>
+                    <th class="text-center">Acopio</th>
+                    <th class="text-center">Cantidad</th>
+                    <th class="text-center">Recogida</th>
+                    <th class="text-center">Cliente</th>
+                    <!-- <th class="text-center">Transportadora</th> -->
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody style="background-color: white">
+                  <tr
+                  *ngFor="let item of listsrequest"
+                  style="font-size: smaller"
+                >
+                  <td class="text-center">{{ item.id }}</td>
+                  <td class="text-center">
+                    {{ item.createdAt | date : "short" }}
+                  </td>
+                  <td class="text-center">{{ item.acopiCenter }}</td>
+                  <td class="text-center">{{ item.estimatedQuantity }}</td>
+                  <td class="text-center">
+                    {{ item.estimatedPickUpDate }}
+                    {{ item.estimatedPickUpTime }}
+                  </td>
+                  <td class="text-center">{{ item.client.businessName }}</td>
+                  <!-- <td class="text-left">{{ item.transporter?.name }}</td> -->
+                  <td class="text-center">
+                    <h5 *ngIf="item.status == true" style="color: white">
+                      <span class="badge bg-success2">Activo</span>
+                    </h5>
+                    <h5 *ngIf="item.status == false" style="color: white">
+                      <span class="badge bg-danger">Inactivo</span>
+                    </h5>
+                  </td>
+                  <td class="text-center">
+                    <i
+                      class="fa-solid f-larger pointer fa-pencil"
+                      (click)="createRequest(item)"
+                    ></i>
+                    <i class="fa-solid f-larger pointer fa-eye" [routerLink]="['/main/process/requestplanner', item.id]"></i>
+
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+      <div class="modal fade" id="modalRequestlogistics" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title pricolor" id="modal-title-notification"> {{ action.name | uppercase }} SOLICITUD</h5>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <h6 class="fw-bold text-uppercase mb-3">Datos de Logística</h6>
+      
+                      <div class="row">
+        
+                     <div class="col-md-12">
+                         <!-- Cambiar Recuperador -->
+                         <div class="mb-3">
+                           <label for="changeRetriever" class="form-label">Seleccionar Usuario</label>
+                           <select class="form-select" id="changeRetriever" [(ngModel)]="data.consultantId">
+                             <option *ngFor="let retriever of users" [value]="retriever.id">{{ retriever.name }}</option>
+                           </select>
+                         </div>
+        
+                     </div>
+                     <div class="col-md-12">
+                      <!-- Seleccionar Transportador -->
+                      <div class="mb-3">
+                        <label for="transporter" class="form-label">Seleccionar Transportador</label>
+                        <select class="form-select" id="transporter" [(ngModel)]="data.transporterId">
+                          <option *ngFor="let transporter of listTransportadores" [value]="transporter.id">{{ transporter.name }}</option>
+                        </select>
+                      </div>
+        
+                  </div>
+                  <div class="col-md-12">
+                    <!-- Seleccionar Transportador -->
+                    <div class="mb-3">
+                      <label for="transporter" class="form-label">Seleccionar lugar de recogidas</label>
+                      <select class="form-select" id="transporter" [(ngModel)]="data.collectionSiteId">
+                        <option *ngFor="let typeCollection of listCenters" [value]="typeCollection.id">{{ typeCollection.name }}</option>
+                      </select>
+                    </div>
+        
+                </div>
+        
+                      </div>
+                   
+                        <div class="row">
+                          <div class="col-md-12 d-flex flex-rows gap-2 justify-content-end mt-5">
+                            <button class="btn btn-md btn-dark" data-bs-dismiss="modal"> <i class="fa-solid fa-circle-xmark"></i> Cancelar </button>
+                            <button class="btn btn-md bg-success2 text-white" (click)="saveData()">Actualizar <i class="fa-solid fa-check"></i></button>
+                          </div>
+                        </div>
+                    </div>
+                    
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+  </div>
+  

@@ -1,0 +1,125 @@
+
+<div class="container">
+  <div class="page-header">
+    <div class="d-flex flex-column">
+      <h5 class="primary title noselect">ROLES</h5>
+      <p class="secundary mb-1">En este modulo podras configurar roles de acopio realizando
+        acciones como: crear | editar | eliminar | cambiar estado </p>
+    </div>
+    <div class="d-flex flex-rows gap-10">
+      <button type="button" class="btn btn-sm bg-add"
+        (click)="createAndUpdte(null)">Agregar <i
+          class="fa-solid fa-add"></i></button>
+      <button type="button" class="btn btn-sm btn-dark"
+        (click)="selectData()">Recargar <i
+          class="fa-solid fa-rotate-right"></i></button>
+    </div>
+  </div>
+  <div class="page-divider mb-3">
+    <hr class="mt-1 mb-1">
+  </div>
+  <div class="page-body">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead class="bg-white">
+                <tr>
+                  <th class="text-left"> Nombre</th>
+                  <th class="text-center"> Fecha Creación </th>
+                  <th class="text-center"> Fecha Actaulización </th>
+                  <th class="text-center"> Estado </th>
+                  <th class="text-center"> Acciones</th>
+                </tr>
+              </thead>
+              <tbody style="background-color: white;">
+                <tr *ngFor="let item of listData; let i = index"
+                  style="font-size: smaller;">
+                  <td class="text-left"> {{item.name}} </td>
+                  <td class="text-center"> {{item.createdAt |
+                    date:'EEEE dd MMM yyyy'}} </td>
+                     <td class="text-center"> {{item.updatedAt |
+                    date:'EEEE dd MMM yyyy'}} </td>
+                  <td class="text-center">
+                    <h5 *ngIf="item.status == true" style="color: white;"><span
+                        class="badge bg-success2">Activo</span></h5>
+                    <h5 *ngIf="item.status == false" style="color: white;"><span
+                        class="badge bg-danger">Inactivo</span></h5>
+                  </td>
+                  <td class="text-center ">
+                    <i class="fa-solid f-larger pointer fa-pencil"
+                      (click)="createAndUpdte(item)"></i>
+
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal fade" id="modalRol" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title pricolor" id="modal-title-notification">{{ action.name | uppercase }} CENTRO</h5>
+        </div>
+        <div class="modal-body">
+          <div class="col-md-12 pb-3">
+            <div class="row">
+              <!-- Nombre -->
+              <div class="col-md-12 mb-3">
+                <label for="nombre" class="form-label text-black">Nombre</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Nombre del Rol"
+                  autocomplete="off"
+                  name="Nombre"
+                  id="nombre"
+                  [(ngModel)]="role.name"
+                  required
+                />
+              </div>
+
+              <!-- Descripción -->
+              <div class="col-md-12 mb-3">
+                <label for="descripcion" class="form-label text-black"
+                  >Descripción</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Descripción del Rol"
+                  autocomplete="off"
+                  name="Descripcion"
+                  id="descripcion"
+                  [(ngModel)]="role.description"
+                  required
+                />
+              </div>
+            </div>
+            <div class="row mt-5">
+              <div class="col-md-12 d-flex flex-rows gap-10">
+                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="createRole()"> Crear </button>
+                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="updateRole()"> Actualizar </button>
+                <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close" (click)="close()"> Cancelar </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+</div>
+
+
+

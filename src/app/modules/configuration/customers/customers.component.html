@@ -1,0 +1,238 @@
+<div class="container">
+  <div class="page-header">
+    <div class="d-flex flex-column">
+      <h3 class="primary title noselect">CLIENTES</h3>
+      <p class="secundary mb-1">En este modulo podras configurar clientes realizando
+        acciones como: crear | editar | eliminar | cambiar estado </p>
+    </div>
+    <div class="d-flex flex-rows gap-10">
+      <button type="button" class="btn btn-sm bg-add"
+        (click)="createOrUpdateclient(null)">Agregar <i
+          class="fa-solid fa-add"></i></button>
+      <button type="button" class="btn btn-sm btn-dark"
+        (click)="selectData()">Recargar <i
+          class="fa-solid fa-rotate-right"></i></button>
+    </div>
+  </div>
+  <div class="page-divider  mb-3">
+    <hr class="mt-1 mb-1">
+  </div>
+  <div class="page-body">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead class="bg-white">
+                <tr>
+                  <th class="text-left"> Nombre</th>
+                  <th class="text-center"> Fecha de Creación </th>
+                  <th class="text-center"> Estado </th>
+                  <th class="text-center"> Acciones</th>
+                </tr>
+              </thead>
+              <tbody style="background-color: white;">
+                <tr *ngFor="let item of listData; let i = index"
+                  style="font-size: smaller;">
+                  <td class="text-left"> {{item.name}} </td>
+                  <td class="text-center"> {{item.createdAt |
+                    date:'EEEE dd MMM yyyy'}} </td>
+                  <td class="text-center">
+                    <h5 *ngIf="item.status == true" style="color: white;"><span
+                        class="badge bg-success2">Activo</span></h5>
+                    <h5 *ngIf="item.status == false" style="color: white;"><span
+                        class="badge bg-danger">Inactivo</span></h5>
+                  </td>
+                  <td class="text-center">
+                    <i class="fa-solid f-larger pointer fa-pencil"
+                      (click)="createOrUpdateclient(item)"></i>
+                    <i class="fa-solid f-larger pointer fa-sync"
+                      (click)="editState(item.id)"></i>
+                    <i class="fa-solid f-larger pointer fa-trash"
+                      (click)="removeItem(item.id)"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal fade" id="modalconfirm" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="col-md-12 text-center pb5">
+            <i class="{{action.icon}} noselect f-xx-large"
+              [style.color]="action.color"></i>
+          </div>
+          <div class="col-md-12 mt-4">
+            <div class="row">
+              <div class="col-md-12 text-center">
+                <h6><strong>¿Esta seguro que desea {{action.name | lowercase}}
+                    este item?</strong></h6>
+                <p><small>Esta acción no se podra deshacer</small></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12 d-flex justify-content-around">
+            <button class="btn btn-sm text-white btn-dark" data-dismiss="modal"
+              aria-label="Close"> Cancelar </button>
+            <button class="btn btn-sm text-white"
+              [style.background]="action.color" (click)="actionConfirm()">
+              Confirmar </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="clientModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title pricolor" id="modal-title-notification">{{action.name | uppercase}} CLIENTES </h5>
+        </div>
+        <div class="modal-body">
+          <div class="col-md-12 pb-3">
+            <div class="row">
+              <!-- Primera Fila: Nombre y Descripción -->
+              <div class="col-md-4">
+                <label for="name" class="form-label text-black">Nombre</label>
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control h-46"
+                    placeholder="Nombre"
+                    autocomplete="off"
+                    name="Name"
+                    id="name"
+                    [(ngModel)]="client.name"
+                  />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="description" class="form-label text-black">Descripción</label>
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control h-46"
+                    placeholder="Descripción"
+                    autocomplete="off"
+                    name="Description"
+                    id="description"
+                    [(ngModel)]="client.description"
+                  />
+                </div>
+              </div>
+
+              <!-- Segunda Fila: Razón Social y Tipo de Documento -->
+              <div class="col-md-4">
+                <label for="businessName" class="form-label text-black">Razón Social</label>
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control h-46"
+                    placeholder="Razón Social"
+                    autocomplete="off"
+                    name="BusinessName"
+                    id="businessName"
+                    [(ngModel)]="client.businessName"
+                  />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="documentTypeId" class="form-label text-black">Tipo de Documento</label>
+                <div class="input-group mb-3">
+                  <select
+                    class="form-select h-46"
+                    name="DocumentTypeId"
+                    id="documentTypeId"
+                    [(ngModel)]="client.documentTypeId"
+                  >
+                    <option *ngFor="let document of typeDocuments" [value]="document.id">
+                      {{ document.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Tercera Fila: País y Número de Documento -->
+              <div class="col-md-4">
+                <label for="countryId" class="form-label text-black">País</label>
+                <div class="input-group mb-3">
+                  <select
+                    class="form-select h-46"
+                    name="CountryId"
+                    id="countryId"
+                    [(ngModel)]="client.countryId"
+                  >
+                    <option *ngFor="let pais of paisData" [value]="pais.id">
+                      {{ pais.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="documentNumber" class="form-label text-black">Número de Documento</label>
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control h-46"
+                    placeholder="Número de Documento"
+                    autocomplete="off"
+                    name="DocumentNumber"
+                    id="documentNumber"
+                    [(ngModel)]="client.documentNumber"
+                  />
+                </div>
+              </div>
+
+              <!-- Cuarta Fila: Referencia WLL y Referencia PH -->
+              <div class="col-md-4">
+                <label for="referenceWLL" class="form-label text-black">Referencia WLL</label>
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control h-46"
+                    placeholder="Referencia WLL"
+                    autocomplete="off"
+                    name="ReferenceWLL"
+                    id="referenceWLL"
+                    [(ngModel)]="client.referenceWLL"
+                  />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="referencePH" class="form-label text-black">Referencia PH</label>
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control h-46"
+                    placeholder="Referencia PH"
+                    autocomplete="off"
+                    name="ReferencePH"
+                    id="referencePH"
+                    [(ngModel)]="client.referencePH"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="row mt-5">
+              <div class="col-md-12 d-flex flex-rows gap-10">
+                <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="createClient()"> Crear </button>
+                <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="updateClient()"> Actualizar </button>
+                <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+  </div>
+  </div>
+</div>

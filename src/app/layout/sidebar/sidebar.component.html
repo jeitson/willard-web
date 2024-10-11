@@ -1,0 +1,33 @@
+<aside class="sidebar" [ngClass]="{'collapsed': isCollapsed}">
+  <header>
+    <img src="assets/images/logo-dark.png" class="w-50" />
+    <a type="button" className="sidebar-burger" (click)="toggleSidebar()">
+      <i class="{{isCollapsed?'ai-radio-fill':'ai-three-line-horizontal'}}"></i>
+    </a>
+  </header>
+  <div class="profile d-grid justify-content-center text-center pb-2">
+    <img src="assets/images/default-user2.png" alt="Avatar" class="avatar m-auto">
+    <span class="infouser text-white t-small">{{name}}</span>
+    <!-- <small class="infouser text-white">{{role}}</small> -->
+  </div>
+  <ul class="menu">
+    <li *ngFor="let menu of itemsMenu">
+      <a [routerLink]="menu.route" routerLinkActive="active" *ngIf="menu.type === 'link'">
+        <i class="{{menu.icon}}"></i>
+        <p>{{menu.name}}</p>
+      </a>
+      <a *ngIf="menu.type === 'sub'">
+        <i class="{{menu.icon}}"></i>
+        <p>{{menu.name}}</p>
+        <i class="ai-chevron-down-small arrow-chevron"></i>
+      </a>
+      <div class="sub-menu" *ngIf="menu.type === 'sub' && menu.subMenu">
+        <ul>
+          <li *ngFor="let sub of menu.subMenu">
+            <a [routerLink]="[menu.route, sub.route]" routerLinkActive="active">{{sub.name}}</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</aside>

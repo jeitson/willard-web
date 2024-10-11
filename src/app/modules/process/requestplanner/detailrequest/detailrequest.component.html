@@ -1,0 +1,114 @@
+<div class="h-content">
+  <div class="container scroll">
+    <div class="d-flex justify-content-between">
+      <div>
+        <h5>Detalle de Solicitud</h5>
+      </div>
+      <div>
+        <div class="d-flex flex-rows justify-content-between gap-10">
+          <span><strong>Codigo:</strong> PHA-{{ listData?.id }}</span>
+          <span><strong>Fecha:</strong> {{ listData?.requestDate }}</span>
+          <h5 class="text-white">
+            <span class="badge bg-success2">{{ listData?.status ? 'Confirmada' : 'Pendiente' }}</span>
+          </h5>
+        </div>
+        <div class="d-flex flex-rows gap-10">
+          <span><strong>Recuperador Asignado:</strong> {{ listData?.transporter?.name || 'No asignado' }}</span>
+          <span><strong>Planeador Asignado:</strong> {{ listData?.consultant?.name || 'No asignado' }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="w-100">
+      <h5>Datos de solicitud</h5>
+      <p>{{ listData?.description }}</p>
+      <div class="d-flex flex-rows gap-10 justify-content-lg-start">
+        <div class="card bg-success2">
+          <div class="card-body">
+            <div class="d-flex flex-column text-center">
+              <span>Tipo Solicitud</span>
+              <span>{{ listData?.isSpecial ? 'Especial' : 'No Especial' }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex flex-column text-center">
+              <span>Fecha Estimado</span>
+              <span>{{ listData?.estimatedPickUpDate }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex flex-column text-center">
+              <span>Hora Estimado</span>
+              <span>{{ listData?.estimatedPickUpTime }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex flex-column text-center">
+              <span>Cantidad Estimada</span>
+              <span>{{ listData?.estimatedQuantity }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex flex-column text-center">
+              <span>Kilos Estimados</span>
+              <span>{{ listData?.estimatedKG | number}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="w-100 mt-3">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <h5>Datos Cliente</h5>
+              <div class="divider"></div>
+              <span><strong>Nit:</strong> {{ listData?.client?.taxId || 'No disponible' }}</span><br>
+              <span><strong>Razon Social:</strong> {{ listData?.client?.businessName || 'No disponible' }}</span><br>
+            </div>
+            <div class="col-md-12">
+              <h5>Observación y Recomendaciones</h5>
+              <div class="divider"></div>
+              <span><strong>Observación:</strong></span><br>
+              <span>{{ listData?.observations }}</span><br>
+              <span><strong>Recomendaciones:</strong></span><br>
+              <span>{{ listData?.recommendations }}</span><br>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <h5>Datos Recogida</h5>
+              <div class="divider"></div>
+              <span><strong>Dirección:</strong> {{ listData?.pickUpLocation || 'No disponible' }}</span><br>
+              <span><strong>Ciudad:</strong> {{ listData?.city || 'No disponible' }}</span><br>
+              <span><strong>Pais:</strong> {{ listData?.country || 'No disponible' }}</span><br>
+              <span><strong>Contacto:</strong> {{ listData?.transporter?.contactName || 'No disponible' }}</span><br>
+              <span><strong>Telefono:</strong> {{ listData?.transporter?.referencePH || 'No disponible' }}</span><br>
+              <span><strong>Email:</strong> {{ listData?.transporter?.contactEmail || 'No disponible' }}</span><br>
+              <span><strong>Aprobado:</strong> {{ listData?.transporter?.modifiedBy || 'No disponible' }}</span><br>
+            </div>
+            <div class="col-md-12">
+              <h5>Datos Transportadora</h5>
+              <div class="divider"></div>
+              <span><strong>Nit:</strong> {{ listData?.transporter?.taxId }}</span><br>
+              <span><strong>Contacto:</strong> {{ listData?.transporter?.contactName }}</span><br>
+              <span><strong>Telefono:</strong> {{ listData?.transporter?.referencePH }}</span><br>
+              <span><strong>Email:</strong> {{ listData?.transporter?.contactEmail }}</span><br>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,107 @@
+/* topbar.component.css */
+.topbar {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #fff;
+  border: none;
+  box-shadow: none;
+  z-index: 1000;
+}
+
+.topbar-content {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  padding: 0 7px;
+  border-bottom: 1px solid #dad5d5;
+  height: 73.888889px;
+  margin: 0px 10px;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+}
+
+.notification-btn,
+.fullscreen-btn {
+  margin-right: 20px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.notification-btn:hover,
+.fullscreen-btn:hover {
+  color: #41464b;
+  font-size: 1.2em;
+}
+
+.profile-dropdown {
+  position: relative;
+  border: 1px solid #cecece;
+  box-shadow: 0px 0px 7px 0px lightgrey;
+}
+
+.profile-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid #434953; /* agregar borde rojo */
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.profile-btn> span{
+  padding-right: 10px;
+}
+
+.profile-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 10px;
+  display: none;
+}
+
+.profile-dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu li {
+  margin-bottom: 10px;
+}
+
+.dropdown-menu li:last-child {
+  margin-bottom: 0;
+}
+
+.dropdown-menu a {
+  color: #333;
+  text-decoration: none;
+}
+
+.dropdown-menu a:hover {
+  color: #337ab7;
+}
+
+.animate-bell{
+  animation: tada 1.5s ease infinite;
+}
