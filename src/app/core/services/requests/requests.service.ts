@@ -29,7 +29,7 @@ export class RequestsService {
 
   // Método para actualizar una solicitud
   updateSolicitud(id: any, content: any): Observable<any> {
-    return this._api.patch(`collection-request/${id}`, content);
+    return this._api.put(`collection-request/${id}`, content);
   }
 
   // Método para eliminar una solicitud

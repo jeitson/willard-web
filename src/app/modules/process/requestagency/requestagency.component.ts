@@ -16,7 +16,7 @@ export class RequestagencyComponent {
   action = { name: 'Crear' }; // o 'Actualizar' según el caso
   viewoptions = true; // true para crear, false para actualizar
   modal: any;
-  
+
   request = {
     clientId: '',
     description: '',
@@ -51,7 +51,7 @@ export class RequestagencyComponent {
   dataId: any;
   actionSave = false;
   roleId: any;
-  isSpecialDisabled: boolean = false; 
+  isSpecialDisabled: boolean = false;
   typeProduct: any = [];
   constructor(
     private _Customers: CustomersService,
@@ -73,11 +73,10 @@ export class RequestagencyComponent {
         this.request.isSpecial = true;
       }
   }
-  
+
 
   getRequest() {
     this._requests.listSolicitudes().subscribe((response: any) => {
-      console.log(response.data.items);
       this.listsrequest = response.data.items;
     });
   }
@@ -90,7 +89,7 @@ export class RequestagencyComponent {
           console.error('Error al obtener transportadores:', error);
         },
       });
-    
+
       this._Customers.getClients().subscribe({
         next: (response: any) => {
           this.listClient = response.data.items;
@@ -99,7 +98,7 @@ export class RequestagencyComponent {
           console.error('Error al obtener clientes:', error);
         },
       });
-    
+
       this._pickUp.getPickUpLocations().subscribe({
         next: (response: any) => {
           this.listTipos = response.data.items;
@@ -108,7 +107,7 @@ export class RequestagencyComponent {
           console.error('Error al obtener tipos de recogida:', error);
         },
       });
-    
+
       this._Settings.getCatalogChildrenByKey('TIPOS_SEDES_ACOPIO').subscribe({
         next: (response: any) => {
           this.listSedes = response.data;
@@ -125,7 +124,7 @@ export class RequestagencyComponent {
           console.error('Error al obtener ciudades:', error);
         },
       });
-    
+
       this._Settings.getCatalogChildrenByKey('CIUDAD').subscribe({
         next: (response: any) => {
           this.listCiudades = response.data;
@@ -134,7 +133,7 @@ export class RequestagencyComponent {
           console.error('Error al obtener ciudades:', error);
         },
       });
-    
+
       this._Settings.getCatalogChildrenByKey('ZONA').subscribe({
         next: (response: any) => {
           this.listZonas = response.data;
@@ -160,14 +159,13 @@ export class RequestagencyComponent {
           console.error('Error al obtener tipos de sedes:', error);
         },
       });
-    
+
   }
   createRequest() {
     this.clearData();
     this.actionSave = false;
     // Lógica para crear la solicitud
     this.modal.show();
-    console.log('Creando solicitud:', this.request);
   }
 
   updateRequest(item: any) {
@@ -193,8 +191,7 @@ export class RequestagencyComponent {
       observations: item.observations,
       recommendations: item.recommendations,
   };
-  
-    console.log('Actualizando solicitud:', this.request);
+
   }
 
   selectItem(
