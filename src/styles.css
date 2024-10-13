@@ -1,7 +1,21 @@
-.page-header{
+.page-header {
   display: flex;
-  align-items: start;
-  justify-content: space-between !important;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap; /* Permite que los elementos se ajusten en una nueva fila si es necesario */
+}
+
+.page-header .d-flex.flex-column {
+  flex: 1;
+  min-width: 250px; /* Asegura que el texto tenga suficiente espacio */
+}
+
+.page-header .d-flex.flex-rows {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  min-width: 250px; /* Evita que los botones se rompan en pantallas pequeñas */
 }
 
 .gap-10{
@@ -279,3 +293,24 @@
   background: #555; /* Color del handle al pasar el ratón */
 }
 
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column; /* Apila los elementos verticalmente */
+    align-items: flex-start;
+  }
+
+  .page-header .d-flex.flex-rows {
+    justify-content: flex-start; /* Alinea los botones a la izquierda en móviles */
+    width: 100%; /* Los botones ocupan todo el ancho disponible */
+    margin-top: 15px; /* Espacio extra entre los botones y el contenido */
+  }
+
+  .page-header .d-flex.flex-column h5 {
+    margin-bottom: 10px; /* Añade espacio entre el título y la descripción */
+  }
+
+  .page-header .d-flex.flex-column p {
+    margin-bottom: 15px; /* Espacio extra entre la descripción y los botones */
+  }
+}

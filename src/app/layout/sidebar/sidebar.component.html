@@ -1,14 +1,13 @@
 <aside class="sidebar" [ngClass]="{'collapsed': isCollapsed}">
   <header>
     <img src="assets/images/logo-dark.png" class="w-50" />
-    <a type="button" className="sidebar-burger" (click)="toggleSidebar()">
+    <a type="button" id="sidebar-burger" className="sidebar-burger" (click)="toggleSidebar()">
       <i class="{{isCollapsed?'ai-radio-fill':'ai-three-line-horizontal'}}"></i>
     </a>
   </header>
   <div class="profile d-grid justify-content-center text-center pb-2">
     <img src="assets/images/default-user2.png" alt="Avatar" class="avatar m-auto">
-    <span class="infouser text-white t-small">{{name}}</span>
-    <!-- <small class="infouser text-white">{{role}}</small> -->
+    <span class="infouser text-white t-small mt-3">{{name}}</span>
   </div>
   <ul class="menu">
     <li *ngFor="let menu of items">

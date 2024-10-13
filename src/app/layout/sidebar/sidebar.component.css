@@ -68,8 +68,8 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 72px;
-  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  height: 65px;
+  /* border-bottom: 1px solid rgb(255 255 255 / 8%); */
   transition: opacity 0.4s ease;
 }
 
@@ -80,7 +80,7 @@ a {
 }
 
 .profile {
-  border-bottom: 1px dashed #838383;
+  border-bottom: 1px solid #115e3b40;
   transition: opacity 0.4s ease;
 }
 
@@ -258,4 +258,50 @@ a {
   width: 100%;
   justify-content: center;
   align-items: center;
+}
+
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 60px;
+    height: calc(100% - 60px);
+    width: 250px;
+    z-index: 1000;
+    transition: left 0.3s ease;
+  }
+
+  #sidebar-burger{
+    display: none;
+  }
+
+  .sidebar > header{
+    /* margin-top: 60px; */
+    justify-content: center;
+  }
+
+  .open {
+    left: 0; /* Visible cuando se abre */
+  }
+
+  /* Opcional: Añadir un fondo semi-transparente cuando el sidebar está abierto */
+  .overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+
+  .overlay.active {
+    display: block;
+  }
+
+  /* Ajustes para el contenido del sidebar */
+  .sidebar.collapsed {
+    width: 250px; /* Asegura que tenga el ancho completo cuando se abre en móvil */
+  }
 }

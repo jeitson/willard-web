@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Auth0Service } from 'src/app/core/services/auth0.service';
 import { StorageService } from 'src/app/core/services/storage.service';
@@ -10,6 +10,7 @@ import { StorageService } from 'src/app/core/services/storage.service';
 })
 export class TopbarComponent implements OnInit, AfterViewInit {
 
+  @Output() toggleSidebar = new EventEmitter<void>();
   name: string = '';
   role: string = '';
   user: any = {};
@@ -27,6 +28,10 @@ export class TopbarComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     // this.name = this.capitalizeTexto(JSON.parse(sessionStorage.getItem("currentUser") || '{}').name.toLowerCase());
     // this.role = JSON.parse(sessionStorage.getItem("currentUser") || '{}').role.name
+  }
+
+  onToggleSidebar() {
+    this.toggleSidebar.emit();
   }
 
   capitalizeTexto(texto: string) {

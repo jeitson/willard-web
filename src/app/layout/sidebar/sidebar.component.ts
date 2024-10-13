@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, DoCheck, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, DoCheck, ElementRef, Input, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { Auth0Service } from 'src/app/core/services/auth0.service';
@@ -11,7 +11,7 @@ import { UsersService } from 'src/app/core/services/security/users.service';
 })
 export class SidebarComponent implements OnInit, OnDestroy {
 
-  isCollapsed = false;
+  @Input() isCollapsed: boolean = false;
   itemsMenu: any[] = [
     {
       route: 'dashboard',
