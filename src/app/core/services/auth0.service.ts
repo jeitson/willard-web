@@ -128,6 +128,7 @@ export class Auth0Service {
   }
 
   logout() {
+    sessionStorage.clear();
     this.auth.logout({
       logoutParams: { returnTo: window.location.origin },
     });

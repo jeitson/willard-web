@@ -21,6 +21,7 @@
             <table class="table table-sm">
               <thead class="bg-white">
                 <tr>
+                  <th>Tipo Producto</th>
                   <th class="text-left"> Nombre</th>
                   <th class="text-center"> Fecha Creación </th>
                   <th class="text-center"> Fecha Actualización </th>
@@ -30,8 +31,8 @@
                 </tr>
               </thead>
               <tbody style="background-color: white;">
-                <tr *ngFor="let item of listData; let i = index"
-                  style="font-size: smaller;">
+                <tr *ngFor="let item of listData; let i = index" style="font-size: smaller;">
+                  <td>{{item.productTypeName}}</td>
                   <td class="text-left"> {{item.name}} </td>
                   <td class="text-center"> {{item.createdAt |
                     date:'EEEE dd MMM yyyy'}} </td>
@@ -101,7 +102,7 @@
           <div class="col-md-12 pb-3">
             <div class="row">
               <!-- First Row: TipoProductoId and UnidadMedidaId -->
-        
+
               <div class="col-md-4">
                 <label for="documentTypeId" class="form-label text-black">Tipo de
                   Producto</label>
@@ -118,7 +119,7 @@
                   </select>
                 </div>
               </div>
-   
+
               <div class="col-md-4">
                 <label for="documentTypeId" class="form-label text-black">Unidad
                   de Medida ID</label>

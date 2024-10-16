@@ -205,24 +205,30 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.authService.getUser().subscribe({
-      next: () => {
-        this.cargarMenu('0');
-        this._users.getProfile().subscribe({
-          next: response => {
-            if (response?.data) {
-              const roleId = response?.data.roles?.[0]?.roleId || null;
-              // Convertir el objeto data a una cadena JSON y guardarlo en sessionStorage
-              sessionStorage.setItem('profileData', JSON.stringify(response.data));
-              sessionStorage.setItem('RoleId', roleId);
-              this.name = JSON.parse(sessionStorage.getItem("profileData") || '{}')?.roles[0].role.name;
-              this.role = JSON.parse(sessionStorage.getItem("RoleId") || '');
-              this.cargarMenu(this.role);
+    this.role = sessionStorage.getItem("RoleId") || '';
+    if(this.role !== ''){
+      this.name = JSON.parse(sessionStorage.getItem("profileData") || '{}')?.roles[0].role.name;
+      this.cargarMenu(this.role);
+    } else {
+      this.authService.getUser().subscribe({
+        next: () => {
+          this.cargarMenu('0');
+          this._users.getProfile().subscribe({
+            next: response => {
+              if (response?.data) {
+                const roleId = response?.data.roles?.[0]?.roleId || null;
+                // Convertir el objeto data a una cadena JSON y guardarlo en sessionStorage
+                sessionStorage.setItem('profileData', JSON.stringify(response.data));
+                sessionStorage.setItem('RoleId', roleId);
+                this.name = JSON.parse(sessionStorage.getItem("profileData") || '{}')?.roles[0].role.name;
+                this.role = sessionStorage.getItem("RoleId") || '';
+                this.cargarMenu(this.role);
+              }
             }
-          }
-        });
-      }
-    })
+          });
+        }
+      })
+    }
   }
 
   ngOnDestroy(): void {
@@ -239,7 +245,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     console.log('Cargando menú para rol:', rol);
     // Carga el menú correspondiente al rol de usuario
     switch (rol.toString()) {
-      case '22':
+      case '22': //Administrator
         this.items = JSON.parse(JSON.stringify([
           {
             route: 'dashboard',
@@ -391,7 +397,61 @@ export class SidebarComponent implements OnInit, OnDestroy {
           }
         ]));
       break;
-      case '14':
+      case '20': //Recuperadora
+        this.items = JSON.parse(JSON.stringify([
+          {
+            route: 'dashboard',
+            short_label: 'D',
+            name: 'Inicio',
+            type: 'link',
+            status: true,
+            icon: 'ai-dashboard'
+          },
+          {
+            route: 'process',
+            short_label: 'P',
+            name: 'Proceso',
+            type: 'sub',
+            status: true,
+            icon: 'ai-settings-horizontal',
+            subMenu: [
+              {
+                name: 'Recepción',
+                type: 'link',
+                route: 'reception'
+              },
+            ]
+          }
+        ]));
+      break;
+      case '18': //AgenciaPh
+        this.items = JSON.parse(JSON.stringify([
+          {
+            route: 'dashboard',
+            short_label: 'D',
+            name: 'Inicio',
+            type: 'link',
+            status: true,
+            icon: 'ai-dashboard'
+          },
+          {
+            route: 'process',
+            short_label: 'P',
+            name: 'Proceso',
+            type: 'sub',
+            status: true,
+            icon: 'ai-settings-horizontal',
+            subMenu: [
+              {
+                name: 'Recepción',
+                type: 'link',
+                route: 'reception'
+              },
+            ]
+          }
+        ]));
+      break;
+      case '14': //Planeador
         this.items = JSON.parse(JSON.stringify([
           {
             route: 'dashboard',
@@ -414,11 +474,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
                 type: 'link',
                 route: 'requestplanner'
               },
+              {
+                name: 'Recepción',
+                type: 'link',
+                route: 'reception'
+              },
             ]
           }
         ]));
       break;
-      case '16':
+      case '16': //Fabrica BW
         this.items = JSON.parse(JSON.stringify([
           {
             route: 'dashboard',
@@ -445,7 +510,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
           }
         ]));
       break;
-      case '13':
+      case '13': //PH ASESOR \ PH AGENCIA
         this.items = JSON.parse(JSON.stringify([
           {
             route: 'dashboard',
@@ -472,7 +537,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
           }
         ]));
       break;
-      case '15':
+      case '15': //WILLARD LOGISTICA
         this.items = JSON.parse(JSON.stringify([
           {
             route: 'dashboard',

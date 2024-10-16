@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ProductsService } from 'src/app/core/services/process/products.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
-declare var $: any;
+declare var bootstrap: any;
 @Component({
   selector: 'wlrd-product',
   templateUrl: './product.component.html',
@@ -37,9 +37,13 @@ export class ProductComponent {
   listData: any = [];
   listProduct: any = [];
   Measure:any = [];
+  modal: any;
+  modalConfirm: any;
   constructor(private _Service: ProductsService, private _settings: SettingsService) {}
 
   ngOnInit(): void {
+    this.modal = new bootstrap.Modal(document.getElementById('modalproduct'), {backdrop: 'static', keyboard: false})
+    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false})
     this.selectData();
   }
   selectData(): void {
@@ -47,12 +51,12 @@ export class ProductComponent {
     this._Service.getProducts().subscribe({
       next: (productsResponse: any) => {
         this.listData = productsResponse.data.items;
-  
+
         // Obtener tipo de producto
         this._settings.getCatalogChildrenByKey('TIPO_PRODUCTO').subscribe({
           next: (typeProductResponse: any) => {
             this.listProduct = typeProductResponse.data;
-  
+
             // Obtener medidas
             this._settings.getCatalogChildrenByKey('UNIDAD_MEDIDA').subscribe({
               next: (medidasResponse: any) => {
@@ -73,13 +77,14 @@ export class ProductComponent {
       },
     });
   }
-  
+
 
   createOrUpdateproduct(item: any | null): void {
     this.resetUser();
     this.action.name = 'Crear';
     this.viewoptions = true;
-    $('#modalproduct').modal({backdrop: 'static', keyboard: false});
+    //$('#modalproduct').modal({backdrop: 'static', keyboard: false});
+    this.modal.show();
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
@@ -122,7 +127,8 @@ export class ProductComponent {
   }
 
   close() {
-    $('#modalproduct').modal('hide');
+    //$('#modalproduct').modal('hide');
+    this.modal.hide();
   }
 
 
@@ -162,7 +168,7 @@ export class ProductComponent {
       referenceWLL,
       referencePH,
     } = this.product;
-  
+
     return {
       id,
       productTypeId,
@@ -181,6 +187,7 @@ export class ProductComponent {
   }
 
    handleSuccess(response: any): void {
+    this.modal.hide();
     this.selectData();
     this.close();
   }
@@ -191,7 +198,7 @@ export class ProductComponent {
     this.action.value = 'delete';
     this.action.color = '#dc3545';
     this.action.icon = 'fa-solid fa-trash';
-    $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
+    this.modalConfirm.show();
   }
 
   editState(id:string){
@@ -200,7 +207,7 @@ export class ProductComponent {
     this.action.value = 'changestatus';
     this.action.color = '#ffc107';
     this.action.icon = 'fa-solid fa-sync';
-    $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
+    this.modalConfirm.show();
   }
 
   actionConfirm(){
@@ -220,7 +227,7 @@ export class ProductComponent {
     this._Service.changeProductStatus(this.itemId).subscribe({
       next: ()=>{
         this.selectData();
-        $("#modalconfirm").modal("hide");
+        this.modalConfirm.hide();
       }, error: ()=>{
 
       }
@@ -231,7 +238,7 @@ export class ProductComponent {
     this._Service.deleteProduct(this.itemId).subscribe({
       next: ()=>{
         this.selectData();
-        $("#modalconfirm").modal("hide");
+        this.modalConfirm.hide();
       }, error: ()=>{
 
       }

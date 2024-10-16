@@ -293,6 +293,11 @@
   background: #555; /* Color del handle al pasar el ratón */
 }
 
+.animate-bell{
+  animation: tada 3s ease infinite;
+}
+
+
 
 @media (max-width: 768px) {
   .page-header {

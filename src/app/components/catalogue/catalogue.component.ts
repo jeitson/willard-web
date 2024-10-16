@@ -159,7 +159,7 @@ export class CatalogueComponent implements OnInit {
         this.modal.hide();
       },
       error: (error: any) => {
-        console.error('Error al crear usuario:', error);
+        console.error('Error al crear catalogo:', error);
       },
     });
   }

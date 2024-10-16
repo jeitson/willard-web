@@ -53,7 +53,7 @@ export class UsersComponent {
       next: (usersResponse: any) => {
         const users = usersResponse.data.items;
         this.users = users;
-        this.pagination.totalItems = users.length;
+        this.pagination = usersResponse.meta;
         // Obtener todos los roles
         this.rolesService.allRoles().subscribe({
           next: (rolesResponse: any) => {

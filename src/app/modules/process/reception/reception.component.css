@@ -1,0 +1,139 @@
+.accordion {
+  width: 100%;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.accordion-item {
+  border-bottom: 1px solid #ccc;
+}
+
+.accordion-header {
+  display: block;
+  background-color: #198754;
+  color: white;
+  padding: 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #ccc;
+  font-size: 18px;
+  text-align: left;
+  transition: background-color 0.3s ease;
+}
+
+.accordion-header:hover {
+  background-color: #157a46;
+}
+
+.accordion-content {
+  overflow: hidden;
+  background-color: #f9f9f9;
+  transition: max-height 0.5s ease, padding 0.5s ease;
+}
+
+.accordion-content p {
+  margin: 0;
+  padding: 10px 0;
+}
+
+.f-xxxlarge{
+  font-size: xxx-large;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Siempre 4 columnas */
+  gap: 10px; /* Espacio entre las fotos */
+}
+
+.photo-item img {
+  width: 100%;
+  height: auto;
+  object-fit: cover; /* Asegura que la imagen se ajuste sin deformarse */
+  border-radius: 5px; /* Opcional: Bordes redondeados */
+}
+
+/* Cámara en pantalla completa */
+.camera-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 9999;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+}
+
+.capture-btn, .close-btn {
+  background-color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.capture-btn:hover, .close-btn:hover {
+  background-color: #ddd;
+}
+
+.photo-preview {
+  margin-top: 20px;
+  max-width: 100%;
+}
+
+.fixed-footer {
+  position: fixed;
+  bottom: -2px;
+  left: 250px;
+  width: calc(100% - 269px);
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  background-color: #f8f8f8;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.fixed-footer-cam {
+  position: fixed;
+  bottom: -2px;
+  left: 0px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  background-color: #f8f8f8;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+/* Asegura que siempre haya 4 columnas incluso en pantallas pequeñas */
+@media (max-width: 768px) {
+  .photo-grid {
+    grid-template-columns: repeat(3, 1fr); /* Mantener 4 columnas en pantallas medianas */
+  }
+  .fixed-footer {
+    flex-direction: row;
+    align-items: stretch;
+    left: 0px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .photo-grid {
+    grid-template-columns: repeat(3, 1fr); /* Mantener 4 columnas en pantallas pequeñas */
+  }
+}
