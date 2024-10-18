@@ -23,16 +23,17 @@ export class ReceptionComponent implements OnInit {
     referenceDoc2:'',
   }
   listTransporters: any[] = [];
-  listsReceptions: any[] = [];
   photos: any[] = [];
   listTypeProducts: any[] = [];
   listProducts: any[] = [];
+  listReceptions: any[] = [];
   products: any[] = [];
   product: any = {
     productId:'',
     quantity:''
   }
   modal: any;
+  modalloading: any;
   activeSection: string | null = null;
   editpanel = false;
   action = '';
@@ -40,14 +41,28 @@ export class ReceptionComponent implements OnInit {
   photo: string | null = null;
   videoStream: MediaStream | null = null;
   imageselect:any = {};
+  messageLoading = 'Subiendo Archivos, por favor espera...';
 
   constructor(private api: ApiService, private _toast: ToastService){}
 
   ngOnInit(){
     this.modal = new bootstrap.Modal(document.getElementById('modalevidence'), {backdrop: 'static', keyboard: false});
+    this.modalloading = new bootstrap.Modal(document.getElementById('modalLoading'), {backdrop: 'static', keyboard: false});
+    this.getReceptions();
     this.getTransporters();
     this.getProductType();
     this.getProducts();
+  }
+
+  getReceptions(){
+    this.api.get(`receptions`).subscribe({
+      next: (response: any) => {
+        this.listReceptions = response.data;
+      },
+      error: (error: any) => {
+        console.error('Error al crear usuario:', error);
+      },
+    });
   }
 
   getProductType(){
@@ -232,6 +247,23 @@ export class ReceptionComponent implements OnInit {
 
   }
 
+  base64ToBlob(base64: string, contentType: string = '', sliceSize: number = 512): Blob {
+    const byteCharacters = atob(base64); // decodificar base64
+    const byteArrays: Uint8Array[] = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+
+    return new Blob(byteArrays, { type: contentType });
+  }
+
   confirmReception(){
     if(this.photos.length === 0){
       this._toast.info('Importante', 'Debe adjuntar evidencias para la recepción')
@@ -247,10 +279,31 @@ export class ReceptionComponent implements OnInit {
       this._toast.info('Importante', 'Debe indicar la cantidad de almenos un producto para la recepción');
       return;
     }
+    this.modalloading.show();
+    const formData = new FormData();
+    this.photos.map(item => ({url: item.url.replace(/^data:image\/[a-zA-Z]+;base64,/, '')})).forEach((base64String, index) => {
+      // Aquí asumimos que son imágenes, puedes cambiar el 'image/png' según el tipo de archivo
+      const blob = this.base64ToBlob(base64String.url, 'image/png');
+      // Adjunta el blob al FormData, nombrando cada archivo con un índice u otro identificador
+      formData.append(`file${index}`, blob, `image${index}.png`);
+    });
+    this.api.postWithReturnData(`files/upload`, formData).subscribe({
+      next: (response: any) => {
+        this.messageLoading = 'Recepcionando productos, por favor espera...'
+        this.saveReception(response);
+      },
+      error: (error: any) => {
+        this.modalloading.hide();
+        console.error('Error al subir archivos:', error);
+      }
+    });
+  }
+
+  saveReception(photos: any[]){
     const data = {
       ...this.receptionForm,
       details: this.products,
-      photos: this.photos.map(item => ({url: item.url.replace(/^data:image\/[a-zA-Z]+;base64,/, '')})),
+      photos: photos,
     };
     this.api.post(`receptions`, data).subscribe({
       next: (response: any) => {
@@ -258,10 +311,13 @@ export class ReceptionComponent implements OnInit {
         this.action = 'listar';
       },
       error: (error: any) => {
+        this.modalloading.hide();
         console.error('Error al guardar la recepción:', error);
       }
     });
   }
+
+
 
 
 }

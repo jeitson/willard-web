@@ -117,8 +117,6 @@
 .scroll{
   overflow-y: auto;
   overflow-x: hidden;
-  min-height: 100%;
-  height: 100%;
 }
 
 .bg-cancel{
@@ -271,8 +269,8 @@
 
 /* Estilo para Firefox */
 .scroll {
-  scrollbar-width: thin; /* Ancho del scrollbar */
-  scrollbar-color: #888 #f1f1f1; /* Color del handle y del track */
+  scrollbar-width: thin;
+  scrollbar-color: #115e3b #69b190;
 }
 
 /* Estilo para el track en Firefox */
@@ -318,4 +316,78 @@
   .page-header .d-flex.flex-column p {
     margin-bottom: 15px; /* Espacio extra entre la descripción y los botones */
   }
+}
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #343a40;
+}
+
+
+.loader {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.circle {
+  position: absolute;
+  border: 3px solid;
+  border-radius: 50%;
+  opacity: 1;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.circle1 {
+  width: 40px;
+  height: 40px;
+  border-color: #ffed00;
+  top: 20px;
+  left: 20px;
+  animation-delay: 0s;
+}
+
+.circle2 {
+  width: 60px;
+  height: 60px;
+  border-color: #333;
+  top: 10px;
+  left: 10px;
+  animation-delay: 0.3s;
+}
+
+.circle3 {
+  width: 80px;
+  height: 80px;
+  border-color: #17d657;
+  top: 0;
+  left: 0;
+  animation-delay: 0.6s;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.loader-message {
+  margin-top: 20px;
+  font-size: 1em;
+  color: white;
+  font-weight: 500;
+  text-align: center;
 }

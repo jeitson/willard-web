@@ -9,6 +9,9 @@ import { map } from 'rxjs';
   styleUrls: ['./landing.component.scss'],
 })
 export class LandingComponent implements AfterViewInit, OnInit {
+
+  loading = true;
+
   constructor(public auth: AuthService, private router: Router){
 
   }
@@ -16,8 +19,11 @@ export class LandingComponent implements AfterViewInit, OnInit {
   ngAfterViewInit(){
     this.auth.isAuthenticated$.subscribe(isAuthenticaded => {
       if (isAuthenticaded) {
+        this.loading = true;
         window.history.replaceState({}, document.title, window.location.pathname);
         this.router.navigate(['/main/dashboard']);
+      } else {
+        this.loading = false;
       }
     })
   }

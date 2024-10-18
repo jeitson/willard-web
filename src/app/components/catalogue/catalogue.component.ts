@@ -1,4 +1,5 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ApiService } from 'src/app/core/services/api/api.service';
 declare var $: any;
 
@@ -9,7 +10,7 @@ declare var bootstrap: any;
   templateUrl: './catalogue.component.html',
   styleUrls: ['./catalogue.component.scss']
 })
-export class CatalogueComponent implements OnInit, OnDestroy {
+export class CatalogueComponent implements OnInit, OnChanges, AfterViewInit {
 
   @Input() key:string = '';
   @Input() parent:string = '';
@@ -55,7 +56,20 @@ export class CatalogueComponent implements OnInit, OnDestroy {
   activeselect:boolean = true;
   modal: any;
   modalConfirm: any;
-  constructor(private api: ApiService){}
+  constructor(private api: ApiService, private cdr: ChangeDetectorRef, private router: Router){
+
+  }
+
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+
+    if (changes['key'] || changes['parent']) {
+      this.updateModalContent();
+    }
+  }
 
   ngOnDestroy(): void {
     // Limpia los valores al destruir el componente
@@ -74,6 +88,11 @@ export class CatalogueComponent implements OnInit, OnDestroy {
     if(this.parent !== 'null'){
       this.listParent();
     }
+  }
+
+  updateModalContent() {
+    // Asegúrate de que el contenido del modal se actualice antes de mostrarlo
+    this.cdr.detectChanges(); // Asegúrate de que Angular detecte los cambios
   }
 
   listKey(){
@@ -115,7 +134,10 @@ export class CatalogueComponent implements OnInit, OnDestroy {
     }
     this.viewoptions = true;
     this.action.name = 'Crear';
-    this.modal.show();
+    this.updateModalContent();
+    setTimeout(() => {
+      this.modal.show();
+    }, 1000);
   }
 
   backToList(){
@@ -129,6 +151,7 @@ export class CatalogueComponent implements OnInit, OnDestroy {
     this.viewoptions = false;
     this.action.name = 'Actualizar';
     this.modal.show();
+    this.cdr.detectChanges();
   }
 
   removeItem(id:string){
@@ -137,7 +160,6 @@ export class CatalogueComponent implements OnInit, OnDestroy {
     this.action.value = 'delete';
     this.action.color = '#dc3545';
     this.action.icon = 'fa-solid fa-trash';
-    $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
     this.modalConfirm.show();
   }
 
@@ -147,7 +169,6 @@ export class CatalogueComponent implements OnInit, OnDestroy {
     this.action.value = 'changestatus';
     this.action.color = '#ffc107';
     this.action.icon = 'fa-solid fa-sync';
-    $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
     this.modalConfirm.show();
   }
 
@@ -186,7 +207,6 @@ export class CatalogueComponent implements OnInit, OnDestroy {
     this.api.put(`catalogs/${this.item.id}`, data).subscribe({
       next: (response: any) => {
         this.listKey();
-        //$("#modallist").modal("hide");
         this.modal.hide();
       },
       error: (error: any) => {
