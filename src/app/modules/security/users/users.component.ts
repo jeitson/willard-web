@@ -3,6 +3,7 @@ import { RolesService } from 'src/app/core/services/security/roles.service';
 import { UsersService } from 'src/app/core/services/security/users.service';
 import { Observable, Subject, forkJoin, fromEvent, identity } from 'rxjs';
 import { ToastService } from 'src/app/core/services/toast.service';
+import { ApiService } from 'src/app/core/services/api/api.service';
 
 declare var bootstrap: any;
 @Component({
@@ -19,15 +20,23 @@ export class UsersComponent {
   actionModal: string = '';
   showForm = false;
   users: any[] = [];
+  collectionSites = '';
+  role = '';
+  userId = '';
   user = {
-    id: null,
-    authId: '',
+    oauthId: '',
     name: '',
     description: '',
+    cellphone: '',
     email: '',
-    role: '',
+    password: '',
+    referenceWLL: '',
+    referencePH: '',
+    roles: [],
+    collectionSites: []
   };
   listData: any;
+  listCollections: any[] = [];
   viewoptions = true;
   action: any = {
     icon: '',
@@ -40,11 +49,24 @@ export class UsersComponent {
     private userService: UsersService,
     private rolesService: RolesService,
     private _toast: ToastService,
+    private http: ApiService
   ) {}
 
   ngOnInit(): void {
     this.modal = new bootstrap.Modal(document.getElementById('userModal'), {backdrop: 'static', keyboard: false})
     this.selectData();
+    this.listCollectionCopy();
+  }
+
+  listCollectionCopy(){
+    this.http.get('collection-sites').subscribe({
+      next: (response: any) => {
+        this.listCollections = response.data.items;
+      },
+      error: (error: any) => {
+        console.error('Error al obtener centros de recolección:', error);
+      },
+    });
   }
 
   selectData(): void {
@@ -79,24 +101,34 @@ export class UsersComponent {
     this.viewoptions = true;
     this.modal.show();
     if (item != null) {
+      this.userId = item.id;
+      this.role = item.roles[0].roleId
       this.action.name = 'Actualizar';
       this.viewoptions = false;
       this.user = {
-        id: item.id ?? '',
-        authId: null ?? '',
-        name: item.name ?? '',
-        description: item.description ?? '',
-        email: item.email ?? '',
-        role: item.roles?.[0]?.roleId ?? '',
+        oauthId: item.oauthId,
+        name: item.name,
+        description: item.description,
+        cellphone: item.cellphone,
+        email: item.email,
+        password: item.password,
+        referenceWLL: item.referenceWLL,
+        referencePH: item.referencePH,
+        roles: item.roles,
+        collectionSites: item.collectionSites,
       };
     }
   }
 
 
   updateeUser(): void {
-    if (this.user.id) {
+      const data = {
+        ...this.user,
+        roles: [Number(this.role)],
+        collectionSites: [Number(this.collectionSites)]
+      }
       this.userService
-        .updateUser(this.user.id, this.geteUserPayload())
+        .updateUser(this.userId, data)
         .subscribe({
           next: (response: any) => {
             this.selectData();
@@ -106,11 +138,15 @@ export class UsersComponent {
           error: (error: any) =>
             console.error('Error al actualizar el registro:', error),
         });
-    }
   }
 
   createeUser(): void {
-    this.userService.createUser(this.geteUserPayload()).subscribe({
+    const data = {
+      ...this.user,
+      roles: [Number(this.role)],
+      collectionSites: [Number(this.collectionSites)]
+    }
+    this.userService.createUser(data).subscribe({
       next: (response: any) => {
         this.selectData();
         this.modal.hide();
@@ -121,26 +157,18 @@ export class UsersComponent {
     });
   }
 
-  geteUserPayload() {
-    const { id, authId, name, description, email, role } = this.user;
-
-    return {
-      authId,
-      name,
-      description,
-      email,
-      roles: [Number(role)],
-    };
-  }
-
   resetUser(): void {
     this.user = {
-      id: null,
-      authId: '',
+      oauthId: '',
       name: '',
       description: '',
+      cellphone: '',
       email: '',
-      role: '',
-    };
+      password: '',
+      referenceWLL: '',
+      referencePH: '',
+      roles: [],
+      collectionSites: []
+    }
   }
 }

@@ -62,7 +62,7 @@
                     <h5 class="modal-title pricolor" id="modal-title-notification">{{action.name | uppercase}} {{keyspanish | uppercase}}</h5>
                 </div>
                 <div class="modal-body">
-                    <h6 style="text-transform: none; font-weight: 300;">A través de esta funcionalidad podrá realizar el proceso de {{action.name}} de {{keyspanish}}. Diligenciar la información y seleccionar la opción {{action.name | lowercase}}.</h6>
+                    <h6 style="text-transform: none; font-weight: 300;">A través de esta funcionalidad podrá realizar el proceso de {{action.name === 'Crear'?'creación':'actualización'}}. Diligenciar la información y seleccionar la opción {{action.name | lowercase}}.</h6>
                     <div class="col-md-12">
                         <div>
                             <div class="row">

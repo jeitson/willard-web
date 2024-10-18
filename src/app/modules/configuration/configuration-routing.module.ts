@@ -4,147 +4,168 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
 		path: 'country',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./country/country.module').then(
 				({ CountryModule }) => CountryModule,
 			),
 	},
   {
 		path: 'department',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./department/department.module').then(
 				({ DepartmentModule }) => DepartmentModule,
 			),
 	},
   {
 		path: 'city',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./city/city.module').then(
 				({ CityModule }) => CityModule,
 			),
 	},
   {
 		path: 'headquartercopy',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./headquartercopy/headquartercopy.module').then(
 				({ HeadquartercopyModule }) => HeadquartercopyModule,
 			),
 	},
   {
 		path: 'specialreason',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./special-reason/special-reason.module').then(
 				({ SpecialReasonModule }) => SpecialReasonModule,
 			),
 	},
   {
 		path: 'locationdeparture',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./locationdeparture/locationdeparture.module').then(
 				({ LocationdepartureModule }) => LocationdepartureModule,
 			),
 	},
   {
 		path: 'typedocuments',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./typedocuments/typedocuments.module').then(
 				({ TypedocumentsModule }) => TypedocumentsModule,
 			),
 	},
   {
 		path: 'typeevidence',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./typeevidence/typeevidence.module').then(
 				({ TypeevidenceModule }) => TypeevidenceModule,
 			),
 	},
   {
 		path: 'typeguide',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./typeguide/typeguide.module').then(
 				({ TypeguideModule }) => TypeguideModule,
 			),
 	},
   {
 		path: 'typeproducts',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./typeproducts/typeproducts.module').then(
 				({ TypeproductsModule }) => TypeproductsModule,
 			),
 	},
   {
 		path: 'unitymetrics',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./unitymetrics/unitymetrics.module').then(
 				({ UnitymetricsModule }) => UnitymetricsModule,
 			),
 	},
   {
 		path: 'zone',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./zone/zone.module').then(
 				({ ZoneModule }) => ZoneModule,
 			),
 	},
   {
 		path: 'trucktype',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./trucktype/trucktype.module').then(
 				({ TrucktypeModule }) => TrucktypeModule,
 			),
 	},
   {
 		path: 'typecustomer',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./typecustomer/typecustomer.module').then(
 				({ TypecustomerModule }) => TypecustomerModule,
 			),
 	},
   {
 		path: 'routestatus',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./routestatus/routestatus.module').then(
 				({ RoutestatusModule }) => RoutestatusModule,
 			),
 	},
   {
 		path: 'customer',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('../configuration/customers/customers.module').then(
 				({ CustomersModule }) => CustomersModule,
 			),
 	},
 	{
 		path: 'collection',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('./collection-centers/collection-centers.module').then(
 				({ CollectionCentersModule }) => CollectionCentersModule,
 			),
 	},
 	{
 		path: 'product',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('../configuration/product/product.module').then(
 				({ ProductModule }) => ProductModule,
 			),
 	},
 	{
 		path: 'conveyor',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('../configuration/conveyor/conveyor.module').then(
 				({ ConveyorModule }) => ConveyorModule,
 			),
 	},
 	{
 		path: 'adviser',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('../configuration/adviser/adviser.module').then(
 				({ AdviserModule }) => AdviserModule,
 			),
 	},
 	{
 		path: 'pickuplocation',
-		loadChildren: () =>
+		data: { reuse: false },
+    loadChildren: () =>
 			import('../configuration/pickuplocation/pickuplocation.module').then(
 				({ PickuplocationModule }) => PickuplocationModule,
 			),
@@ -153,6 +174,6 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class ConfigurationRoutingModule { }

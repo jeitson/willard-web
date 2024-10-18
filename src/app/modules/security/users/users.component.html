@@ -90,8 +90,14 @@
               </div>
               <div class="mb-3">
                 <label for="role" class="form-label">Rol</label>
-                <select class="form-control form-select"  [(ngModel)]="user.role">
+                <select class="form-control form-select"  [(ngModel)]="role">
                   <option *ngFor="let item of listData" [value]="item.id">{{item.name}}</option>
+                </select>
+              </div>
+              <div class="mb-3" *ngIf="role === '18'">
+                <label for="role" class="form-label">Sede Acopio</label>
+                <select class="form-control form-select"  [(ngModel)]="collectionSites">
+                  <option *ngFor="let item of listCollections" [value]="item.id">{{item.name}}</option>
                 </select>
               </div>
             </div>

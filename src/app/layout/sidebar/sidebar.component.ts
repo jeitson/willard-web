@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, DoCheck, ElementRef, Input, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, DoCheck, ElementRef, HostListener, Input, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 import { Auth0Service } from 'src/app/core/services/auth0.service';
@@ -158,6 +158,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
           name: 'Solicitudes (logistics)',
           type: 'link',
           route: 'requestlogistics'
+        },
+        {
+          name: 'Recepción',
+          type: 'link',
+          route: 'reception'
         }
       ]
     },
@@ -204,6 +209,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    this.isCollapsed = false;
+    // console.log(`Nueva anchura: ${width}px, nueva altura: ${height}px`);
+  }
+
   ngOnInit(): void {
     this.role = sessionStorage.getItem("RoleId") || '';
     if(this.role !== ''){
@@ -217,7 +230,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
             next: response => {
               if (response?.data) {
                 const roleId = response?.data.roles?.[0]?.roleId || null;
-                // Convertir el objeto data a una cadena JSON y guardarlo en sessionStorage
                 sessionStorage.setItem('profileData', JSON.stringify(response.data));
                 sessionStorage.setItem('RoleId', roleId);
                 this.name = JSON.parse(sessionStorage.getItem("profileData") || '{}')?.roles[0].role.name;

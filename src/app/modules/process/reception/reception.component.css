@@ -54,6 +54,10 @@
   border-radius: 5px; /* Opcional: Bordes redondeados */
 }
 
+.h-auto{
+  height: auto !important;
+}
+
 /* Cámara en pantalla completa */
 .camera-overlay {
   position: fixed;

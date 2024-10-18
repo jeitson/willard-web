@@ -37,14 +37,13 @@
                 </thead>
                 <tbody style="background-color: white;">
                   <!-- <tr *ngFor="let item of listsReceptions | paginate: { itemsPerPage: totalItemsRender, currentPage: p }; let i = index;"> -->
-                    <tr *ngFor="let item of listsReceptions; let i = index;">
-                        <td class="text-center"> {{item.id}} </td>
+                    <tr *ngFor="let item of listReceptions; let i = index;">
+                        <td class="text-center"> {{item.guideNumber}} </td>
                         <td class="text-center"> {{item.createdAt | date:'short'}} </td>
-                        <td class="text-left"> {{item.acopiCenter }} </td>
-                        <td class="text-center"> {{item.estimatedQuantity }} </td>
-                        <td class="text-left"> {{item.estimatedPickUpDate}} {{item.estimatedPickUpTime}} </td>
-                        <td class="text-left"> {{item.customer }} </td>
-                        <td class="text-left"> {{ item.transporter?.name }} </td>
+                        <td class="text-left"> {{item.transporter.name }} </td>
+                        <td class="text-center"> {{item.licensePlate }} </td>
+                        <td class="text-left"> {{item.driver}}</td>
+                        <td class="text-left"> </td>
                         <td class="text-center">
                             <h5 *ngIf="item.status == true" style="color: white;"><span class="badge bg-success2 t-small">Activo</span></h5>
                             <h5 *ngIf="item.status == false" style="color: white;"><span class="badge bg-danger t-small">Inactivo</span></h5>
@@ -218,3 +217,20 @@
 </div>
 
 <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none" (change)="onFileSelected($event)">
+
+<div class="modal fade" id="modalLoading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+      <div class="modal-content">
+          <div class="modal-body p-0">
+            <div class="loader-container pt-4 h-auto">
+              <div class="loader">
+                <div class="circle circle1"></div>
+                <div class="circle circle2"></div>
+                <div class="circle circle3"></div>
+              </div>
+              <p class="loader-message">{{messageLoading}}</p>
+            </div>
+          </div>
+      </div>
+  </div>
+</div>

@@ -5,6 +5,8 @@ import { CatalogueRoutingModule } from './catalogue-routing.module';
 import { CatalogueComponent } from './catalogue.component';
 import { FormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { RouteReuseStrategy } from '@angular/router';
+import { CustomReuseStrategy } from 'src/app/core/utils/custon-ruse.strategy';
 
 
 @NgModule({
@@ -19,6 +21,6 @@ import { NgxPaginationModule } from 'ngx-pagination';
   ],
   exports: [
     CatalogueComponent
-  ]
+  ],
 })
 export class CatalogueModule { }

@@ -9,7 +9,7 @@
     <img src="assets/images/default-user2.png" alt="Avatar" class="avatar m-auto">
     <span class="infouser text-white t-small mt-3">{{name}}</span>
   </div>
-  <ul class="menu">
+  <ul class="menu scroll">
     <li *ngFor="let menu of items">
       <a [routerLink]="menu.route" routerLinkActive="active" *ngIf="menu.type === 'link'">
         <i class="{{menu.icon}}"></i>
