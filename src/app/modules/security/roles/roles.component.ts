@@ -2,6 +2,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { RolesService } from 'src/app/core/services/security/roles.service';
 import { Observable, Subject, forkJoin, fromEvent } from 'rxjs';
+import { ToastService } from 'src/app/core/services/toast.service';
 declare var bootstrap: any;
 @Component({
   selector: 'wlrd-roles',
@@ -270,7 +271,7 @@ export class RolesComponent implements OnInit {
   modules: any[] = [];
   modal: any;
   mmenu: any;
-  constructor(private _rolesService: RolesService) {}
+  constructor(private _rolesService: RolesService, private _toast: ToastService) {}
   ngOnInit(): void {
     this.modal = new bootstrap.Modal(document.getElementById('modalRol'), {backdrop: 'static', keyboard: false});
     this.mmenu = new bootstrap.Modal(document.getElementById('modalMenu'), {backdrop: 'static', keyboard: false});
@@ -303,9 +304,13 @@ export class RolesComponent implements OnInit {
   }
 
   openModalMenu(item: any){
-    this.modules = JSON.parse(JSON.stringify([]));
-    this.modules = this.preloadModules(item.menu)
-    this.mmenu.show();
+    if(item.menu.length > 0){
+      this.modules = JSON.parse(JSON.stringify([]));
+      this.modules = this.preloadModules(item.menu)
+      this.mmenu.show();
+    } else {
+      this._toast.info('Importante', 'No hay menu asignado para este rol');
+    }
   }
 
   createAndUpdte(item: any | null): void {
