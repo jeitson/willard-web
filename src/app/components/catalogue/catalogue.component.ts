@@ -75,8 +75,10 @@ totalPages: number = 0; // Total de páginas
   }
 
   ngOnInit(): void {
-    this.listKey();
-    this.listParent();
+   this.listKey();
+    if(this.parent !== 'null'){
+      this.listParent();
+    }
   }
 
   listKey() {
