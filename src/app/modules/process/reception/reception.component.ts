@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/services/api/api.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 
@@ -27,11 +28,15 @@ export class ReceptionComponent implements OnInit {
   listTypeProducts: any[] = [];
   listProducts: any[] = [];
   listReceptions: any[] = [];
+  listBase: any[] = [];
+
   products: any[] = [];
   product: any = {
     productId:'',
     quantity:''
   }
+  searchTerm$ = new Subject<any>();
+  searchTerm: string = ''; // Para almacenar el texto de búsqueda
   modal: any;
   modalloading: any;
   activeSection: string | null = null;
@@ -43,21 +48,31 @@ export class ReceptionComponent implements OnInit {
   imageselect:any = {};
   messageLoading = 'Subiendo Archivos, por favor espera...';
 
+
+  // paginacion
+  currentPage: number = 1; // Página actual
+  itemsPerPage: number = 5; // Cantidad de elementos por página
+  totalPages: number = 0; // Total de páginas
+  totalItems = 0;
+  paginatedList: any = [];
   constructor(private api: ApiService, private _toast: ToastService){}
 
   ngOnInit(){
     this.modal = new bootstrap.Modal(document.getElementById('modalevidence'), {backdrop: 'static', keyboard: false});
     this.modalloading = new bootstrap.Modal(document.getElementById('modalLoading'), {backdrop: 'static', keyboard: false});
-    this.getReceptions();
+    this.getReceptions(this.currentPage);
     this.getTransporters();
     this.getProductType();
     this.getProducts();
   }
 
-  getReceptions(){
-    this.api.get(`receptions`).subscribe({
+  getReceptions(item: any){
+    this.api.get(`receptions?page=${item}`).subscribe({
       next: (response: any) => {
         this.listReceptions = response.data.items;
+        this.listBase = this.listReceptions; // Guardamos la lista original para filtrar
+        this.totalItems = this.listReceptions.length; // Total de solicitudes
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
       },
       error: (error: any) => {
         console.error('Error al crear usuario:', error);
@@ -325,6 +340,46 @@ export class ReceptionComponent implements OnInit {
   }
 
 
-
+    // paginación
+    updatePaginatedList() {
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      const endIndex = startIndex + this.itemsPerPage;
+      this.paginatedList = this.listReceptions.slice(startIndex, endIndex);
+    }
+  
+    goToPage(page: number) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+        // this.updatePaginatedList();
+        this.getReceptions(page);
+      }
+    }
+  
+    onPageChange(event: Event) {
+      const selectElement = event.target as HTMLSelectElement;
+      const selectedPage = Number(selectElement.value);
+      this.goToPage(selectedPage);
+    }
+  
+    get pagesArray() {
+      return Array(this.totalPages)
+        .fill(0)
+        .map((x, i) => i + 1);
+    }
+  onSearchChange(value: string): void {
+    if (!value) {
+      this.listReceptions = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
+    } else {
+      this.listReceptions = this.listBase.filter((item: any) => {
+        const itemValues: any = Object.values(item);
+        return itemValues.some((val: string) =>
+          String(val).toLowerCase().includes(value.toLowerCase())
+        );
+      });
+    }
+    this.currentPage = 1; // Reinicia a la primera página
+    this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
+  }
+  
 
 }
