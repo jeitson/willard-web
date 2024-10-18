@@ -75,6 +75,12 @@ totalPages: number = 0; // Total de páginas
   }
 
   ngOnInit(): void {
+    this.modal = new bootstrap.Modal(document.getElementById('modallist'), {backdrop: 'static', keyboard: false})
+    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false})
+    this.listKey();
+    if(this.parent !== 'null'){
+      this.listParent();
+    }
   }
 
   listKey() {

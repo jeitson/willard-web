@@ -19,6 +19,13 @@
       <div class="row">
         <div class="col-md-12">
           <div class="table-responsive">
+            <div class="mb-3 col-4">
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                placeholder="Buscar..."
+              />
+            </div>
             <table class="table table-sm">
               <thead class="bg-white">
                 <tr>
@@ -36,7 +43,7 @@
                   <td colspan="8" class="text-center">No hay registros disponibles.</td>
                 </tr>
                 <tr *ngFor="let item of listData; let i = index" style="font-size: smaller;">
-                  <td>{{item.productTypeName}}</td>
+                  <td>{{item.productType?.name}}</td>
                   <td class="text-left"> {{item.name}} </td>
                   <td class="text-center"> {{item.createdAt |
                     date:'EEEE dd MMM yyyy'}} </td>
@@ -59,6 +66,32 @@
                 </tr>
               </tbody>
             </table>
+            <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-between">
+                <div class="d-flex align-items-center">
+                  <li class="page-item d-flex align-items-center">
+                    <span class="me-2">Pag</span>
+                    <select class="form-select form-select-sm me-2">
+                      <option *ngFor="let i of [0, 1]" [value]="i">{{ i }}</option>
+                    </select>
+                    <span class="me-2">de</span>
+                    <span>{{ 1 }}</span>
+                  </li>
+                </div>
+                <div class="d-flex">
+                  <li class="page-item" [class.disabled]="currentPage === 1">
+                    <a class="page-link">
+                      <i class="fa-solid fa-angle-left"></i>
+                    </a>
+                  </li>
+                  <li class="page-item" [class.disabled]="currentPage === 1">
+                    <a class="page-link">
+                      <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                  </li>
+                </div>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
@@ -251,9 +284,9 @@
             </div>
             <div class="row mt-5">
               <div class="col-md-12 d-flex flex-rows gap-10">
+                <button class="btn btn-sm btn-dark" data-bs-dismiss="modal"> Cerrar</button>
                 <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="createProduct()"> Crear </button>
                 <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false " (click)="updateProduct()"> Actualizar </button>
-                <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
               </div>
             </div>
           </div>

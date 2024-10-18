@@ -370,11 +370,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
                 type: 'link',
                 route: 'conveyor'
               },
-              {
-                name: 'Asesor',
-                type: 'link',
-                route: 'adviser'
-              },
+              // {
+              //   name: 'Asesor',
+              //   type: 'link',
+              //   route: 'adviser'
+              // },
               {
                 name: 'Lugares de Recogida',
                 type: 'link',

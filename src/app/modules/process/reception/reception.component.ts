@@ -47,7 +47,6 @@ export class ReceptionComponent implements OnInit {
   videoStream: MediaStream | null = null;
   imageselect:any = {};
   messageLoading = 'Subiendo Archivos, por favor espera...';
-<<<<<<< HEAD
 
 
   // paginacion
@@ -56,10 +55,8 @@ export class ReceptionComponent implements OnInit {
   totalPages: number = 0; // Total de páginas
   totalItems = 0;
   paginatedList: any = [];
-=======
   role: string = '';
   headacopi: any = '';
->>>>>>> db7b1520bfb4838a274a5bf530ed2a1ef0a31849
   constructor(private api: ApiService, private _toast: ToastService){}
 
   ngOnInit(){

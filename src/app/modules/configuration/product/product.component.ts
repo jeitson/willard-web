@@ -17,6 +17,7 @@ export class ProductComponent {
     value:'',
     color:''
   };
+  currentPage = 1;
   itemId: string = '';
   product = {
     id: null,

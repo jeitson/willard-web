@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CustomersService } from 'src/app/core/services/process/customers.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
-declare var $: any;
+declare var bootstrap: any;
 @Component({
   selector: 'wlrd-customers',
   templateUrl: './customers.component.html',
@@ -11,6 +11,8 @@ export class CustomersComponent {
   switchSection: string = 'List';
   actionModal: string = '';
   showForm = false;
+  modal: any;
+  modalConfirm: any;
   action: any = {
     icon:'',
     name:'',
@@ -30,7 +32,7 @@ export class CustomersComponent {
     referencePH: '',
   };
 
-
+  currentPage= 1;
   listData: any = [];
   paisData: any = [];
   typeDocuments: any = [];
@@ -41,7 +43,10 @@ export class CustomersComponent {
   ) {}
 
   ngOnInit(): void {
+    this.modal = new bootstrap.Modal(document.getElementById('clientModal'), {backdrop: 'static', keyboard: false})
+    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false})
     this.selectData();
+
   }
 
   selectData(): void {
@@ -79,7 +84,7 @@ export class CustomersComponent {
     this.resetUser();
     this.action.name = 'Crear';
     this.viewoptions = true;
-    $('#clientModal').modal({backdrop: 'static', keyboard: false});
+    this.modal.show();
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
@@ -116,7 +121,7 @@ export class CustomersComponent {
   }
 
   close() {
-    $('#clientModal').modal('hide');
+    this.modal.hide();
   }
 
 
@@ -176,7 +181,7 @@ export class CustomersComponent {
     this.action.value = 'delete';
     this.action.color = '#dc3545';
     this.action.icon = 'fa-solid fa-trash';
-    $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
+    this.modalConfirm.show();
   }
 
   editState(id:string){
@@ -185,7 +190,7 @@ export class CustomersComponent {
     this.action.value = 'changestatus';
     this.action.color = '#ffc107';
     this.action.icon = 'fa-solid fa-sync';
-    $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
+    this.modalConfirm.show();
   }
 
   actionConfirm(){
@@ -205,7 +210,7 @@ export class CustomersComponent {
     this._Service.changeClientStatus(this.itemId).subscribe({
       next: ()=>{
         this.selectData();
-        $("#modalconfirm").modal("hide");
+        this.modalConfirm.hide();
       }, error: ()=>{
 
       }
@@ -216,7 +221,7 @@ export class CustomersComponent {
     this._Service.deleteClient(this.itemId).subscribe({
       next: ()=>{
         this.selectData();
-        $("#modalconfirm").modal("hide");
+        this.modalConfirm.hide();
       }, error: ()=>{
 
       }

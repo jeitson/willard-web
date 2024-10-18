@@ -29,6 +29,7 @@ export class CollectionCentersComponent {
   };
   listData: any = [];
   viewoptions = true;
+  currentPage = 1;
   action: any = {
     icon: '',
     name: '',

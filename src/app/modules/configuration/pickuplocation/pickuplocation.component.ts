@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { AdviserService } from 'src/app/core/services/process/adviser.service';
 import { CustomersService } from 'src/app/core/services/process/customers.service';
+import { UsersService } from 'src/app/core/services/security/users.service';
 import { PickuplocationService } from 'src/app/core/services/settings/pickuplocation.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
-declare var $: any;
+// declare var $: any;
+declare var bootstrap: any;
 
 @Component({
   selector: 'wlrd-pickuplocation',
@@ -51,96 +53,104 @@ export class PickuplocationComponent {
   listData: any = [];
   listProduct: any = [];
   Measure: any = [];
+  currentPage = 1;
+  modal: any;
+  modalConfirm: any;
   constructor(
     private _Service: PickuplocationService,
     private _Customers: CustomersService,
     private _Adviser: AdviserService,
-    private _Settings: SettingsService
+    private _Settings: SettingsService,
+    private userService: UsersService,
   ) {}
 
   ngOnInit(): void {
+    this.modal = new bootstrap.Modal(document.getElementById('modalPickup'), {
+      backdrop: 'static',
+      keyboard: false,
+    });
+    this.modalConfirm = new bootstrap.Modal(
+      document.getElementById('modalconfirm'),
+      { backdrop: 'static', keyboard: false }
+    );
     this.selectData();
   }
 
   selectData(): void {
+    this.getPickUpLocations();
+    this.getClients();
+    this.getConsultants();
+    this.getCatalogChildren('TIPO_LUGAR_RECOGIDA');
+    this.getCatalogChildren('TIPOS_SEDES_ACOPIO');
+    this.getCatalogChildren('CIUDAD');
+    this.getCatalogChildren('ZONA');
+  }
+
+  getPickUpLocations(): void {
     this._Service.getPickUpLocations().subscribe({
       next: (response: any) => {
         this.listData = response.data.items;
-
-        // Llamadas individuales a los otros servicios
-        this._Customers.getClients().subscribe({
-          next: (clientesResponse: any) => {
-            this.listClientes = clientesResponse.data.items;
-
-            this._Adviser.getConsultants().subscribe({
-              next: (asesoresResponse: any) => {
-                this.listAsesores = asesoresResponse.data.items;
-
-                this._Settings
-                  .getCatalogChildrenByKey('TIPO_LUGAR_RECOGIDA')
-                  .subscribe({
-                    next: (tiposResponse: any) => {
-                      this.listTipos = tiposResponse.data;
-
-                      this._Settings
-                        .getCatalogChildrenByKey('TIPOS_SEDES_ACOPIO')
-                        .subscribe({
-                          next: (sedesResponse: any) => {
-                            this.listSedes = sedesResponse.data;
-
-                            this._Settings
-                              .getCatalogChildrenByKey('CIUDAD')
-                              .subscribe({
-                                next: (ciudadesResponse: any) => {
-                                  this.listCiudades = ciudadesResponse.data;
-
-                                  this._Settings
-                                    .getCatalogChildrenByKey('ZONA')
-                                    .subscribe({
-                                      next: (zonasResponse: any) => {
-                                        this.listZonas = zonasResponse.data;
-                                      },
-                                      error: (error: any) => {
-                                        console.error(
-                                          'Error al obtener zonas:',
-                                          error
-                                        );
-                                      },
-                                    });
-                                },
-                                error: (error: any) => {
-                                  console.error(
-                                    'Error al obtener ciudades:',
-                                    error
-                                  );
-                                },
-                              });
-                          },
-                          error: (error: any) => {
-                            console.error('Error al obtener sedes:', error);
-                          },
-                        });
-                    },
-                    error: (error: any) => {
-                      console.error(
-                        'Error al obtener tipos de lugar de recogida:',
-                        error
-                      );
-                    },
-                  });
-              },
-              error: (error: any) => {
-                console.error('Error al obtener asesores:', error);
-              },
-            });
-          },
-          error: (error: any) => {
-            console.error('Error al obtener clientes:', error);
-          },
-        });
       },
       error: (error: any) => {
         console.error('Error al obtener lugares de recogida:', error);
+      },
+    });
+  }
+
+  getClients(): void {
+    this._Customers.getClients().subscribe({
+      next: (clientesResponse: any) => {
+        this.listClientes = clientesResponse.data.items;
+      },
+      error: (error: any) => {
+        console.error('Error al obtener clientes:', error);
+      },
+    });
+  }
+
+  getConsultants(): void {
+    // this._Adviser.getConsultants().subscribe({
+    //   next: (asesoresResponse: any) => {
+    //     this.listAsesores = asesoresResponse.data.items;
+    //   },
+    //   error: (error: any) => {
+    //     console.error('Error al obtener asesores:', error);
+    //   },
+    // });
+
+    this.userService.allUsers().subscribe({
+      next: (asesoresResponse: any) => {
+        this.listAsesores = asesoresResponse.data.items;
+      },
+      error: (error: any) => {
+        console.error('Error al obtener asesores:', error);
+      },
+    });
+  }
+
+  getCatalogChildren(key: string): void {
+    this._Settings.getCatalogChildrenByKey(key).subscribe({
+      next: (response: any) => {
+        switch (key) {
+          case 'TIPO_LUGAR_RECOGIDA':
+            this.listTipos = response.data;
+            break;
+          case 'TIPOS_SEDES_ACOPIO':
+            this.listSedes = response.data;
+            break;
+          case 'CIUDAD':
+            this.listCiudades = response.data;
+            break;
+          case 'ZONA':
+            this.listZonas = response.data;
+            break;
+          default:
+            console.error('Clave no reconocida:', key);
+            break;
+        }
+      },
+      error: (error: any) => {
+        console.error(`Error al obtener ${key}:`, error);
       },
     });
   }
@@ -149,7 +159,7 @@ export class PickuplocationComponent {
     this.resetUser();
     this.action.name = 'Crear';
     this.viewoptions = true;
-    $('#modalPickup').modal('show');
+    this.modal.show();
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
@@ -200,7 +210,7 @@ export class PickuplocationComponent {
   }
 
   close() {
-    $('#modalPickup').modal('hide');
+    this.modal.hide();
   }
 
   updateLugar(): void {
@@ -276,7 +286,7 @@ export class PickuplocationComponent {
     this.action.value = 'delete';
     this.action.color = '#dc3545';
     this.action.icon = 'fa-solid fa-trash';
-    $('#modalconfirm').modal('show');
+    this.modalConfirm.show();
   }
 
   editState(id: string) {
@@ -285,7 +295,7 @@ export class PickuplocationComponent {
     this.action.value = 'changestatus';
     this.action.color = '#ffc107';
     this.action.icon = 'fa-solid fa-sync';
-    $('#modalconfirm').modal('show');
+    this.modalConfirm.show();
   }
 
   actionConfirm() {
@@ -305,7 +315,7 @@ export class PickuplocationComponent {
     this._Service.changeConsultantStatus(this.itemId).subscribe({
       next: () => {
         this.selectData();
-        $('#modalconfirm').modal('hide');
+        this.modalConfirm.hide();
       },
       error: () => {},
     });
@@ -315,7 +325,7 @@ export class PickuplocationComponent {
     this._Service.deletePickUpLocation(this.itemId).subscribe({
       next: () => {
         this.selectData();
-        $('#modalconfirm').modal('hide');
+        this.modalConfirm.hide();
       },
       error: () => {},
     });

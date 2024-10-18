@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ConvenyorService } from 'src/app/core/services/process/convenyor.service';
-declare var $: any;
+// declare var $: any;
+declare var bootstrap: any;
 @Component({
   selector: 'wlrd-conveyor',
   templateUrl: './conveyor.component.html',
@@ -14,6 +15,8 @@ export class ConveyorComponent {
     value: '',
     color: '',
   };
+  modal: any;
+  modalConfirm: any;
   itemId: string = '';
   conveyor = {
     id: null,
@@ -26,12 +29,14 @@ export class ConveyorComponent {
     referenceWLL: '',
     referencePH: '',
   };
-
+  currentPage = 1;
   listData: any = [];
 
   constructor(private _Service: ConvenyorService) {}
 
   ngOnInit(): void {
+    this.modal = new bootstrap.Modal(document.getElementById('modalconveyor'), {backdrop: 'static', keyboard: false})
+    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false})
     this.selectData();
   }
 
@@ -51,7 +56,8 @@ export class ConveyorComponent {
     this.resetconveyor();
     this.action.name = 'Crear';
     this.viewoptions = true;
-    $('#modalconveyor').modal('show');
+    // $('#modalconveyor').modal('show');
+    this.modal.show();
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
@@ -84,7 +90,7 @@ export class ConveyorComponent {
   }
 
   close(): void {
-    $('#modalconveyor').modal('hide');
+    this.modal.hide();
   }
 
  
@@ -145,7 +151,7 @@ export class ConveyorComponent {
     this.action.value = 'delete';
     this.action.color = '#dc3545';
     this.action.icon = 'fa-solid fa-trash';
-    $('#modalconfirm').modal('show');
+    this.modalConfirm.show();
   }
 
   editState(id: string) {
@@ -154,7 +160,7 @@ export class ConveyorComponent {
     this.action.value = 'changestatus';
     this.action.color = '#ffc107';
     this.action.icon = 'fa-solid fa-sync';
-    $('#modalconfirm').modal('show');
+    this.modalConfirm.show();
   }
 
   actionConfirm() {
@@ -174,7 +180,7 @@ export class ConveyorComponent {
     this._Service.changeTransportadorStatus(this.itemId).subscribe({
       next: () => {
         this.selectData();
-        $('#modalconfirm').modal('hide');
+        this.modalConfirm.hide();
       },
       error: () => {},
     });
@@ -184,7 +190,7 @@ export class ConveyorComponent {
     this._Service.deleteTransportador(this.itemId).subscribe({
       next: () => {
         this.selectData();
-        $('#modalconfirm').modal('hide');
+        this.modalConfirm.hide();
       },
       error: () => {},
     });
