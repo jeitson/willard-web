@@ -3,7 +3,8 @@
     <div class="d-flex flex-column">
       <h3 class="primary title noselect">PRODUCTOS</h3>
       <p class="secundary mb-1">En este modulo podras configurar productos realizando
-        acciones como: crear | editar | eliminar | cambiar estado </p>
+        acciones como crear, editar eliminar y cambiar estado </p>
+        
     </div>
     <div class="d-flex flex-rows gap-10">
       <button type="button" class="btn btn-sm bg-add" (click)="createOrUpdateproduct(null)">Agregar <i class="fa-solid fa-add"></i></button>
@@ -31,6 +32,9 @@
                 </tr>
               </thead>
               <tbody style="background-color: white;">
+                <tr *ngIf="listData.length === 0">
+                  <td colspan="8" class="text-center">No hay registros disponibles.</td>
+                </tr>
                 <tr *ngFor="let item of listData; let i = index" style="font-size: smaller;">
                   <td>{{item.productTypeName}}</td>
                   <td class="text-left"> {{item.name}} </td>

@@ -37,7 +37,7 @@ export class RequestlogisticsComponent {
   listTransportadores: any[] = [];
   listDataAdviser: any[] = [];
   users: any[] = [];
-
+  currentPage =1;
   listCenters: any[] = [];
   modal: any;
   action = { name: 'LOGISTICA' };
@@ -58,7 +58,7 @@ export class RequestlogisticsComponent {
     this.getData();
   }
   getRequest() {
-    this._requests.listSolicitudes().subscribe((response: any) => {
+    this._requests.listSolicitudes(1).subscribe((response: any) => {
       this.listsrequest = response.data.items;
     });
   }
@@ -118,7 +118,7 @@ export class RequestlogisticsComponent {
     // Lógica para crear la solicitud
     this.data = {
       id: item.id,
-      collectionSiteId: item.collectionSite,
+      collectionSiteId: item.pickUpLocation.id,
       consultantId: item.consultant,
       transporterId: item.transporter,
     };

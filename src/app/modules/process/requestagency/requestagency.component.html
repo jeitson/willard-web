@@ -39,7 +39,7 @@
                 <tr>
                   <th class="text-center">Id</th>
                   <th class="text-center">Fecha</th>
-                  <th class="text-center">Acopio</th>
+                  <th class="text-center">Lugar de Recogida</th>
                   <th class="text-center">Cantidad</th>
                   <th class="text-center">Recogida</th>
                   <th class="text-center">Cliente</th>
@@ -56,7 +56,7 @@
                   <td class="text-center">
                     {{ item.createdAt | date : "short" }}
                   </td>
-                  <td class="text-center">{{ item.acopiCenter }}</td>
+                  <td class="text-center">{{ item.pickUpLocation?.name }}</td>
                   <td class="text-center">{{ item.estimatedQuantity }}</td>
                   <td class="text-center">
                     {{ item.estimatedPickUpDate }}
@@ -86,7 +86,6 @@
             </table>
 
             <!-- Paginación -->
-            <!-- Paginación -->
             <nav aria-label="Page navigation">
               <ul class="pagination justify-content-between">
                 <!-- Select para seleccionar la página -->
@@ -100,9 +99,6 @@
                     <span>{{ totalPages }}</span>
                   </li>
                 </div>
-                
-                
-
                 <!-- Controles Anterior y Siguiente alineados a la derecha -->
                 <div class="d-flex">
                   <li class="page-item" [class.disabled]="currentPage === 1">

@@ -61,7 +61,7 @@ export class RequestagencyComponent {
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
   filteredList: any[] = []; // La lista filtrada
   currentPage = 1;
-  itemsPerPage = 3;
+  itemsPerPage = 10;
   totalItems = 0;
   totalPages = 0;
   paginatedList: any = [];
@@ -83,7 +83,7 @@ export class RequestagencyComponent {
     this.maxDate = futureDate.toISOString().split('T')[0];
   }
   ngOnInit(): void {
-    this.getRequest();
+    this.getRequest(this.currentPage);
     this.getData();
     this.modal = new bootstrap.Modal(
       document.getElementById('modalRequestAgency'),
@@ -105,8 +105,8 @@ export class RequestagencyComponent {
   //   });
   // }
 
-  getRequest() {
-    this._requests.listSolicitudes().subscribe((response: any) => {
+  getRequest(page: any) {
+    this._requests.listSolicitudes(page).subscribe((response: any) => {
       this.listsrequest = response.data.items;
       this.listCopy = [...response.data.items]; // Hacemos una copia de la lista original
       this.totalItems = this.listsrequest.length; // Total de solicitudes
@@ -277,6 +277,8 @@ export class RequestagencyComponent {
     this.selectedClient = null;
   }
 
+
+  
   saveRequest() {
     // Validar que todos los campos requeridos no estén vacíos
     if (this.validateFields()) {
@@ -292,7 +294,7 @@ export class RequestagencyComponent {
 
           this.dataId = []; // Limpiar los objetos
           this.clearData();
-          this.getRequest();
+          this.getRequest(this.currentPage);
         },
         error: (err) => {
           console.error(err); // Puedes registrar el error en la consola
@@ -337,35 +339,46 @@ export class RequestagencyComponent {
     recommendations: false,
   };
 
-  // Función para validar que no hay campos vacíos
+
+  
   validateFields(): boolean {
     // Reiniciar las validaciones
     Object.keys(this.labelsValidation).forEach(
       (key) => (this.labelsValidation[key] = false)
     );
-
+  
     let allFieldsValid = true;
-
-    // Validar los campos generales, excluyendo motiveSpecialId y transporterId
+  
+    // Validar los campos generales, excluyendo isSpecial, motiveSpecialId y transporterId cuando sea necesario
     for (const [key, value] of Object.entries(this.request)) {
       if (
-        (key !== 'motiveSpecialId' && key !== 'transporterId' && !value) ||
-        (key === 'motiveSpecialId' && this.request.isSpecial && !value) ||
-        (key === 'transporterId' && !this.request.isSpecial && !value)
+        key !== 'isSpecial' && // Ignorar la validación de isSpecial
+        (
+          // Si el campo no es motiveSpecialId ni transporterId y está vacío
+          (key !== 'motiveSpecialId' && key !== 'transporterId' && !value) ||
+          // Si es motiveSpecialId y isSpecial es true pero el campo está vacío
+          (key === 'motiveSpecialId' && this.request.isSpecial && !value) ||
+          // Si es transporterId y isSpecial es false pero el campo está vacío
+          (key === 'transporterId' && !this.request.isSpecial && !value)
+        )
       ) {
         this.labelsValidation[key] = true; // Marcar como inválido
         allFieldsValid = false;
       }
     }
-
+  
+    console.log(this.request); // Verificar el contenido completo del objeto
+  
     // Validar si el peso estimado es mayor a 10,000
     if (this.request.estimatedKG > 10000) {
+      console.log(`Peso estimado excede 10,000: ${this.request.estimatedKG}`);
       this.labelsValidation.estimatedKG = true; // Marcar como inválido
       allFieldsValid = false;
     }
-
+  
     return allFieldsValid;
   }
+  
 
   onSearchChange(value: string): void {
     // Filtra la lista según el valor de búsqueda
