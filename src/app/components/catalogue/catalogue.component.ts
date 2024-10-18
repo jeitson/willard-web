@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/core/services/api/api.service';
 declare var $: any;
 
@@ -9,7 +9,7 @@ declare var bootstrap: any;
   templateUrl: './catalogue.component.html',
   styleUrls: ['./catalogue.component.scss']
 })
-export class CatalogueComponent implements OnInit {
+export class CatalogueComponent implements OnInit, OnDestroy {
 
   @Input() key:string = '';
   @Input() parent:string = '';
@@ -34,6 +34,11 @@ export class CatalogueComponent implements OnInit {
     color:''
   };
 
+   // Inicializar labelsValidation para rastrear qué campos son inválidos
+   labelsValidation: any = {
+    name: false,
+    observations: false,
+  };
   item:any = {
     catalogCode: this.key,
     parentId: this.parent,
@@ -52,6 +57,16 @@ export class CatalogueComponent implements OnInit {
   modalConfirm: any;
   constructor(private api: ApiService){}
 
+  ngOnDestroy(): void {
+    // Limpia los valores al destruir el componente
+    this.key = '';
+    this.parent = '';
+    this.keyspanish = '';
+    this.parentspanish = '';
+    this.keypluralspanish = '';
+    this.rol = '';
+  }
+  
   ngOnInit(): void {
     this.modal = new bootstrap.Modal(document.getElementById('modallist'), {backdrop: 'static', keyboard: false})
     this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false})
@@ -207,4 +222,24 @@ export class CatalogueComponent implements OnInit {
       },
     });
   }
+
+    // Función para validar que no hay campos vacíos
+    validateFields(): boolean {
+      // Reiniciar las validaciones
+      Object.keys(this.labelsValidation).forEach(key => this.labelsValidation[key] = false);
+  
+      let allFieldsValid = true;
+  
+      // Validar los campos generales, excluyendo motiveSpecialId y transporterId
+      for (const [key, value] of Object.entries(this.item)) {
+        if ((key === 'name' && !value) ||
+            (key === 'description'  && !value)) {
+          this.labelsValidation[key] = true; // Marcar como inválido
+          allFieldsValid = false;
+        }
+      }
+
+  
+      return allFieldsValid;
+    }
 }

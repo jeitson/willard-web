@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RequestsService } from 'src/app/core/services/requests/requests.service';
@@ -11,7 +12,7 @@ export class DetailrequestComponent {
 
   @Input() requestId: string | null = null;
 
-  constructor(private route: ActivatedRoute,  private  _service: RequestsService) {}
+  constructor(private route: ActivatedRoute,  private  _service: RequestsService, private _location: Location) {}
   listData: any = [];
 
   ngOnInit(): void {
@@ -37,5 +38,9 @@ export class DetailrequestComponent {
       console.log(this.listData);
       // Aquí puedes manejar la respuesta según tus necesidades
     });
+  }
+
+  back(): void {
+    this._location.back();
   }
 }

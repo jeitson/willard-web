@@ -24,6 +24,16 @@
       <div class="row">
         <div class="col-md-12">
           <div class="table-responsive">
+            <div class="mb-3 col-4">
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                placeholder="Buscar..."
+                [(ngModel)]="searchTerm" 
+                (ngModelChange)="onSearchChange($event)" 
+              />
+            </div>
+            
             <table class="table table-sm">
               <thead class="bg-white">
                 <tr>
@@ -33,14 +43,13 @@
                   <th class="text-center">Cantidad</th>
                   <th class="text-center">Recogida</th>
                   <th class="text-center">Cliente</th>
-                  <!-- <th class="text-center">Transportadora</th> -->
                   <th class="text-center">Estado</th>
                   <th class="text-center">Acciones</th>
                 </tr>
               </thead>
               <tbody style="background-color: white">
                 <tr
-                  *ngFor="let item of listsrequest"
+                  *ngFor="let item of paginatedList"
                   style="font-size: smaller"
                 >
                   <td class="text-center">{{ item.id }}</td>
@@ -54,12 +63,11 @@
                     {{ item.estimatedPickUpTime }}
                   </td>
                   <td class="text-center">{{ item.client.businessName }}</td>
-                  <!-- <td class="text-left">{{ item.transporter?.name }}</td> -->
                   <td class="text-center">
-                    <h5 *ngIf="item.status == true" style="color: white">
+                    <h5 *ngIf="item.status === true" style="color: white">
                       <span class="badge bg-success2">Activo</span>
                     </h5>
-                    <h5 *ngIf="item.status == false" style="color: white">
+                    <h5 *ngIf="item.status === false" style="color: white">
                       <span class="badge bg-danger">Inactivo</span>
                     </h5>
                   </td>
@@ -76,285 +84,458 @@
                 </tr>
               </tbody>
             </table>
+
+            <!-- Paginación -->
+            <!-- Paginación -->
+            <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-between">
+                <!-- Select para seleccionar la página -->
+                <div class="d-flex align-items-center">
+                  <li class="page-item d-flex align-items-center">
+                    <span class="me-2">Pag</span>
+                    <select class="form-select form-select-sm me-2" (change)="onPageChange($event)">
+                      <option *ngFor="let i of pagesArray" [value]="i" [selected]="currentPage === i">{{ i }}</option>
+                    </select>
+                    <span class="me-2">de</span>
+                    <span>{{ totalPages }}</span>
+                  </li>
+                </div>
+                
+                
+
+                <!-- Controles Anterior y Siguiente alineados a la derecha -->
+                <div class="d-flex">
+                  <li class="page-item" [class.disabled]="currentPage === 1">
+                    <a class="page-link" (click)="goToPage(currentPage - 1)">
+                      <i class="fa-solid fa-angle-left"></i>
+                    </a>
+                  </li>
+                  <li
+                    class="page-item"
+                    [class.disabled]="currentPage === totalPages"
+                  >
+                    <a class="page-link" (click)="goToPage(currentPage + 1)">
+                      <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                  </li>
+                </div>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
     </div>
   </div>
   <!-- Modal -->
-  <div class="modal fade" id="modalRequestAgency" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div
+    class="modal fade"
+    id="modalRequestAgency"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+  >
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title pricolor" id="modal-title-notification"> {{ action.name | uppercase }} SOLICITUD</h5>
-            </div>
-            <div class="modal-body">
-              <div class="row">
-                <div class="col-md-12">
-                  <h6 style="text-transform: none; font-weight: 300;">A través de esta funcionalidad podrá realizar el proceso de planeación para la recogida de los productos.</h6>
-                    <div class="row g-3">
-                      <!-- Descripción -->
-                      <div class="col-6">
-                        <div class="mb-2">
-                          <label for="clientId" class="form-label">Cliente</label>
-                          <select
-                            class="form-select"
-                            id="clientId"
-                            [(ngModel)]="request.clientId"
-                            name="clientId"
-                            required
-                            (change)="
-                              selectItem(request.clientId, listClient, 'selectedClient')
-                            "
-                          >
-                            <option value="" disabled selected>
-                              Seleccione un cliente
-                            </option>
-                            <option *ngFor="let client of listClient" [value]="client.id">
-                              {{ client.name }}
-                            </option>
-                          </select>
-                        </div>
-                        <!-- Mostrar la información del cliente seleccionado -->
-                        <div *ngIf="selectedClient" class="border p-2 rounded bg-light">
-                          <div class="ft d-flex justify-content-between mb-2">
-                            <strong>NIT:</strong>
-                            <span>{{ selectedClient.documentNumber }}</span>
-                          </div>
-                          <div class="ft d-flex justify-content-between mb-2">
-                            <strong>Agencia:</strong>
-                            <span>{{ selectedClient.businessName }}</span>
-                          </div>
-                        </div>
-                      </div>
-
-
-                      <!-- Producto -->
-                      <div class="col-6">
-                        <label for="productoId" class="form-label">Producto</label>
-                        <select
-                          class="form-select"
-                          id="productoId"
-                          [(ngModel)]="request.productTypeId"
-                          name="productoId"
-                          required
-                        >
-                          <option value="" disabled selected>
-                            Seleccione un producto
-                          </option>
-                          <option
-                            *ngFor="let product of typeProduct"
-                            [value]="product.id"
-                          >
-                            {{ product.name }}
-                          </option>
-                        </select>
-                      </div>
-
-                      <div class="col-12">
-                        <label for="description" class="form-label">Descripción</label>
-                        <textarea
-                          class="form-control"
-                          id="description"
-                          [(ngModel)]="request.description"
-                          name="description"
-                          rows="2"
-                          placeholder="Descripción de la solicitud"
-                          required
-                        ></textarea>
-                      </div>
-
-                      <!-- Fecha y Hora de Solicitud -->
-
-
-
-                      <!-- Fecha y Hora de recogida -->
-                      <div class="col-md-6">
-                        <label for="requestDate" class="form-label"
-                          >Fecha estimada de recogida</label
-                        >
-                        <input
-                          type="date"
-                          class="form-control"
-                          id="requestDate"
-                          [(ngModel)]="request.estimatedPickUpDate"
-                          name="requestDate"
-                          required
-                        />
-                      </div>
-
-                      <div class="col-md-6">
-                        <label for="requestTime" class="form-label"
-                          >Hora estimada de recogida</label
-                        >
-                        <input
-                          type="time"
-                          class="form-control"
-                          id="requestTime"
-                          [(ngModel)]="request.estimatedPickUpTime"
-                          name="requestTime"
-                          required
-                        />
-                      </div>
-                      <!-- Cantidad y Peso Estimados -->
-                      <div class="col-md-6">
-                        <label for="estimatedQuantity" class="form-label"
-                          >Cantidad Estimada</label
-                        >
-                        <input
-                          type="number"
-                          class="form-control"
-                          id="estimatedQuantity"
-                          [(ngModel)]="request.estimatedQuantity"
-                          name="estimatedQuantity"
-                          placeholder="0"
-                          min="0"
-                          required
-                        />
-                      </div>
-
-                      <div class="col-md-6">
-                        <label for="estimatedKG" class="form-label"
-                          >Peso Estimado (KG)</label
-                        >
-                        <input
-                          type="number"
-                          class="form-control"
-                          id="estimatedKG"
-                          [(ngModel)]="request.estimatedKG"
-                          name="estimatedKG"
-                          placeholder="0"
-                          min="0"
-                          step="0.01"
-                          required
-                        />
-                      </div>
-
-                      <!-- Es Especial -->
-                      <div class="col-md-2">
-                        <label class="form-label">¿Es Especial?</label>
-                        <div class="form-check form-switch">
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            id="isSpecial"
-                            [(ngModel)]="request.isSpecial"
-                            name="isSpecial"
-                            [disabled]="isSpecialDisabled"
-                          />
-                          <label class="form-check-label" for="isSpecial">No / Sí</label>
-                        </div>
-                      </div>
-
-                           <!-- Es Especial -->
-                           <div class="col-md-10" *ngIf="isSpecialDisabled || request.isSpecial">
-                              <label for="pickUpLocationId" class="form-label"
-                                >Motivo</label
-                              >
-                              <select
-                                class="form-select"
-                                id="pickUpLocationId"
-                                [(ngModel)]="request.motiveSpecialId"
-                                name="pickUpLocationId"
-                                required
-                              >
-                                <option value="" >
-                                  Seleccione un motivo
-                                </option>
-                                <option
-                                  *ngFor="let motive of listmotive"
-                                  [value]="motive.id"
-                                >
-                                  {{ motive.name }}
-                                </option>
-                              </select>
-                            </div>
-                          <!-- Transportadora -->
-                          <div class="col-12" *ngIf="!request.isSpecial">
-                            <label for="pickUpLocationId" class="form-label"
-                              >Trasportadora</label
-                            >
-                            <select
-                              class="form-select"
-                              id="pickUpLocationId"
-                              [(ngModel)]="request.transporterId"
-                              name="pickUpLocationId"
-                              required
-                            >
-                              <option value="" disabled selected>
-                                Seleccione una Transportadora
-                              </option>
-                              <option
-                                *ngFor="let location of listTransportador"
-                                [value]="location.id"
-                              >
-                                {{ location.name }}
-                              </option>
-                            </select>
-                          </div>
-                      <!-- Lugar de Recogida -->
-                      <div class="col-12" >
-                        <label for="pickUpLocationId" class="form-label"
-                          >Lugar de Recogida</label
-                        >
-                        <select
-                          class="form-select"
-                          id="pickUpLocationId"
-                          [(ngModel)]="request.pickUpLocationId"
-                          name="pickUpLocationId"
-                          required
-                        >
-                          <option value="" disabled selected>
-                            Seleccione un lugar de recogida
-                          </option>
-                          <option
-                            *ngFor="let location of listTipos"
-                            [value]="location.id"
-                          >
-                            {{ location.name }}
-                          </option>
-                        </select>
-                      </div>
-
-                      <!-- Observaciones y Recomendaciones -->
-                      <div class="col-12">
-                        <label for="observations" class="form-label">Observaciones</label>
-                        <textarea
-                          class="form-control"
-                          id="observations"
-                          [(ngModel)]="request.observations"
-                          name="observations"
-                          rows="2"
-                          placeholder="Observaciones adicionales"
-                        ></textarea>
-                      </div>
-
-                      <div class="col-12">
-                        <label for="recommendations" class="form-label"
-                          >Recomendaciones</label
-                        >
-                        <textarea
-                          class="form-control"
-                          id="recommendations"
-                          [(ngModel)]="request.recommendations"
-                          name="recommendations"
-                          rows="2"
-                          placeholder="Recomendaciones"
-                        ></textarea>
-                      </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title pricolor" id="modal-title-notification">
+            {{ action.name | uppercase }} SOLICITUD
+          </h5>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <h6 style="text-transform: none; font-weight: 300">
+                A través de esta funcionalidad podrá realizar el proceso de
+                planeación para la recogida de los productos.
+              </h6>
+              <div class="row g-3">
+                <!-- Descripción -->
+                <div class="col-6">
+                  <div class="mb-2">
+                    <label
+                      for="clientId"
+                      class="form-label"
+                      [ngClass]="{ 'text-danger': labelsValidation.clientId }"
+                      >Cliente</label
+                    >
+                    <select
+                      class="form-select"
+                      id="clientId"
+                      [(ngModel)]="request.clientId"
+                      name="clientId"
+                      required
+                      (change)="
+                        selectItem(
+                          request.clientId,
+                          listClient,
+                          'selectedClient'
+                        )
+                      "
+                      (blur)="validateFields()"
+                    >
+                      <option value="" disabled selected>
+                        Seleccione un cliente
+                      </option>
+                      <option
+                        *ngFor="let client of listClient"
+                        [value]="client.id"
+                      >
+                        {{ client.name }}
+                      </option>
+                    </select>
+                  </div>
+                  <!-- Mostrar la información del cliente seleccionado -->
+                  <div
+                    *ngIf="selectedClient"
+                    class="border p-2 rounded bg-light"
+                  >
+                    <div class="ft d-flex justify-content-between mb-2">
+                      <strong>NIT:</strong>
+                      <span>{{ selectedClient.documentNumber }}</span>
                     </div>
-
-                    <div class="row">
-                      <div class="col-md-12 d-flex flex-rows gap-2 justify-content-end mt-5">
-                        <button class="btn btn-md btn-dark" data-bs-dismiss="modal"> <i class="fa-solid fa-circle-xmark"></i> Cancelar </button>
-                        <button class="btn btn-md bg-success2 text-white" (click)="saveRequest()"> {{actionSave ? 'Actualizar' :'Guardar'}} <i class="fa-solid fa-check"></i></button>
-                      </div>
+                    <div class="ft d-flex justify-content-between mb-2">
+                      <strong>Agencia:</strong>
+                      <span>{{ selectedClient.businessName }}</span>
                     </div>
+                  </div>
                 </div>
 
+                <!-- Producto -->
+                <div class="col-6">
+                  <label
+                    for="productoId"
+                    class="form-label"
+                    [ngClass]="{
+                      'text-danger': labelsValidation.productTypeId
+                    }"
+                    >Producto</label
+                  >
+                  <select
+                    class="form-select"
+                    id="productoId"
+                    [(ngModel)]="request.productTypeId"
+                    name="productoId"
+                    required
+                    (blur)="validateFields()"
+                  >
+                    <option value="" disabled selected>
+                      Seleccione un producto
+                    </option>
+                    <option
+                      *ngFor="let product of typeProduct"
+                      [value]="product.id"
+                    >
+                      {{ product.name }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label
+                    for="description"
+                    class="form-label"
+                    [ngClass]="{ 'text-danger': labelsValidation.description }"
+                    >Descripción</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="description"
+                    [(ngModel)]="request.description"
+                    name="description"
+                    rows="2"
+                    placeholder="Descripción de la solicitud"
+                    maxlength="1000"
+                    required
+                    (blur)="validateFields()"
+                  ></textarea>
+                  <div class="text-end">
+                    <small
+                      >{{ request.description?.length || 0 }}/1000
+                      caracteres</small
+                    >
+                  </div>
+                </div>
+
+                <!-- Fecha y Hora de Solicitud -->
+
+                <div class="col-md-6">
+                  <label
+                    for="requestDate"
+                    class="form-label"
+                    [ngClass]="{
+                      'text-danger': labelsValidation.estimatedPickUpDate
+                    }"
+                    >Fecha estimada de recogida</label
+                  >
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="requestDate"
+                    [(ngModel)]="request.estimatedPickUpDate"
+                    name="requestDate"
+                    [min]="minDate"
+                    [max]="maxDate"
+                    required
+                    (blur)="validateFields()"
+                  />
+                </div>
+
+                <div class="col-md-6">
+                  <label
+                    for="requestTime"
+                    class="form-label"
+                    [ngClass]="{
+                      'text-danger': labelsValidation.estimatedPickUpTime
+                    }"
+                    >Hora estimada de recogida</label
+                  >
+                  <input
+                    type="time"
+                    class="form-control"
+                    id="requestTime"
+                    [(ngModel)]="request.estimatedPickUpTime"
+                    name="requestTime"
+                    required
+                    (blur)="validateFields()"
+                  />
+                </div>
+                <!-- Cantidad Estimada -->
+                <div class="col-md-6">
+                  <label
+                    for="estimatedQuantity"
+                    class="form-label"
+                    [ngClass]="{
+                      'text-danger': labelsValidation.estimatedQuantity
+                    }"
+                    >Cantidad Estimada</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="estimatedQuantity"
+                    [(ngModel)]="request.estimatedQuantity"
+                    name="estimatedQuantity"
+                    placeholder="1"
+                    min="1"
+                    max="10000"
+                    required
+                    (blur)="validateFields()"
+                  />
+                </div>
+
+                <!-- Peso Estimado (KG) -->
+                <div class="col-md-6">
+                  <label
+                    for="estimatedKG"
+                    class="form-label"
+                    [ngClass]="{ 'text-danger': labelsValidation.estimatedKG }"
+                    >Peso Estimado (KG)</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="estimatedKG"
+                    [(ngModel)]="request.estimatedKG"
+                    name="estimatedKG"
+                    placeholder="1"
+                    min="1"
+                    max="10000"
+                    step="0.01"
+                    required
+                    (blur)="validateFields()"
+                    (input)="validateEstimatedKG()"
+                  />
+                  <div *ngIf="estimatedKGError" class="text-danger">
+                    El peso estimado no puede ser mayor a 10,000.
+                  </div>
+                </div>
+
+                <!-- Es Especial -->
+                <div class="col-md-2">
+                  <label class="form-label">¿Es Especial?</label>
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="isSpecial"
+                      [(ngModel)]="request.isSpecial"
+                      name="isSpecial"
+                      [disabled]="isSpecialDisabled"
+                    />
+                    <label class="form-check-label" for="isSpecial"
+                      >No / Sí</label
+                    >
+                  </div>
+                </div>
+
+                <!-- Es Especial -->
+                <div
+                  class="col-md-10"
+                  *ngIf="isSpecialDisabled || request.isSpecial"
+                >
+                  <label
+                    for="pickUpLocationId"
+                    class="form-label"
+                    [ngClass]="{
+                      'text-danger':
+                        labelsValidation.motiveSpecialId && request.isSpecial
+                    }"
+                    >Motivo</label
+                  >
+                  <select
+                    class="form-select"
+                    id="pickUpLocationId"
+                    [(ngModel)]="request.motiveSpecialId"
+                    name="pickUpLocationId"
+                    required
+                  >
+                    <option value="">Seleccione un motivo</option>
+                    <option
+                      *ngFor="let motive of listmotive"
+                      [value]="motive.id"
+                    >
+                      {{ motive.name }}
+                    </option>
+                  </select>
+                </div>
+                <!-- Transportadora -->
+                <div class="col-12" *ngIf="!request.isSpecial">
+                  <label
+                    for="pickUpLocationId"
+                    class="form-label"
+                    [ngClass]="{
+                      'text-danger':
+                        labelsValidation.transporterId && !request.isSpecial
+                    }"
+                  >
+                    Transportadora
+                  </label>
+                  <select
+                    class="form-select"
+                    id="pickUpLocationId"
+                    [(ngModel)]="request.transporterId"
+                    name="pickUpLocationId"
+                    required
+                  >
+                    <option value="" disabled selected>
+                      Seleccione una Transportadora
+                    </option>
+                    <option
+                      *ngFor="let location of listTransportador"
+                      [value]="location.id"
+                    >
+                      {{ location.name }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Lugar de Recogida -->
+                <div class="col-12">
+                  <label
+                    for="pickUpLocationId"
+                    class="form-label"
+                    [ngClass]="{
+                      'text-danger': labelsValidation.pickUpLocationId
+                    }"
+                    >Lugar de Recogida</label
+                  >
+                  <select
+                    class="form-select"
+                    id="pickUpLocationId"
+                    [(ngModel)]="request.pickUpLocationId"
+                    name="pickUpLocationId"
+                    required
+                    (blur)="validateFields()"
+                  >
+                    <option value="" disabled selected>
+                      Seleccione un lugar de recogida
+                    </option>
+                    <option
+                      *ngFor="let location of listTipos"
+                      [value]="location.id"
+                    >
+                      {{ location.name }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Observaciones y Recomendaciones -->
+
+                <div class="col-12">
+                  <label
+                    for="observations"
+                    class="form-label"
+                    [ngClass]="{ 'text-danger': labelsValidation.observations }"
+                    >Observaciones</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="observations"
+                    [(ngModel)]="request.observations"
+                    name="observations"
+                    rows="2"
+                    placeholder="observation de la solicitud"
+                    maxlength="2000"
+                    required
+                    (blur)="validateFields()"
+                  ></textarea>
+                  <div class="text-end">
+                    <small
+                      >{{ request.observations?.length || 0 }}/2000
+                      caracteres</small
+                    >
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <label
+                    for="Recomendaciones"
+                    class="form-label"
+                    [ngClass]="{
+                      'text-danger': labelsValidation.recommendations
+                    }"
+                    >Recomendaciones</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="Recomendaciones"
+                    [(ngModel)]="request.recommendations"
+                    name="Recomendaciones"
+                    rows="2"
+                    placeholder="Recomendaciones"
+                    maxlength="2000"
+                    required
+                    (blur)="validateFields()"
+                  ></textarea>
+                  <div class="text-end">
+                    <small
+                      >{{ request.recommendations?.length || 0 }}/2000
+                      caracteres</small
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div
+                  class="col-md-12 d-flex flex-rows gap-2 justify-content-end mt-5"
+                >
+                  <button class="btn btn-md btn-dark" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-circle-xmark"></i> Cancelar
+                  </button>
+                  <button
+                    class="btn btn-md bg-success2 text-white"
+                    (click)="saveRequest()"
+                  >
+                    {{ actionSave ? "Actualizar" : "Guardar" }}
+                    <i class="fa-solid fa-check"></i>
+                  </button>
+                </div>
               </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 </div>

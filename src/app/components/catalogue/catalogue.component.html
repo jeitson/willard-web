@@ -2,7 +2,7 @@
   <div class="page-header">
     <div class="d-flex flex-column">
       <h5 class="primary title noselect">CONFIGURACIÓN DE {{keypluralspanish | uppercase}}</h5>
-      <p class="secundary mb-1">En este modulo podras configurar {{keypluralspanish | lowercase}}, realizando acciones como: crear | editar | eliminar | cambiar estado </p>
+      <p class="secundary mb-1">En este modulo podras configurar {{keypluralspanish | lowercase}}, realizando acciones como: Crear, Editar, Eliminar y Cambiar Estado </p>
     </div>
     <div class="d-flex flex-rows gap-10">
       <button type="button" class="btn btn-sm bg-add" (click)="addItem()">Agregar <i class="fa-solid fa-add"></i></button>
@@ -62,7 +62,7 @@
                     <h5 class="modal-title pricolor" id="modal-title-notification">{{action.name | uppercase}} {{keyspanish | uppercase}}</h5>
                 </div>
                 <div class="modal-body">
-                    <h6 style="text-transform: none; font-weight: 300;">A través de esta funcionalidad podrá realizar el proceso de {{action.name}} de {{keyspanish}}. Diligenciar la información y seleccionar la opción {{action.name | lowercase}}.</h6>
+                    <h6 style="text-transform: none; font-weight: 300;">A través de esta funcionalidad podrá realizar el proceso de {{action.name}} {{keyspanish}}. Diligenciar la información y seleccionar la opción {{action.name | lowercase}}.</h6>
                     <div class="col-md-12">
                         <div>
                             <div class="row">
@@ -81,10 +81,29 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-12">
+                                <!-- <div class="col-md-12">
                                     <label for="" class="pricolor">Descripción</label>
                                     <textarea type="textarea" class="form-control" placeholder="Descripción" name="describe" autocomplete="off" [(ngModel)]="item.description"></textarea>
-                                </div>
+                                </div> -->
+                                
+                                <div class="col-12">
+                                    <label for="Descripción" class="form-label"  [ngClass]="{'text-danger': labelsValidation.description}">Observaciones</label>
+                                    <textarea
+                                    class="form-control"
+                                    id="Descripción"
+                                    [(ngModel)]="item.description"
+                                    name="Descripción"
+                                    rows="2"
+                                    placeholder="Descripción"
+                                    maxlength="250"
+                                    required
+                                    (blur)="validateFields()"
+                                    autocomplete="off"
+                                    ></textarea>
+                                    <div class="text-end">
+                                    <small>{{ item.description?.length || 0 }}/250 caracteres</small>
+                                    </div>
+                                </div>    
                             </div>
                             <div class="row mt-5">
                                 <div class="col-md-12 d-flex flex-rows gap-10">
