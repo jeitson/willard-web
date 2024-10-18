@@ -47,7 +47,6 @@ export class ReceptionComponent implements OnInit {
   videoStream: MediaStream | null = null;
   imageselect:any = {};
   messageLoading = 'Subiendo Archivos, por favor espera...';
-<<<<<<< HEAD
 
 
   // paginacion
@@ -56,10 +55,8 @@ export class ReceptionComponent implements OnInit {
   totalPages: number = 0; // Total de páginas
   totalItems = 0;
   paginatedList: any = [];
-=======
   role: string = '';
   headacopi: any = '';
->>>>>>> db7b1520bfb4838a274a5bf530ed2a1ef0a31849
   constructor(private api: ApiService, private _toast: ToastService){}
 
   ngOnInit(){
@@ -353,7 +350,7 @@ export class ReceptionComponent implements OnInit {
       const endIndex = startIndex + this.itemsPerPage;
       this.paginatedList = this.listReceptions.slice(startIndex, endIndex);
     }
-  
+
     goToPage(page: number) {
       if (page >= 1 && page <= this.totalPages) {
         this.currentPage = page;
@@ -361,13 +358,13 @@ export class ReceptionComponent implements OnInit {
         this.getReceptions(page);
       }
     }
-  
+
     onPageChange(event: Event) {
       const selectElement = event.target as HTMLSelectElement;
       const selectedPage = Number(selectElement.value);
       this.goToPage(selectedPage);
     }
-  
+
     get pagesArray() {
       return Array(this.totalPages)
         .fill(0)
@@ -387,6 +384,6 @@ export class ReceptionComponent implements OnInit {
     this.currentPage = 1; // Reinicia a la primera página
     this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
   }
-  
+
 
 }
