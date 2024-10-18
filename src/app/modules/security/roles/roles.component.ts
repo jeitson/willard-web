@@ -304,7 +304,7 @@ export class RolesComponent implements OnInit {
 
   openModalMenu(item: any){
     this.modules = JSON.parse(JSON.stringify([]));
-    this.modules = this.preloadModules(JSON.parse(item.menu))
+    this.modules = this.preloadModules(item.menu)
     this.mmenu.show();
   }
 
@@ -320,27 +320,13 @@ export class RolesComponent implements OnInit {
         id: item.id,
         name: item.name,
         description: item.description,
-        menu: JSON.parse(item.menu),
+        menu: item.menu,
       };
       if(this.role.menu === null || this.role.menu.length === 0){
         this.modules = this.modulesBase;
       } else {
         this.modules = this.preloadModules(this.role.menu);
       }
-      // const savedModules: any[] = [
-      //   {
-      //     "type": "sub",
-      //     "id": "2",
-      //     "children": [
-      //       { "id": "21" },
-      //       { "id": "22" }
-      //     ]
-      //   },
-      //   {
-      //     "type": "link",
-      //     "id": "1"
-      //   }
-      // ];
     }
   }
 
