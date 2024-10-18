@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { CentersService } from 'src/app/core/services/process/centers.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
-declare var $: any;
+// declare var $: any;
+declare var bootstrap: any;
 @Component({
   selector: 'wlrd-collection-centers',
   templateUrl: './collection-centers.component.html',
@@ -40,11 +41,21 @@ export class CollectionCentersComponent {
   countries: any = [];
   cities: any = [];
   typeCenters: any = [];
+  modal: any;
+  modalConfirm: any;
   constructor(
     private _Service: CentersService,
     private _settings: SettingsService
   ) {}
   ngOnInit(): void {
+    this.modal = new bootstrap.Modal(document.getElementById('modalCenter'), {
+      backdrop: 'static',
+      keyboard: false,
+    });
+    this.modalConfirm = new bootstrap.Modal(
+      document.getElementById('modalconfirm'),
+      { backdrop: 'static', keyboard: false }
+    );
     this.selectData();
   }
 
@@ -91,7 +102,7 @@ export class CollectionCentersComponent {
     this.resetCenter();
     this.action.name = 'Crear';
     this.viewoptions = true;
-    $('#modalCenter').modal('show');
+    this.modal.show();
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
@@ -138,7 +149,7 @@ export class CollectionCentersComponent {
   }
 
   close(): void {
-    $('#modalCenter').modal('hide');
+    this.modal.hide();
   }
 
   updateCollection(): void {
@@ -211,7 +222,7 @@ export class CollectionCentersComponent {
     this.action.value = 'delete';
     this.action.color = '#dc3545';
     this.action.icon = 'fa-solid fa-trash';
-    $('#modalconfirm').modal('show');
+    this.modalConfirm.show();
   }
 
   editState(id: string) {
@@ -220,7 +231,7 @@ export class CollectionCentersComponent {
     this.action.value = 'changestatus';
     this.action.color = '#ffc107';
     this.action.icon = 'fa-solid fa-sync';
-    $('#modalconfirm').modal('show');
+    this.modalConfirm.show();
   }
 
   actionConfirm() {
@@ -240,7 +251,7 @@ export class CollectionCentersComponent {
     this._Service.changeCollectionSiteStatus(this.itemId).subscribe({
       next: () => {
         this.selectData();
-        $('#modalconfirm').modal('hide');
+        this.modalConfirm.hide();
       },
       error: () => {},
     });
@@ -250,7 +261,7 @@ export class CollectionCentersComponent {
     this._Service.deleteCollectionSite(this.itemId).subscribe({
       next: () => {
         this.selectData();
-        $('#modalconfirm').modal('hide');
+        this.modalConfirm.hide();
       },
       error: () => {},
     });
