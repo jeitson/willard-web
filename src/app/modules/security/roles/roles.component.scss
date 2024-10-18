@@ -41,3 +41,15 @@
   list-style: none;
   flex: 1 1 calc(25% - 0px);
 }
+
+.form-check-input:disabled {
+  pointer-events: none;
+  filter: none;
+  opacity: .9 !important;
+}
+
+
+.form-check-input:disabled~.form-check-label, .form-check-input[disabled]~.form-check-label {
+  cursor: default;
+  opacity: .8 !important;
+}

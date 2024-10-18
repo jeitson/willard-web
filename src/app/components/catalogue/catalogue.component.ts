@@ -10,7 +10,7 @@ declare var bootstrap: any;
   templateUrl: './catalogue.component.html',
   styleUrls: ['./catalogue.component.scss']
 })
-export class CatalogueComponent implements OnInit, OnChanges, AfterViewInit {
+export class CatalogueComponent implements OnInit {
 
   @Input() key:string = '';
   @Input() parent:string = '';
@@ -55,29 +55,7 @@ export class CatalogueComponent implements OnInit, OnChanges, AfterViewInit {
 
   }
 
-  ngAfterViewInit(): void {
-    this.cdr.detectChanges();
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-
-    if (changes['key'] || changes['parent']) {
-      this.updateModalContent();
-    }
-  }
-
   ngOnInit(): void {
-    this.modal = new bootstrap.Modal(document.getElementById('modallist'), {backdrop: 'static', keyboard: false})
-    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false})
-    this.listKey();
-    if(this.parent !== 'null'){
-      this.listParent();
-    }
-  }
-
-  updateModalContent() {
-    // Asegúrate de que el contenido del modal se actualice antes de mostrarlo
-    this.cdr.detectChanges(); // Asegúrate de que Angular detecte los cambios
   }
 
   listKey(){
@@ -119,10 +97,12 @@ export class CatalogueComponent implements OnInit, OnChanges, AfterViewInit {
     }
     this.viewoptions = true;
     this.action.name = 'Crear';
-    this.updateModalContent();
-    setTimeout(() => {
-      this.modal.show();
-    }, 1000);
+    this.modal = new bootstrap.Modal(document.getElementById('modallist'), {backdrop: 'static', keyboard: false});
+    this.listKey();
+    if(this.parent !== 'null'){
+      this.listParent();
+    }
+    this.modal.show();
   }
 
   backToList(){
@@ -135,6 +115,7 @@ export class CatalogueComponent implements OnInit, OnChanges, AfterViewInit {
     }
     this.viewoptions = false;
     this.action.name = 'Actualizar';
+    this.modal = new bootstrap.Modal(document.getElementById('modallist'), {backdrop: 'static', keyboard: false});
     this.modal.show();
     this.cdr.detectChanges();
   }
@@ -145,6 +126,7 @@ export class CatalogueComponent implements OnInit, OnChanges, AfterViewInit {
     this.action.value = 'delete';
     this.action.color = '#dc3545';
     this.action.icon = 'fa-solid fa-trash';
+    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false});
     this.modalConfirm.show();
   }
 
@@ -154,6 +136,7 @@ export class CatalogueComponent implements OnInit, OnChanges, AfterViewInit {
     this.action.value = 'changestatus';
     this.action.color = '#ffc107';
     this.action.icon = 'fa-solid fa-sync';
+    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false});
     this.modalConfirm.show();
   }
 
