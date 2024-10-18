@@ -96,7 +96,7 @@ totalPages: number = 0; // Total de páginas
       },
     });
   }
-  
+
 
   listParent(){
     this.api.get(`catalogs/key/${this.parent}`).subscribe({
@@ -242,9 +242,9 @@ totalPages: number = 0; // Total de páginas
     validateFields(): boolean {
       // Reiniciar las validaciones
       Object.keys(this.labelsValidation).forEach(key => this.labelsValidation[key] = false);
-  
+
       let allFieldsValid = true;
-  
+
       // Validar los campos generales, excluyendo motiveSpecialId y transporterId
       for (const [key, value] of Object.entries(this.item)) {
         if ((key === 'name' && !value) ||
@@ -254,7 +254,7 @@ totalPages: number = 0; // Total de páginas
         }
       }
 
-  
+
       return allFieldsValid;
     }
 
@@ -276,14 +276,14 @@ totalPages: number = 0; // Total de páginas
         .fill(0)
         .map((x, i) => i + 1);
     }
-    
+
     updatePaginatedList() {
       const startIndex = (this.currentPage - 1) * this.itemsPerPage;
       const endIndex = startIndex + this.itemsPerPage;
       this.paginatedList = this.list.slice(startIndex, endIndex);
       this.totalPages = Math.ceil(this.list.length / this.itemsPerPage); // Calcula el total de páginas
     }
-    
+
 
     onSearchChange(value: string): void {
       if (!value) {
@@ -299,5 +299,5 @@ totalPages: number = 0; // Total de páginas
       this.currentPage = 1; // Reinicia a la primera página
       this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
     }
-    
+
 }

@@ -350,7 +350,7 @@ export class ReceptionComponent implements OnInit {
       const endIndex = startIndex + this.itemsPerPage;
       this.paginatedList = this.listReceptions.slice(startIndex, endIndex);
     }
-  
+
     goToPage(page: number) {
       if (page >= 1 && page <= this.totalPages) {
         this.currentPage = page;
@@ -358,13 +358,13 @@ export class ReceptionComponent implements OnInit {
         this.getReceptions(page);
       }
     }
-  
+
     onPageChange(event: Event) {
       const selectElement = event.target as HTMLSelectElement;
       const selectedPage = Number(selectElement.value);
       this.goToPage(selectedPage);
     }
-  
+
     get pagesArray() {
       return Array(this.totalPages)
         .fill(0)
@@ -384,6 +384,6 @@ export class ReceptionComponent implements OnInit {
     this.currentPage = 1; // Reinicia a la primera página
     this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
   }
-  
+
 
 }
