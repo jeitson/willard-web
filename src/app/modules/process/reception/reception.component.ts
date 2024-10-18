@@ -42,10 +42,13 @@ export class ReceptionComponent implements OnInit {
   videoStream: MediaStream | null = null;
   imageselect:any = {};
   messageLoading = 'Subiendo Archivos, por favor espera...';
-
+  role: string = '';
+  headacopi: any = '';
   constructor(private api: ApiService, private _toast: ToastService){}
 
   ngOnInit(){
+    this.role = sessionStorage.getItem('RoleId') || '';
+    this.headacopi = JSON.parse(sessionStorage.getItem('profileData') || '[]')?.collectionSites[0].collectionSite.name
     this.modal = new bootstrap.Modal(document.getElementById('modalevidence'), {backdrop: 'static', keyboard: false});
     this.modalloading = new bootstrap.Modal(document.getElementById('modalLoading'), {backdrop: 'static', keyboard: false});
     this.getReceptions();

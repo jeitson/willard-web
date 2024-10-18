@@ -76,6 +76,9 @@
   <div class="page-body">
     <div style="padding-bottom: 80px;">
       <div class="row">
+        <div class="col-md-12 mb-3">
+          <label>{{role==='18'?'Agencia PH':'Recuperadora'}}: {{headacopi}}</label>
+        </div>
         <div class="col-sm-6 col-md-6 mb-3">
           <label class="pricolor">Transportadora</label>
           <div class="input-group">
@@ -97,11 +100,11 @@
           <label for="" class="pricolor"># Guía</label>
           <input type="text" class="form-control" name="guideNumber" [(ngModel)]="receptionForm.guideNumber" autocomplete="off" required>
         </div>
-        <div class="col-sm-6 col-md-6 mb-3">
+        <div class="col-sm-6 col-md-6 mb-3" *ngIf="role==='18'">
           <label for="" class="pricolor">Doc Referencia 1</label>
           <input type="number" maxlength="10" class="form-control" name="reference1" [(ngModel)]="receptionForm.referenceDoc1" autocomplete="off" required>
         </div>
-        <div class="col-sm-6 col-md-6 mb-3">
+        <div class="col-sm-6 col-md-6 mb-3" *ngIf="role==='18'">
           <label for="" class="pricolor">Doc Referencia 2</label>
           <input type="number" maxlength="10" class="form-control" name="reference2" [(ngModel)]="receptionForm.referenceDoc2" autocomplete="off" required>
         </div>
