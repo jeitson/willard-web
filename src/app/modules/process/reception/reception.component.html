@@ -27,10 +27,10 @@
                     <tr>
                         <th class="text-center"> # Guia</th>
                         <th class="text-center"> Fecha </th>
-                        <th class="text-left"> Transportadora </th>
+                        <!-- <th class="text-left"> Transportadora </th> -->
                         <th class="text-center"> Placa </th>
                         <th class="text-left"> Conductor</th>
-                        <th class="text-left"> Cantidad Total </th>
+                        <th class="text-center"> Cantidad Total </th>
                         <th class="text-center"> Estado </th>
                         <th class="text-center"> </th>
                     </tr>
@@ -40,10 +40,10 @@
                     <tr *ngFor="let item of listReceptions; let i = index;">
                         <td class="text-center"> {{item.guideNumber}} </td>
                         <td class="text-center"> {{item.createdAt | date:'short'}} </td>
-                        <td class="text-left"> {{item.transporter.name }} </td>
-                        <td class="text-center"> {{item.licensePlate }} </td>
+                        <!-- <td class="text-left"> {{item.transporter.name }} </td> -->
+                        <td class="text-center"> {{item.licensePlate | uppercase}} </td>
                         <td class="text-left"> {{item.driver}}</td>
-                        <td class="text-left"> </td>
+                        <td class="text-center">{{sumQuantity(item.receptionDetails) | number}}</td>
                         <td class="text-center">
                             <h5 *ngIf="item.status == true" style="color: white;"><span class="badge bg-success2 t-small">Activo</span></h5>
                             <h5 *ngIf="item.status == false" style="color: white;"><span class="badge bg-danger t-small">Inactivo</span></h5>

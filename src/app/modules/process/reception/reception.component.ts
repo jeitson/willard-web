@@ -57,7 +57,7 @@ export class ReceptionComponent implements OnInit {
   getReceptions(){
     this.api.get(`receptions`).subscribe({
       next: (response: any) => {
-        this.listReceptions = response.data;
+        this.listReceptions = response.data.items;
       },
       error: (error: any) => {
         console.error('Error al crear usuario:', error);
@@ -139,6 +139,10 @@ export class ReceptionComponent implements OnInit {
   countQuantity(type: number){
     return this.listProducts.filter(product => product.productTypeId === type)
     .reduce((sum, product) => sum + product.quantity, 0);
+  }
+
+  sumQuantity(item: any){
+    return item.reduce((sum: any, product: any) => (sum += Number(product.quantity)), 0);
   }
 
   addProduct(productTypeId: number){
@@ -313,6 +317,9 @@ export class ReceptionComponent implements OnInit {
       error: (error: any) => {
         this.modalloading.hide();
         console.error('Error al guardar la recepción:', error);
+      },
+      complete: ()=>{
+        this.modalloading.hide();
       }
     });
   }

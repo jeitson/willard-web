@@ -89,6 +89,10 @@
                 <input type="email" id="email" class="form-control" name="email" [(ngModel)]="user.email">
               </div>
               <div class="mb-3">
+                <label for="pass" class="form-label">Contraseña</label>
+                <input type="password" id="pass" class="form-control" name="password" [(ngModel)]="user.password">
+              </div>
+              <div class="mb-3">
                 <label for="role" class="form-label">Rol</label>
                 <select class="form-control form-select"  [(ngModel)]="role">
                   <option *ngFor="let item of listData" [value]="item.id">{{item.name}}</option>
