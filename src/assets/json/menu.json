@@ -1,0 +1,240 @@
+[
+  {
+    "route": "dashboard",
+    "short_label": "D",
+    "name": "Inicio",
+    "type": "link",
+    "status": false,
+    "id": "1",
+    "icon": "ai-dashboard"
+  },
+  {
+    "route": "process",
+    "short_label": "P",
+    "name": "Proceso",
+    "type": "sub",
+    "status": false,
+    "id": "2",
+    "icon": "ai-settings-horizontal",
+    "subMenu": [
+      {
+        "name": "Solicitudes (planeador)",
+        "type": "link",
+        "id": "21",
+        "route": "requestplanner",
+        "status": false
+      },
+      {
+        "name": "Solicitudes (Agencia)",
+        "type": "link",
+        "id": "22",
+        "route": "requestagency",
+        "status": false
+      },
+      {
+        "name": "Solicitudes (logistics)",
+        "type": "link",
+        "id": "23",
+        "route": "requestlogistics",
+        "status": false
+      },
+      {
+        "name": "Recepción",
+        "type": "link",
+        "id": "24",
+        "route": "reception",
+        "status": false
+      },
+      {
+        "name": "Envios",
+        "type": "link",
+        "id": "25",
+        "route": "shipping",
+        "status": false
+      }
+    ]
+  },
+  {
+    "route": "security",
+    "short_label": "P",
+    "name": "Seguridad",
+    "type": "sub",
+    "status": false,
+    "id": "3",
+    "icon": "ai-lock-on",
+    "subMenu": [
+      {
+        "name": "Usuarios",
+        "type":"link",
+        "id": "31",
+        "route": "users",
+        "status": false
+      },
+      {
+        "name": "Roles",
+        "type":"link",
+        "id": "32",
+        "route": "roles",
+        "status": false
+      },
+      {
+        "name": "Auditoria",
+        "type":"link",
+        "id": "33",
+        "route": "request",
+        "status": false
+      }
+    ]
+  },
+  {
+    "route": "settings",
+    "short_label": "C",
+    "name": "Configuraciones",
+    "type": "sub",
+    "status": false,
+    "id": "4",
+    "icon": "ai-gear",
+    "subMenu": [
+      {
+        "name": "Pais",
+        "type": "link",
+        "id": "41",
+        "route": "country",
+        "status": false
+      },
+      {
+        "name": "Departamento",
+        "type": "link",
+        "id": "42",
+        "route": "department",
+        "status": false
+      },
+      {
+        "name": "Ciudad",
+        "type": "link",
+        "id": "43",
+        "route": "city",
+        "status": false
+      },
+      {
+        "name": "Tipos sedes acopio",
+        "type": "link",
+        "id": "44",
+        "route": "headquartercopy",
+        "status": false
+      },
+      {
+        "name": "Tipo lugar de recogida ",
+        "type": "link",
+        "id": "45",
+        "route": "locationdeparture",
+        "status": false
+      },
+      {
+        "name": "Tipos de documento",
+        "type": "link",
+        "id": "46",
+        "route": "typedocuments",
+        "status": false
+      },
+      {
+        "name": "Unidad de medida",
+        "type": "link",
+        "id": "47",
+        "route": "unitymetrics",
+        "status": false
+      },
+      {
+        "name": "Tipo producto",
+        "type": "link",
+        "id": "48",
+        "route": "typeproducts",
+        "status": false
+      },
+      {
+        "name": "Tipo guía",
+        "type": "link",
+        "id": "49",
+        "route": "typeguide",
+        "status": false
+      },
+      {
+        "name": "Tipo evidencia",
+        "type": "link",
+        "id": "410",
+        "route": "typeevidence",
+        "status": false
+      },
+      {
+        "name": "Zona",
+        "type": "link",
+        "id": "411",
+        "route": "zone",
+        "status": false
+      },
+      {
+        "name": "Tipo de Camión",
+        "type": "link",
+        "id": "412",
+        "route": "trucktype",
+        "status": false
+      },
+      {
+        "name": "Tipo de Cliente",
+        "type": "link",
+        "id": "413",
+        "route": "typecustomer",
+        "status": false
+      },
+      {
+        "name": "Motivo Especial",
+        "type": "link",
+        "id": "414",
+        "route": "specialreason",
+        "status": false
+      },
+      {
+        "name": "Estado de rutas",
+        "type": "link",
+        "id": "415",
+        "route": "routestatus",
+        "status": false
+      },
+      {
+        "name": "Productos",
+        "type": "link",
+        "id": "416",
+        "route": "product",
+        "status": false
+      },
+      {
+        "name": "Clientes",
+        "type": "link",
+        "id": "417",
+        "route": "customer",
+        "status": false
+      },
+      {
+        "name": "Sedes de Acopio",
+        "type": "link",
+        "id": "418",
+        "route": "collection",
+        "status": false
+      },
+      {
+        "name": "Transportador",
+        "type": "link",
+        "id": "419",
+        "route": "conveyor",
+        "status": false
+      },
+      {
+        "name": "Lugares de Recogida",
+        "type": "link",
+        "id": "421",
+        "route": "pickuplocation",
+        "status": false
+      }
+    ]
+  }
+]

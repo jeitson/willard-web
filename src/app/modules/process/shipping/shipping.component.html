@@ -1,11 +1,11 @@
 <div class="container" *ngIf="!editpanel">
   <div class="page-header">
     <div class="d-flex flex-column">
-      <h5 class="primary title noselect">RECEPTCIÓN DE BUPAS</h5>
-      <p class="secundary mb-1">En este módulo podras hacer la recepción de las bupas</p>
+      <h5 class="primary title noselect">ENVIO DE BUPAS</h5>
+      <p class="secundary mb-1">En este módulo podras hacer los diferentes envios de las bupas</p>
     </div>
     <div class="d-flex flex-rows gap-10">
-      <button type="button" class="btn btn-sm bg-success2" (click)="addReception()">Agregar <i class="fa-solid fa-add"></i></button>
+      <button type="button" class="btn btn-sm bg-success2" (click)="addShipments()">Agregar <i class="fa-solid fa-add"></i></button>
       <button type="button" class="btn btn-sm btn-dark">Recargar <i class="fa-solid fa-rotate-right"></i></button>
     </div>
   </div>
@@ -45,12 +45,12 @@
                 </thead>
                 <tbody style="background-color: white;">
                   <!-- <tr *ngFor="let item of listsReceptions | paginate: { itemsPerPage: totalItemsRender, currentPage: p }; let i = index;"> -->
-                    <tr *ngFor="let item of listReceptions; let i = index;">
+                    <tr *ngFor="let item of listShipping; let i = index;">
                         <td class="text-center"> {{item.guideNumber}} </td>
                         <td class="text-center"> {{item.createdAt | date:'short'}} </td>
                         <td class="text-center"> {{item.licensePlate | uppercase}} </td>
                         <td class="text-left"> {{item.driver}}</td>
-                        <td class="text-center">{{sumQuantity(item.receptionDetails) | number}}</td>
+                        <td class="text-center">{{sumQuantity(item.shipmentDetails) | number}}</td>
                         <td class="text-center">
                             <h5 *ngIf="item.status == true" style="color: white;"><span class="badge bg-success2 t-small">Activo</span></h5>
                             <h5 *ngIf="item.status == false" style="color: white;"><span class="badge bg-danger t-small">Inactivo</span></h5>
@@ -100,7 +100,7 @@
 <div class="container" *ngIf="editpanel">
   <div class="page-header">
     <div class="d-flex flex-column">
-      <h5 class="primary title noselect">RECEPCIÓN DE BUPAS</h5>
+      <h5 class="primary title noselect">ENVIO DE BUPAS</h5>
     </div>
     <div class="d-flex flex-rows gap-10">
     </div>
@@ -112,12 +112,12 @@
     <div style="padding-bottom: 80px;">
       <div class="row">
         <div class="col-md-12 mb-3">
-          <label class="form-control">{{role==='18'?'Agencia PH':'Recuperadora'}}: {{headacopi}}</label>
+          <label class="form-control">Agencia PH {{headacopi}}</label>
         </div>
         <div class="col-sm-6 col-md-6 mb-3">
           <label class="pricolor">Transportadora</label>
           <div class="input-group">
-            <select class="form-control form-select" name="transporter" [(ngModel)]="receptionForm.transporterId" required>
+            <select class="form-control form-select" name="transporter" [(ngModel)]="shipmentForm.transporterId" required>
                 <option value="" selected>Seleccionar</option>
                 <option *ngFor="let opt of listTransporters" value="{{opt.id}}">{{opt.name}}</option>
             </select>
@@ -125,23 +125,33 @@
         </div>
         <div class="col-sm-6 col-md-6 mb-3">
           <label for="" class="pricolor">Placa</label>
-          <input type="text" class="form-control uppercase" name="plate" [(ngModel)]="receptionForm.licensePlate" autocomplete="off" required>
+          <input type="text" class="form-control uppercase" name="plate" [(ngModel)]="shipmentForm.licensePlate" autocomplete="off" required>
         </div>
         <div class="col-sm-6 col-md-6 mb-3">
           <label for="" class="pricolor">Conductor</label>
-          <input type="text" class="form-control" name="datedelivery" [(ngModel)]="receptionForm.driver" autocomplete="off" required>
+          <input type="text" class="form-control" name="datedelivery" [(ngModel)]="shipmentForm.driver" autocomplete="off" required>
         </div>
         <div class="col-sm-6 col-md-6 mb-3">
           <label for="" class="pricolor"># Guía</label>
-          <input type="text" class="form-control" name="guideNumber" [(ngModel)]="receptionForm.guideNumber" autocomplete="off" required>
+          <input type="text" class="form-control" name="guideNumber" [(ngModel)]="shipmentForm.guideNumber" autocomplete="off" required>
         </div>
-        <div class="col-sm-6 col-md-6 mb-3" *ngIf="role==='18'">
+        <div class="col-sm-6 col-md-6 mb-3">
           <label for="" class="pricolor">Doc Referencia 1</label>
-          <input type="number" maxlength="10" class="form-control" name="reference1" [(ngModel)]="receptionForm.referenceDoc1" autocomplete="off" required>
+          <input type="number" maxlength="10" class="form-control" name="reference1" [(ngModel)]="shipmentForm.referenceDoc1" autocomplete="off" required>
         </div>
-        <div class="col-sm-6 col-md-6 mb-3" *ngIf="role==='18'">
+        <div class="col-sm-6 col-md-6 mb-3">
           <label for="" class="pricolor">Doc Referencia 2</label>
-          <input type="number" maxlength="10" class="form-control" name="reference2" [(ngModel)]="receptionForm.referenceDoc2" autocomplete="off" required>
+          <input type="number" maxlength="10" class="form-control" name="reference2" [(ngModel)]="shipmentForm.referenceDoc2" autocomplete="off" required>
+        </div>
+        <div class="col-sm-6 col-md-6 mb-3">
+          <label for="" class="pricolor">ERC</label>
+          <div class="input-group mb-2">
+            <input type="text" class="form-control" name="erccode" [(ngModel)]="erc" autocomplete="off" required (keypress.enter)="addErc()">
+            <span class="input-group-text pointer bg-success2" id="inputGroup-sizing-sm" (click)="addErc()">Agregar</span>
+          </div>
+          <div class="d-flex justify-content-start gap-10 ">
+            <span class="bg-reasign badge pointer" *ngFor="let item of this.shipmentForm.erc" (click)="removeErc(item)">{{item}} <i class="fa-solid fa-close"></i></span>
+          </div>
         </div>
         <div class="col-md-12 mb-3">
           <div class="accordion">
@@ -154,31 +164,6 @@
               </div>
               <div class="accordion-content" [ngStyle]="{ 'height': activeSection === typep.id ? 'auto' : '0', 'padding': activeSection === typep.id ? '15px' : '0' }">
                 <div class="row">
-                  <!-- <div class="col-md-12 mb-3">
-                    <div class="d-flex justify-content-between align-items-baseline gap-2">
-                      <select class="form-control form-select" name="product" [(ngModel)]="product.productId" required>
-                        <option value="" selected>producto</option>
-                        <option *ngFor="let opt of filterProductBytype(typep.id, listProducts)" value="{{opt.id}}">{{opt.name}}</option>
-                      </select>
-                      <input type="number" class="form-control" name="cuantity" placeholder="cantidad" [(ngModel)]="product.quantity">
-                      <button class="btn btn-sm btn-add bg-reasign" (click)="addProduct(typep.id)"><i class="fa-solid fa-add"></i></button>
-                    </div>
-                  </div>
-                  <div class="col-md-12">
-                    <div class="card mb-2" *ngFor="let item of filterProductBytype(typep.id, products)">
-                      <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                          <div>
-                            <h5 class="mb-0">{{getNamePropuct(item.productId)}}</h5>
-                            <p class="mb-0 p-0">{{item.quantity}}</p>
-                          </div>
-                          <div>
-                            <i class="fa-solid fa-trash f-larger text-danger pointer" (click)="deleteProduct(item)"></i>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div> -->
                   <div class="col-md-12">
                     <div class="mb-2" *ngFor="let item of filterProductBytype(typep.id, listProducts)">
                       <div class="form-group">
@@ -219,8 +204,8 @@
       </div>
     </div>
     <div class="fixed-footer">
-      <button class="btn btn-sm btn-dark" (click)="cancelReception()">Cancelar <i class="fa-solid fa-close"></i></button>
-      <button class="btn btnsm bg-success2" (click)="confirmReception()">Confirmar <i class="fa-solid fa-paper-plane"></i></button>
+      <button class="btn btn-sm btn-dark" (click)="cancelShipments()">Cancelar <i class="fa-solid fa-close"></i></button>
+      <button class="btn btnsm bg-success2" (click)="confirmShipments()">Confirmar <i class="fa-solid fa-paper-plane"></i></button>
     </div>
   </div>
 </div>
