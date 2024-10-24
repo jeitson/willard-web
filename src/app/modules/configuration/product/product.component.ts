@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Subject } from 'rxjs';
 import { ProductsService } from 'src/app/core/services/process/products.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
 declare var bootstrap: any;
@@ -17,7 +18,6 @@ export class ProductComponent {
     value:'',
     color:''
   };
-  currentPage = 1;
   itemId: string = '';
   product = {
     id: null,
@@ -36,10 +36,19 @@ export class ProductComponent {
   };
 
   listData: any = [];
+  listBase: any = [];
   listProduct: any = [];
   Measure:any = [];
   modal: any;
   modalConfirm: any;
+
+  pagination: any = {};
+  searchTerm$ = new Subject<any>();
+  paginatedList: any = [];
+  searchTerm: string = ''; // Para almacenar el texto de búsqueda
+  currentPage: number = 1; // Página actual
+  itemsPerPage: number = 5; // Cantidad de elementos por página
+  totalPages: number = 0; // Total de páginas
   constructor(private _Service: ProductsService, private _settings: SettingsService) {}
 
   ngOnInit(): void {
@@ -52,6 +61,9 @@ export class ProductComponent {
     this._Service.getProducts().subscribe({
       next: (productsResponse: any) => {
         this.listData = productsResponse.data.items;
+        this.listBase = this.listData; // Guardamos la lista original para filtrar
+        this.pagination.totalItems = productsResponse.data.length;
+        this.updatePaginatedList(); // Actualiza la lista paginada
 
         // Obtener tipo de producto
         this._settings.getCatalogChildrenByKey('TIPO_PRODUCTO').subscribe({
@@ -245,5 +257,44 @@ export class ProductComponent {
       }
     });
   }
+   // paginación
+   onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList();
+    }
+  }
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
 
+  updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listData.slice(startIndex, endIndex);
+    this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Calcula el total de páginas
+  }
+
+
+  onSearchChange(value: string): void {
+    if (!value) {
+      this.listData = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
+    } else {
+      this.listData = this.listBase.filter((item: any) => {
+        const itemValues: any = Object.values(item);
+        return itemValues.some((val: string) =>
+          String(val).toLowerCase().includes(value.toLowerCase())
+        );
+      });
+    }
+    this.currentPage = 1; // Reinicia a la primera página
+    this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
+  }
 }

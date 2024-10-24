@@ -62,14 +62,9 @@ export class CatalogueComponent implements OnInit {
   searchTerm$ = new Subject<any>();
 
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
-
-
   currentPage: number = 1; // Página actual
-itemsPerPage: number = 5; // Cantidad de elementos por página
-totalPages: number = 0; // Total de páginas
-
-
-
+  itemsPerPage: number = 5; // Cantidad de elementos por página
+  totalPages: number = 0; // Total de páginas
   constructor(private api: ApiService, private cdr: ChangeDetectorRef, private router: Router){
 
   }

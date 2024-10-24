@@ -354,7 +354,7 @@ export class ReceptionComponent implements OnInit {
     goToPage(page: number) {
       if (page >= 1 && page <= this.totalPages) {
         this.currentPage = page;
-        // this.updatePaginatedList();
+        this.updatePaginatedList();
         this.getReceptions(page);
       }
     }
@@ -370,6 +370,7 @@ export class ReceptionComponent implements OnInit {
         .fill(0)
         .map((x, i) => i + 1);
     }
+
   onSearchChange(value: string): void {
     if (!value) {
       this.listReceptions = [...this.listBase]; // Restablecer la lista original si no hay búsqueda

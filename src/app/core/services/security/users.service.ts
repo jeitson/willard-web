@@ -8,9 +8,10 @@ import { ApiService } from '../api/api.service';
 export class UsersService {
   constructor(private _api: ApiService) {}
 
-  allUsers(): Observable<any> {
-    return this._api.get('users');
+  allUsers(params?: any): Observable<any> {
+    return this._api.get(`users`);
   }
+  
 
   createUser(content: any): Observable<any> {
     return this._api.post('users', content);
