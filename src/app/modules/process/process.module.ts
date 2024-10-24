@@ -8,6 +8,7 @@ import { DetailrequestComponent } from './requestplanner/detailrequest/detailreq
 import { RequestagencyComponent } from './requestagency/requestagency.component';
 import { RequestlogisticsComponent } from './requestlogistics/requestlogistics.component';
 import { ReceptionComponent } from './reception/reception.component';
+import { ShippingComponent } from './shipping/shipping.component';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import { ReceptionComponent } from './reception/reception.component';
     RequestagencyComponent,
     DetailrequestComponent,
     RequestlogisticsComponent,
-    ReceptionComponent
+    ReceptionComponent,
+    ShippingComponent
   ],
   imports: [
     CommonModule,

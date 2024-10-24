@@ -5,19 +5,20 @@ import { ToastService } from 'src/app/core/services/toast.service';
 
 declare var bootstrap: any;
 @Component({
-  selector: 'app-reception',
-  templateUrl: './reception.component.html',
-  styleUrls: ['./reception.component.css']
+  selector: 'app-shipping',
+  templateUrl: './shipping.component.html',
+  styleUrls: ['./shipping.component.css']
 })
-export class ReceptionComponent implements OnInit {
+export class ShippingComponent implements OnInit {
 
   @ViewChild('video', { static: false }) videoElement!: ElementRef<HTMLVideoElement>;
   p:number = 1;
   totalItemsRender: number = 10;
   pagination: any = {};
-  receptionForm = {
+  shipmentForm = {
     transporterId:'',
     licensePlate:'',
+    erc: [] as string[],
     driver:'',
     guideNumber:'',
     referenceDoc1:'',
@@ -27,7 +28,7 @@ export class ReceptionComponent implements OnInit {
   photos: any[] = [];
   listTypeProducts: any[] = [];
   listProducts: any[] = [];
-  listReceptions: any[] = [];
+  listShipping: any[] = [];
   listBase: any[] = [];
 
   products: any[] = [];
@@ -47,7 +48,7 @@ export class ReceptionComponent implements OnInit {
   videoStream: MediaStream | null = null;
   imageselect:any = {};
   messageLoading = 'Subiendo Archivos, por favor espera...';
-
+  erc: string = '';
 
   // paginacion
   currentPage: number = 1; // Página actual
@@ -61,21 +62,26 @@ export class ReceptionComponent implements OnInit {
 
   ngOnInit(){
     this.role = sessionStorage.getItem('RoleId') || '';
-    this.headacopi = JSON.parse(sessionStorage.getItem('profileData') || '[]')?.collectionSites[0].collectionSite.name
+    const head = JSON.parse(sessionStorage.getItem('profileData') || '[]');
+    if(head?.collectionSites.length > 0){
+      this.headacopi = head?.collectionSites[0].collectionSite.name
+    } else {
+      this.headacopi = this.role;
+    }
     this.modal = new bootstrap.Modal(document.getElementById('modalevidence'), {backdrop: 'static', keyboard: false});
     this.modalloading = new bootstrap.Modal(document.getElementById('modalLoading'), {backdrop: 'static', keyboard: false});
-    this.getReceptions(this.currentPage);
+    this.getShipments(this.currentPage);
     this.getTransporters();
     this.getProductType();
     this.getProducts();
   }
 
-  getReceptions(item: any){
-    this.api.get(`receptions?page=${item}`).subscribe({
+  getShipments(item: any){
+    this.api.get(`shipments?page=${item}`).subscribe({
       next: (response: any) => {
-        this.listReceptions = response.data.items;
-        this.listBase = this.listReceptions; // Guardamos la lista original para filtrar
-        this.totalItems = this.listReceptions.length; // Total de solicitudes
+        this.listShipping = response.data.items;
+        this.listBase = this.listShipping; // Guardamos la lista original para filtrar
+        this.totalItems = this.listShipping.length; // Total de solicitudes
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
       },
       error: (error: any) => {
@@ -122,15 +128,16 @@ export class ReceptionComponent implements OnInit {
     return productlist;
   }
 
-  addReception(){
+  addShipments(){
     this.photos = [];
     this.products.forEach(element => {
       return element.quantity = 0;
     });
-    this.receptionForm = {
+    this.shipmentForm = {
       transporterId:'',
       licensePlate:'',
       driver:'',
+      erc: [] as string[],
       guideNumber:'',
       referenceDoc1:'',
       referenceDoc2:'',
@@ -140,9 +147,23 @@ export class ReceptionComponent implements OnInit {
     this.action = 'agregar'
   }
 
-  editReception(item: any){
+  editShipments(item: any){
     this.editpanel = true;
     this.action = 'actualizar'
+  }
+
+  addErc(){
+    if(this.erc !== ''){
+      const exist =  this.shipmentForm.erc.find((x: any)=> x === this.erc);
+      if(exist === undefined){
+        this.shipmentForm.erc.push(this.erc);
+        this.erc = '';
+      }
+    }
+  }
+
+  removeErc(item: any){
+      this.shipmentForm.erc =  this.shipmentForm.erc.filter((x: any)=> x !== item);
   }
 
   toggleSection(section: string) {
@@ -264,7 +285,7 @@ export class ReceptionComponent implements OnInit {
     this.modal.hide();
   }
 
-  cancelReception(){
+  cancelShipments(){
     this.editpanel = false;
     this.action = 'listar';
 
@@ -287,9 +308,9 @@ export class ReceptionComponent implements OnInit {
     return new Blob(byteArrays, { type: contentType });
   }
 
-  confirmReception(){
+  confirmShipments(){
     if(this.photos.length === 0){
-      this._toast.info('Importante', 'Debe adjuntar evidencias para la recepción')
+      this._toast.info('Importante', 'Debe adjuntar evidencias para el envio')
       return;
     }
     this.products = this.listProducts.reduce((acc, { id, quantity }) => {
@@ -299,7 +320,7 @@ export class ReceptionComponent implements OnInit {
       return acc;
     }, [])
     if(this.products.length === 0){
-      this._toast.info('Importante', 'Debe indicar la cantidad de almenos un producto para la recepción');
+      this._toast.info('Importante', 'Debe indicar la cantidad de almenos un producto para el envio');
       return;
     }
     this.modalloading.show();
@@ -312,8 +333,8 @@ export class ReceptionComponent implements OnInit {
     });
     this.api.postWithReturnData(`files/upload`, formData).subscribe({
       next: (response: any) => {
-        this.messageLoading = 'Recepcionando productos, por favor espera...'
-        this.saveReception(response);
+        this.messageLoading = 'Enviando productos, por favor espera...'
+        this.saveShipments(response);
       },
       error: (error: any) => {
         this.modalloading.hide();
@@ -322,61 +343,58 @@ export class ReceptionComponent implements OnInit {
     });
   }
 
-  saveReception(photos: any[]){
+  saveShipments(photos: any[]){
     const data = {
-      ...this.receptionForm,
-      licensePlate: this.receptionForm.licensePlate.toUpperCase(),
+      ...this.shipmentForm,
+      licensePlate: this.shipmentForm.licensePlate.toUpperCase(),
       details: this.products,
       photos: photos,
     };
-    this.api.post(`receptions`, data).subscribe({
+    this.api.post(`shipments`, data).subscribe({
       next: (response: any) => {
         this.editpanel = false;
         this.action = 'listar';
+        this.getShipments(this.currentPage);
+        this.modalloading.hide();
       },
       error: (error: any) => {
         this.modalloading.hide();
-        console.error('Error al guardar la recepción:', error);
+        console.error('Error al guardar la envio:', error);
       },
-      complete: ()=>{
-        this.modalloading.hide();
-      }
     });
   }
 
+  // paginación
+  updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listShipping.slice(startIndex, endIndex);
+  }
 
-    // paginación
-    updatePaginatedList() {
-      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-      const endIndex = startIndex + this.itemsPerPage;
-      this.paginatedList = this.listReceptions.slice(startIndex, endIndex);
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      // this.updatePaginatedList();
+      this.getShipments(page);
     }
+  }
 
-    goToPage(page: number) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page;
-        this.updatePaginatedList();
-        this.getReceptions(page);
-      }
-    }
+  onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
 
-    onPageChange(event: Event) {
-      const selectElement = event.target as HTMLSelectElement;
-      const selectedPage = Number(selectElement.value);
-      this.goToPage(selectedPage);
-    }
-
-    get pagesArray() {
-      return Array(this.totalPages)
-        .fill(0)
-        .map((x, i) => i + 1);
-    }
-
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
   onSearchChange(value: string): void {
     if (!value) {
-      this.listReceptions = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
+      this.listShipping = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
     } else {
-      this.listReceptions = this.listBase.filter((item: any) => {
+      this.listShipping = this.listBase.filter((item: any) => {
         const itemValues: any = Object.values(item);
         return itemValues.some((val: string) =>
           String(val).toLowerCase().includes(value.toLowerCase())
@@ -386,6 +404,4 @@ export class ReceptionComponent implements OnInit {
     this.currentPage = 1; // Reinicia a la primera página
     this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
   }
-
-
 }
