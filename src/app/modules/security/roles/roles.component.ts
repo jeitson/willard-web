@@ -33,6 +33,15 @@ export class RolesComponent implements OnInit {
   modules: any[] = [];
   modal: any;
   mmenu: any;
+  listBase: any[] = [];
+  paginatedList: any = [];
+  searchTerm$ = new Subject<any>();
+  searchTerm: string = ''; // Para almacenar el texto de búsqueda
+  totalItems = 0;
+  itemsPerPage: number = 10; // Cambiar a 10 para que se muestren 10 usuarios por página
+totalPages: number = 0;
+currentPage: number = 1;
+
   constructor(private _rolesService: RolesService, private _toast: ToastService, private general:GeneralService) {}
   ngOnInit(): void {
     this.general.getMenu().subscribe({
@@ -50,6 +59,10 @@ export class RolesComponent implements OnInit {
       next: (value: any) => {
         console.log(value);
         this.listData = value.data.items;
+        this.listBase = this.listData;
+        this.totalItems = value.data.meta.totalItems; // Total de solicitudes
+        this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Total de páginas
+        this.updatePaginatedList(); // Actualiza la lista paginada
       },
       error: (error) => {
         console.log(error);
@@ -214,5 +227,47 @@ export class RolesComponent implements OnInit {
   handleSuccess(response: any): void {
     this.selectData();
     this.close();
+  }
+
+
+   // paginación
+   updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listData.slice(startIndex, endIndex);
+    this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Calcula el total de páginas
+  }
+  
+  onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
+  
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList(); // Actualiza la lista para la nueva página
+    }
+  }
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
+  
+  onSearchChange(value: string): void {
+    if (!value) {
+      this.listData = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
+    } else {
+      this.listData = this.listBase.filter((item: any) => {
+        const itemValues: any = Object.values(item);
+        return itemValues.some((val: string) =>
+          String(val).toLowerCase().includes(value.toLowerCase())
+        );
+      });
+    }
+    this.currentPage = 1; // Reinicia a la primera página
+    this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
   }
 }

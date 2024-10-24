@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subject } from 'rxjs';
 import { AdviserService } from 'src/app/core/services/process/adviser.service';
 import { CentersService } from 'src/app/core/services/process/centers.service';
 import { ConvenyorService } from 'src/app/core/services/process/convenyor.service';
@@ -37,10 +37,20 @@ export class RequestlogisticsComponent {
   listTransportadores: any[] = [];
   listDataAdviser: any[] = [];
   users: any[] = [];
-  currentPage =1;
   listCenters: any[] = [];
   modal: any;
   action = { name: 'LOGISTICA' };
+
+  searchTerm$ = new Subject<any>();
+
+  searchTerm: string = ''; // Para almacenar el texto de búsqueda
+  filteredList: any[] = []; // La lista filtrada
+  currentPage = 1;
+  itemsPerPage = 10;
+  totalItems = 0;
+  totalPages = 0;
+  paginatedList: any = [];
+  listCopy: any[] = [];
   constructor(
     private _Customers: CustomersService,
     private _Conveyor: ConvenyorService,
@@ -54,12 +64,15 @@ export class RequestlogisticsComponent {
   ) {}
   ngOnInit(): void {
     this.modal = new bootstrap.Modal(document.getElementById('modalRequestlogistics'), {backdrop: 'static', keyboard: false})
-    this.getRequest();
+    this.getRequest(this.currentPage);
     this.getData();
   }
-  getRequest() {
-    this._requests.listSolicitudes(1).subscribe((response: any) => {
+  getRequest(page: any) {
+    this._requests.listSolicitudes(page).subscribe((response: any) => {
       this.listsrequest = response.data.items;
+      this.listCopy = this.listsrequest; // Hacemos una copia de la lista original
+      this.totalItems = this.listsrequest.length; // Total de solicitudes
+      this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
     });
   }
 
@@ -137,7 +150,7 @@ export class RequestlogisticsComponent {
       .subscribe((x: any) => {
         this._toast.success('Completado', 'Ruta Actualizada exitosamente');
         // Si la respuesta es positiva
-        this.getRequest();
+        this.getRequest(this.currentPage);
         this.modal.hide();
         this.clearData();
       });
@@ -150,5 +163,48 @@ export class RequestlogisticsComponent {
       consultantId: '',
       transporterId: '',
     };
+  }
+
+  
+  // paginación
+  updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listsrequest.slice(startIndex, endIndex);
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList();
+      this.getRequest(page);
+    }
+  }
+
+  onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
+
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
+
+  onSearchChange(value: string): void {
+    if (!value) {
+      this.listsrequest = [...this.listCopy]; // Restablecer la lista original si no hay búsqueda
+    } else {
+      this.listsrequest = this.listCopy.filter((item: any) => {
+        const itemValues: any = Object.values(item);
+        return itemValues.some((val: string) =>
+          String(val).toLowerCase().includes(value.toLowerCase())
+        );
+      });
+    }
+    this.currentPage = 1; // Reinicia a la primera página
+    this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
   }
 }

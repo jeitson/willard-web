@@ -45,6 +45,7 @@ export class CustomersComponent {
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
   itemsPerPage: number = 5; // Cantidad de elementos por página
   totalPages: number = 0; // Total de páginas
+  totalItems = 0;
   constructor(
     private _Service: CustomersService,
     private _settings: SettingsService
@@ -62,8 +63,12 @@ export class CustomersComponent {
       next: (response: any) => {
         this.listData = response.data.items;
         this.listBase = this.listData; // Guardamos la lista original para filtrar
-        this.pagination.totalItems = response.data.length;
+        this.totalItems = response.data.meta.totalItems; // Total de solicitudes
+        this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Total de páginas
+        // this.pagination.totalItems = response.data.length;
         this.updatePaginatedList(); // Actualiza la lista paginada
+
+
         
         // Llamadas individuales a los otros servicios
         this._settings.getCatalogChildrenByKey('TIPO_DOCUMENTO').subscribe({
@@ -239,45 +244,45 @@ export class CustomersComponent {
     });
   }
 
-      // paginación
-      onPageChange(event: Event) {
-        const selectElement = event.target as HTMLSelectElement;
-        const selectedPage = Number(selectElement.value);
-        this.goToPage(selectedPage);
-      }
-      goToPage(page: number) {
-        if (page >= 1 && page <= this.totalPages) {
-          this.currentPage = page;
-          this.updatePaginatedList();
-        }
-      }
-      get pagesArray() {
-        return Array(this.totalPages)
-          .fill(0)
-          .map((x, i) => i + 1);
-      }
+   // paginación
+   updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listData.slice(startIndex, endIndex);
+    this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Calcula el total de páginas
+  }
   
-      updatePaginatedList() {
-        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-        const endIndex = startIndex + this.itemsPerPage;
-        this.paginatedList = this.listData.slice(startIndex, endIndex);
-        this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Calcula el total de páginas
-      }
+  onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
   
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList(); // Actualiza la lista para la nueva página
+    }
+  }
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
   
-      onSearchChange(value: string): void {
-        if (!value) {
-          this.listData = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
-        } else {
-          this.listData = this.listBase.filter((item: any) => {
-            const itemValues: any = Object.values(item);
-            return itemValues.some((val: string) =>
-              String(val).toLowerCase().includes(value.toLowerCase())
-            );
-          });
-        }
-        this.currentPage = 1; // Reinicia a la primera página
-        this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
-      }
+  onSearchChange(value: string): void {
+    if (!value) {
+      this.listData = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
+    } else {
+      this.listData = this.listBase.filter((item: any) => {
+        const itemValues: any = Object.values(item);
+        return itemValues.some((val: string) =>
+          String(val).toLowerCase().includes(value.toLowerCase())
+        );
+      });
+    }
+    this.currentPage = 1; // Reinicia a la primera página
+    this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
+  }
 
 }

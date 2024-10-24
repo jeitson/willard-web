@@ -108,37 +108,14 @@ export class RequestagencyComponent {
   getRequest(page: any) {
     this._requests.listSolicitudes(page).subscribe((response: any) => {
       this.listsrequest = response.data.items;
-      this.listCopy = [...response.data.items]; // Hacemos una copia de la lista original
+      this.listCopy = this.listsrequest; // Hacemos una copia de la lista original
       this.totalItems = this.listsrequest.length; // Total de solicitudes
       this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
-      this.updatePaginatedList(); // Llamada para paginar los resultados
+
     });
   }
 
-  updatePaginatedList() {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    this.paginatedList = this.listsrequest.slice(startIndex, endIndex);
-  }
 
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.updatePaginatedList();
-    }
-  }
-
-  onPageChange(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const selectedPage = Number(selectElement.value);
-    this.goToPage(selectedPage);
-  }
-
-  get pagesArray() {
-    return Array(this.totalPages)
-      .fill(0)
-      .map((x, i) => i + 1);
-  }
   getData() {
     this._Conveyor.getTransportadores().subscribe({
       next: (response: any) => {
@@ -277,8 +254,6 @@ export class RequestagencyComponent {
     this.selectedClient = null;
   }
 
-
-  
   saveRequest() {
     // Validar que todos los campos requeridos no estén vacíos
     if (this.validateFields()) {
@@ -339,49 +314,70 @@ export class RequestagencyComponent {
     recommendations: false,
   };
 
-
-  
   validateFields(): boolean {
     // Reiniciar las validaciones
     Object.keys(this.labelsValidation).forEach(
       (key) => (this.labelsValidation[key] = false)
     );
-  
+
     let allFieldsValid = true;
-  
+
     // Validar los campos generales, excluyendo isSpecial, motiveSpecialId y transporterId cuando sea necesario
     for (const [key, value] of Object.entries(this.request)) {
       if (
         key !== 'isSpecial' && // Ignorar la validación de isSpecial
-        (
-          // Si el campo no es motiveSpecialId ni transporterId y está vacío
-          (key !== 'motiveSpecialId' && key !== 'transporterId' && !value) ||
+        // Si el campo no es motiveSpecialId ni transporterId y está vacío
+        ((key !== 'motiveSpecialId' && key !== 'transporterId' && !value) ||
           // Si es motiveSpecialId y isSpecial es true pero el campo está vacío
           (key === 'motiveSpecialId' && this.request.isSpecial && !value) ||
           // Si es transporterId y isSpecial es false pero el campo está vacío
-          (key === 'transporterId' && !this.request.isSpecial && !value)
-        )
+          (key === 'transporterId' && !this.request.isSpecial && !value))
       ) {
         this.labelsValidation[key] = true; // Marcar como inválido
         allFieldsValid = false;
       }
     }
-  
+
     console.log(this.request); // Verificar el contenido completo del objeto
-  
+
     // Validar si el peso estimado es mayor a 10,000
     if (this.request.estimatedKG > 10000) {
       console.log(`Peso estimado excede 10,000: ${this.request.estimatedKG}`);
       this.labelsValidation.estimatedKG = true; // Marcar como inválido
       allFieldsValid = false;
     }
-  
+
     return allFieldsValid;
   }
-  
+
+  // paginación
+  updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listsrequest.slice(startIndex, endIndex);
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList();
+      this.getRequest(page);
+    }
+  }
+
+  onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
+
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
 
   onSearchChange(value: string): void {
-    // Filtra la lista según el valor de búsqueda
     if (!value) {
       this.listsrequest = [...this.listCopy]; // Restablecer la lista original si no hay búsqueda
     } else {
@@ -392,6 +388,7 @@ export class RequestagencyComponent {
         );
       });
     }
+    this.currentPage = 1; // Reinicia a la primera página
     this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
   }
 }

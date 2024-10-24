@@ -3,8 +3,8 @@
   <div class="page-header">
     <div class="d-flex flex-column">
       <h5 class="primary title noselect">ROLES</h5>
-      <p class="secundary mb-1">En este modulo podras configurar roles de acopio realizando
-        acciones como: crear | editar | eliminar | cambiar estado </p>
+      <p class="secundary mb-1">En este modulo podras configurar roles realizando
+        acciones como: crear, editar, eliminar, cambiar estado </p>
     </div>
     <div class="d-flex flex-rows gap-10">
       <!-- <button type="button" class="btn btn-sm bg-add"
@@ -23,6 +23,15 @@
       <div class="row">
         <div class="col-md-12">
           <div class="table-responsive">
+            <div class="mb-3 col-4">
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                placeholder="Buscar..."
+                [(ngModel)]="searchTerm"
+                (ngModelChange)="onSearchChange($event)"
+              />
+            </div>
             <table class="table table-sm">
               <thead class="bg-white">
                 <tr>
@@ -56,6 +65,37 @@
                 </tr>
               </tbody>
             </table>
+            
+              <!-- Paginación -->
+              <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-between">
+                  <!-- Select para seleccionar la página -->
+                  <div class="d-flex align-items-center">
+                    <li class="page-item d-flex align-items-center">
+                      <span class="me-2">Pag</span>
+                      <select class="form-select form-select-sm me-2" (change)="onPageChange($event)">
+                        <option *ngFor="let i of pagesArray" [value]="i" [selected]="currentPage === i">{{ i }}</option>
+                      </select>
+                      <span class="me-2">de</span>
+                      <span>{{ totalPages }}</span>
+                    </li>
+                  </div>
+            
+                  <!-- Controles Anterior y Siguiente -->
+                  <div class="d-flex">
+                    <li class="page-item" [class.disabled]="currentPage === 1">
+                      <a class="page-link" style="color: #198754;" (click)="goToPage(currentPage - 1)">
+                        <i class="fa-solid fa-angle-left"></i>
+                      </a>
+                    </li>
+                    <li class="page-item" [class.disabled]="currentPage === totalPages">
+                      <a class="page-link" style="color: #198754;" (click)="goToPage(currentPage + 1)">
+                        <i class="fa-solid fa-angle-right"></i>
+                      </a>
+                    </li>
+                  </div>
+                </ul>
+              </nav>
           </div>
         </div>
       </div>
