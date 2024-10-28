@@ -6,7 +6,7 @@
     </div>
     <div class="d-flex flex-rows gap-10">
       <button type="button" class="btn btn-sm bg-success2" (click)="addReception()">Agregar <i class="fa-solid fa-add"></i></button>
-      <button type="button" class="btn btn-sm btn-dark">Recargar <i class="fa-solid fa-rotate-right"></i></button>
+      <button type="button" class="btn btn-sm btn-dark" (click)="getReceptions(1);">Recargar <i class="fa-solid fa-rotate-right"></i></button>
     </div>
   </div>
   <div class="page-divider mb-3">
@@ -154,31 +154,6 @@
               </div>
               <div class="accordion-content" [ngStyle]="{ 'height': activeSection === typep.id ? 'auto' : '0', 'padding': activeSection === typep.id ? '15px' : '0' }">
                 <div class="row">
-                  <!-- <div class="col-md-12 mb-3">
-                    <div class="d-flex justify-content-between align-items-baseline gap-2">
-                      <select class="form-control form-select" name="product" [(ngModel)]="product.productId" required>
-                        <option value="" selected>producto</option>
-                        <option *ngFor="let opt of filterProductBytype(typep.id, listProducts)" value="{{opt.id}}">{{opt.name}}</option>
-                      </select>
-                      <input type="number" class="form-control" name="cuantity" placeholder="cantidad" [(ngModel)]="product.quantity">
-                      <button class="btn btn-sm btn-add bg-reasign" (click)="addProduct(typep.id)"><i class="fa-solid fa-add"></i></button>
-                    </div>
-                  </div>
-                  <div class="col-md-12">
-                    <div class="card mb-2" *ngFor="let item of filterProductBytype(typep.id, products)">
-                      <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                          <div>
-                            <h5 class="mb-0">{{getNamePropuct(item.productId)}}</h5>
-                            <p class="mb-0 p-0">{{item.quantity}}</p>
-                          </div>
-                          <div>
-                            <i class="fa-solid fa-trash f-larger text-danger pointer" (click)="deleteProduct(item)"></i>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div> -->
                   <div class="col-md-12">
                     <div class="mb-2" *ngFor="let item of filterProductBytype(typep.id, listProducts)">
                       <div class="form-group">
@@ -220,7 +195,7 @@
     </div>
     <div class="fixed-footer">
       <button class="btn btn-sm btn-dark" (click)="cancelReception()">Cancelar <i class="fa-solid fa-close"></i></button>
-      <button class="btn btnsm bg-success2" (click)="confirmReception()">Confirmar <i class="fa-solid fa-paper-plane"></i></button>
+      <button class="btn btnsm bg-success2" (click)="confirmReception()">Guardar <i class="fa-solid fa-paper-plane"></i></button>
     </div>
   </div>
 </div>
@@ -268,6 +243,51 @@
               </div>
               <p class="loader-message">{{messageLoading}}</p>
             </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalconfirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+      <div class="modal-content">
+          <div class="modal-body">
+              <div class="col-md-12 text-center pb5">
+                   <i class="{{actionmodal.icon}} noselect f-xx-large" [style.color]="actionmodal.color"></i>
+              </div>
+              <div class="col-md-12 mt-4">
+                  <div class="row">
+                      <div class="col-md-12 text-center d-flex flex-column mb-3">
+                        <span><strong># Guia:</strong> {{receptionForm.guideNumber}}</span>
+                        <span><strong>Transportadora:</strong> {{getNameTransporter(receptionForm.transporterId)}}</span>
+                        <span><strong>Conductor:</strong> {{receptionForm.driver}}</span>
+                        <span><strong>Placa:</strong> {{receptionForm.licensePlate | uppercase}}</span>
+                        <span><strong>Referencias:</strong> {{receptionForm.referenceDoc1}} {{receptionForm.referenceDoc2}}</span>
+                        <span><strong>Evidencias:</strong> {{photos.length}} </span>
+                        <hr>
+                      </div>
+                      <div class="col-md-12">
+                          <span><strong>Productos:</strong></span>
+                          <table class="table table-bordered mt-3">
+                            <tbody>
+                              <tr *ngFor="let item of products">
+                                <th class="text-left">{{getNamePropuct(item.productId)}}</th>
+                                <td class="text-center">{{item.quantity}}</td>
+                              </tr>
+                              <tr>
+                                <th class="text-left">Total</th>
+                                <td class="text-center">{{sumQuantity(products)}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+              <hr>
+              <div class="col-md-12 d-flex justify-content-around">
+                  <button class="btn btn-sm text-white btn-dark" data-bs-dismiss="modal"> Cancelar </button>
+                  <button class="btn btn-sm text-white bg-success2" (click)="uploadEvidence()"> Confirmar </button>
+              </div>
           </div>
       </div>
   </div>

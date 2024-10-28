@@ -22,6 +22,10 @@
   transition: background-color 0.3s ease;
 }
 
+.text-left{
+  text-align: left;
+}
+
 .accordion-header:hover {
   background-color: #157a46;
 }

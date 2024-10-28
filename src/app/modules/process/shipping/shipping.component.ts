@@ -36,6 +36,12 @@ export class ShippingComponent implements OnInit {
     productId:'',
     quantity:''
   }
+  actionmodal: any = {
+    icon:'',
+    name:'',
+    value:'',
+    color:''
+  };
   searchTerm$ = new Subject<any>();
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
   modal: any;
@@ -58,6 +64,7 @@ export class ShippingComponent implements OnInit {
   paginatedList: any = [];
   role: string = '';
   headacopi: any = '';
+  modalConfirm: any;
   constructor(private api: ApiService, private _toast: ToastService){}
 
   ngOnInit(){
@@ -206,6 +213,10 @@ export class ShippingComponent implements OnInit {
     return this.listProducts.find((x: any)=> x.id === id).name;
   }
 
+  getNameTransporter(id: string){
+    return this.listTransporters.find((x: any)=> x.id === id)?.name || '';
+  }
+
   // Abre la cámara y muestra el stream
   openCamera() {
     if(this.photos.length === 6){
@@ -323,6 +334,16 @@ export class ShippingComponent implements OnInit {
       this._toast.info('Importante', 'Debe indicar la cantidad de almenos un producto para el envio');
       return;
     }
+    this.actionmodal.name = 'Confirmar Envio';
+    this.actionmodal.value = 'saveshipping';
+    this.actionmodal.color = '#198754';
+    this.actionmodal.icon = 'fa-solid fa-check';
+    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false});
+    this.modalConfirm.show();
+  }
+
+  uploadData(){
+    this.modalConfirm.hide();
     this.modalloading.show();
     const formData = new FormData();
     this.photos.map(item => ({url: item.url.replace(/^data:image\/[a-zA-Z]+;base64,/, '')})).forEach((base64String, index) => {

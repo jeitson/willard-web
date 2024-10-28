@@ -34,7 +34,13 @@ export class ReceptionComponent implements OnInit {
   product: any = {
     productId:'',
     quantity:''
-  }
+  };
+  actionmodal: any = {
+    icon:'',
+    name:'',
+    value:'',
+    color:''
+  };
   searchTerm$ = new Subject<any>();
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
   modal: any;
@@ -57,6 +63,7 @@ export class ReceptionComponent implements OnInit {
   paginatedList: any = [];
   role: string = '';
   headacopi: any = '';
+  modalConfirm: any;
   constructor(private api: ApiService, private _toast: ToastService){}
 
   ngOnInit(){
@@ -185,6 +192,10 @@ export class ReceptionComponent implements OnInit {
     return this.listProducts.find((x: any)=> x.id === id).name;
   }
 
+  getNameTransporter(id: string){
+    return this.listTransporters.find((x: any)=> x.id === id)?.name || '';
+  }
+
   // Abre la cámara y muestra el stream
   openCamera() {
     if(this.photos.length === 6){
@@ -302,6 +313,16 @@ export class ReceptionComponent implements OnInit {
       this._toast.info('Importante', 'Debe indicar la cantidad de almenos un producto para la recepción');
       return;
     }
+    this.actionmodal.name = 'Confirmar Envio';
+    this.actionmodal.value = 'saveshipping';
+    this.actionmodal.color = '#198754';
+    this.actionmodal.icon = 'fa-solid fa-check';
+    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false});
+    this.modalConfirm.show();
+  }
+
+  uploadEvidence(){
+    this.modalConfirm.hide();
     this.modalloading.show();
     const formData = new FormData();
     this.photos.map(item => ({url: item.url.replace(/^data:image\/[a-zA-Z]+;base64,/, '')})).forEach((base64String, index) => {
@@ -333,13 +354,11 @@ export class ReceptionComponent implements OnInit {
       next: (response: any) => {
         this.editpanel = false;
         this.action = 'listar';
+        this.modalloading.hide();
       },
       error: (error: any) => {
         this.modalloading.hide();
         console.error('Error al guardar la recepción:', error);
-      },
-      complete: ()=>{
-        this.modalloading.hide();
       }
     });
   }
