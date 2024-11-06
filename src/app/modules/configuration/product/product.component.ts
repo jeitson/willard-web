@@ -54,43 +54,51 @@ export class ProductComponent {
   ngOnInit(): void {
     this.modal = new bootstrap.Modal(document.getElementById('modalproduct'), {backdrop: 'static', keyboard: false})
     this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false})
-    this.selectData();
+  this.getProducts();
   }
-  selectData(): void {
-    // Obtener productos
+  getProducts(): void {
     this._Service.getProducts().subscribe({
       next: (productsResponse: any) => {
         this.listData = productsResponse.data.items;
         this.listBase = this.listData; // Guardamos la lista original para filtrar
         this.pagination.totalItems = productsResponse.data.length;
+        this.search();
         this.updatePaginatedList(); // Actualiza la lista paginada
-
-        // Obtener tipo de producto
-        this._settings.getCatalogChildrenByKey('TIPO_PRODUCTO').subscribe({
-          next: (typeProductResponse: any) => {
-            this.listProduct = typeProductResponse.data;
-
-            // Obtener medidas
-            this._settings.getCatalogChildrenByKey('UNIDAD_MEDIDA').subscribe({
-              next: (medidasResponse: any) => {
-                this.Measure = medidasResponse.data;
-              },
-              error: (error: any) => {
-                console.error('Error al obtener medidas:', error);
-              },
-            });
-          },
-          error: (error: any) => {
-            console.error('Error al obtener tipo de producto:', error);
-          },
-        });
+  
+        // Después de obtener productos, obtener tipos de producto
+        this.getProductTypes();
+        this.getMeasurements();
       },
       error: (error: any) => {
         console.error('Error al obtener productos:', error);
       },
     });
   }
+  
+  getProductTypes(): void {
+    this._settings.getCatalogChildrenByKey('TIPO_PRODUCTO').subscribe({
+      next: (typeProductResponse: any) => {
+        this.listProduct = typeProductResponse.data;
+  
+        // Después de obtener tipos de producto, obtener medidas
 
+      },
+      error: (error: any) => {
+        console.error('Error al obtener tipo de producto:', error);
+      },
+    });
+  }
+  
+  getMeasurements(): void {
+    this._settings.getCatalogChildrenByKey('UNIDAD_MEDIDA').subscribe({
+      next: (medidasResponse: any) => {
+        this.Measure = medidasResponse.data;
+      },
+      error: (error: any) => {
+        console.error('Error al obtener medidas:', error);
+      },
+    });
+  }
 
   createOrUpdateproduct(item: any | null): void {
     this.resetUser();
@@ -201,7 +209,7 @@ export class ProductComponent {
 
    handleSuccess(response: any): void {
     this.modal.hide();
-    this.selectData();
+    this.getProducts();
     this.close();
   }
 
@@ -239,7 +247,7 @@ export class ProductComponent {
   changeStatus(){
     this._Service.changeProductStatus(this.itemId).subscribe({
       next: ()=>{
-        this.selectData();
+        this.getProducts();
         this.modalConfirm.hide();
       }, error: ()=>{
 
@@ -250,7 +258,7 @@ export class ProductComponent {
   delete(){
     this._Service.deleteProduct(this.itemId).subscribe({
       next: ()=>{
-        this.selectData();
+        this.getProducts();
         this.modalConfirm.hide();
       }, error: ()=>{
 
@@ -283,18 +291,19 @@ export class ProductComponent {
   }
 
 
-  onSearchChange(value: string): void {
-    if (!value) {
-      this.listData = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
-    } else {
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      const searchTerm = value.toLowerCase();
       this.listData = this.listBase.filter((item: any) => {
-        const itemValues: any = Object.values(item);
-        return itemValues.some((val: string) =>
-          String(val).toLowerCase().includes(value.toLowerCase())
+        // Obtén todos los valores, incluyendo `productType.name`
+        const itemValues = [...Object.values(item), item.productType?.name];
+  
+        // Verifica si alguno de los valores contiene el término de búsqueda
+        return itemValues.some(val =>
+          String(val).toLowerCase().includes(searchTerm),
         );
       });
-    }
-    this.currentPage = 1; // Reinicia a la primera página
-    this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
+    });
   }
+  
 }

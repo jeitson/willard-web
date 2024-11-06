@@ -85,6 +85,7 @@ export class CatalogueComponent implements OnInit {
         this.listBase = this.list; // Guardamos la lista original para filtrar
         this.pagination.totalItems = response.data.length;
         this.updatePaginatedList(); // Actualiza la lista paginada
+        this.search();
       },
       error: (error: any) => {
         console.error('Error al obtener datos:', error);
@@ -280,19 +281,15 @@ export class CatalogueComponent implements OnInit {
     }
 
 
-    onSearchChange(value: string): void {
-      if (!value) {
-        this.list = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
-      } else {
-        this.list = this.listBase.filter((item: any) => {
-          const itemValues: any = Object.values(item);
-          return itemValues.some((val: string) =>
-            String(val).toLowerCase().includes(value.toLowerCase())
+    search(): void {
+      this.searchTerm$.subscribe(({ value }: { value: string }) => {
+        this.list = this.listBase.filter(item => {
+          const itemValues = Object.values(item);
+          return itemValues.some(item =>
+            String(item).toLowerCase().includes(value.toLowerCase()),
           );
         });
-      }
-      this.currentPage = 1; // Reinicia a la primera página
-      this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
+      });
     }
 
 }

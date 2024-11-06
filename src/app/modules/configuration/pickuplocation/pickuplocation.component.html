@@ -19,13 +19,12 @@
           <div class="col-md-12">
             <div class="table-responsive">
               <div class="mb-3 col-4">
-                <input
+                <input 
                 type="text"
                 class="form-control form-control-sm"
                 placeholder="Buscar..."
-                [(ngModel)]="searchTerm"
-                (ngModelChange)="onSearchChange($event)"
-              />
+                (keyup)="searchTerm$.next($event.target)"
+                />
               </div>
               <table class="table table-sm">
                 <thead class="bg-white">

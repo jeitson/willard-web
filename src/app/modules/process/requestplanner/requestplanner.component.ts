@@ -84,6 +84,7 @@ export class RequestplannerComponent implements OnInit {
         this.listCopy = this.listsrequest; // Hacemos una copia de la lista original
         this.totalItems = this.listsrequest.length; // Total de solicitudes
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
+        this.search();
       },
       error: (error: any) => {
         console.error('Error:', error);
@@ -219,18 +220,14 @@ export class RequestplannerComponent implements OnInit {
       .map((x, i) => i + 1);
   }
 
-  onSearchChange(value: string): void {
-    if (!value) {
-      this.listsrequest = [...this.listCopy]; // Restablecer la lista original si no hay búsqueda
-    } else {
-      this.listsrequest = this.listCopy.filter((item: any) => {
-        const itemValues: any = Object.values(item);
-        return itemValues.some((val: string) =>
-          String(val).toLowerCase().includes(value.toLowerCase())
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.listsrequest = this.listCopy.filter(item => {
+        const itemValues = Object.values(item);
+        return itemValues.some(item =>
+          String(item).toLowerCase().includes(value.toLowerCase()),
         );
       });
-    }
-    this.currentPage = 1; // Reinicia a la primera página
-    this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
+    });
   }
 }

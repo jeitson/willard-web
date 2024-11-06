@@ -73,6 +73,7 @@ export class RequestlogisticsComponent {
       this.listCopy = this.listsrequest; // Hacemos una copia de la lista original
       this.totalItems = this.listsrequest.length; // Total de solicitudes
       this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
+      this.search();
     });
   }
 
@@ -193,18 +194,20 @@ export class RequestlogisticsComponent {
       .map((x, i) => i + 1);
   }
 
-  onSearchChange(value: string): void {
-    if (!value) {
-      this.listsrequest = [...this.listCopy]; // Restablecer la lista original si no hay búsqueda
-    } else {
-      this.listsrequest = this.listCopy.filter((item: any) => {
-        const itemValues: any = Object.values(item);
-        return itemValues.some((val: string) =>
-          String(val).toLowerCase().includes(value.toLowerCase())
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+        const lowerValue = value.toLowerCase();
+        this.listsrequest = this.listCopy.filter(item =>
+            [
+                item.id?.toString(),                             // Id
+                item.requestDate,                                // Fecha
+                item.pickUpLocation?.name,                       // Acopio
+                item.estimatedQuantity?.toString(),              // Cantidad
+                item.estimatedPickUpDate,                        // Recogida
+                item.client?.name                                // Cliente
+            ].some(field => field?.toLowerCase().includes(lowerValue))
         );
-      });
-    }
-    this.currentPage = 1; // Reinicia a la primera página
-    this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
-  }
+    });
+}
+
 }

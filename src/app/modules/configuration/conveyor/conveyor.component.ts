@@ -42,8 +42,14 @@ export class ConveyorComponent {
   constructor(private _Service: ConvenyorService) {}
 
   ngOnInit(): void {
-    this.modal = new bootstrap.Modal(document.getElementById('modalconveyor'), {backdrop: 'static', keyboard: false})
-    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false})
+    this.modal = new bootstrap.Modal(document.getElementById('modalconveyor'), {
+      backdrop: 'static',
+      keyboard: false,
+    });
+    this.modalConfirm = new bootstrap.Modal(
+      document.getElementById('modalconfirm'),
+      { backdrop: 'static', keyboard: false }
+    );
     this.selectData();
   }
 
@@ -54,13 +60,13 @@ export class ConveyorComponent {
         this.listBase = this.listData; // Guardamos la lista original para filtrar
         this.pagination.totalItems = response.data.length;
         this.updatePaginatedList(); // Actualiza la lista paginada
+        this.search();
       },
       error: (error: any) => {
         console.error('Error al obtener transportadores:', error);
       },
     });
   }
-  
 
   createOrUpdateconveyor(item: any | null): void {
     this.resetconveyor();
@@ -103,8 +109,6 @@ export class ConveyorComponent {
     this.modal.hide();
   }
 
- 
-
   updateConveyor(): void {
     if (this.conveyor.id) {
       this._Service
@@ -137,7 +141,7 @@ export class ConveyorComponent {
       referenceWLL,
       referencePH,
     } = this.conveyor;
-  
+
     return {
       id,
       name,
@@ -150,7 +154,7 @@ export class ConveyorComponent {
       referencePH,
     };
   }
-   handleSuccess(response: any): void {
+  handleSuccess(response: any): void {
     this.selectData();
     this.close();
   }
@@ -206,45 +210,39 @@ export class ConveyorComponent {
     });
   }
 
-    // paginación
-    onPageChange(event: Event) {
-      const selectElement = event.target as HTMLSelectElement;
-      const selectedPage = Number(selectElement.value);
-      this.goToPage(selectedPage);
+  // paginación
+  onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList();
     }
-    goToPage(page: number) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page;
-        this.updatePaginatedList();
-      }
-    }
-    get pagesArray() {
-      return Array(this.totalPages)
-        .fill(0)
-        .map((x, i) => i + 1);
-    }
+  }
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
 
-    updatePaginatedList() {
-      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-      const endIndex = startIndex + this.itemsPerPage;
-      this.paginatedList = this.listData.slice(startIndex, endIndex);
-      this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Calcula el total de páginas
-    }
+  updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listData.slice(startIndex, endIndex);
+    this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Calcula el total de páginas
+  }
 
-
-    onSearchChange(value: string): void {
-      if (!value) {
-        this.listData = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
-      } else {
-        this.listData = this.listBase.filter((item: any) => {
-          const itemValues: any = Object.values(item);
-          return itemValues.some((val: string) =>
-            String(val).toLowerCase().includes(value.toLowerCase())
-          );
-        });
-      }
-      this.currentPage = 1; // Reinicia a la primera página
-      this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
-    }
-
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.listData = this.listBase.filter((item: any) => {
+        const itemValues = Object.values(item);
+        return itemValues.some((item) =>
+          String(item).toLowerCase().includes(value.toLowerCase())
+        );
+      });
+    });
+  }
 }

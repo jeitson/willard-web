@@ -63,6 +63,7 @@ currentPage: number = 1;
         this.totalItems = value.data.meta.totalItems; // Total de solicitudes
         this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Total de páginas
         this.updatePaginatedList(); // Actualiza la lista paginada
+        this.search();
       },
       error: (error) => {
         console.log(error);
@@ -256,18 +257,14 @@ currentPage: number = 1;
       .map((x, i) => i + 1);
   }
   
-  onSearchChange(value: string): void {
-    if (!value) {
-      this.listData = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
-    } else {
-      this.listData = this.listBase.filter((item: any) => {
-        const itemValues: any = Object.values(item);
-        return itemValues.some((val: string) =>
-          String(val).toLowerCase().includes(value.toLowerCase())
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.listData = this.listBase.filter(item => {
+        const itemValues = Object.values(item);
+        return itemValues.some(item =>
+          String(item).toLowerCase().includes(value.toLowerCase()),
         );
       });
-    }
-    this.currentPage = 1; // Reinicia a la primera página
-    this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
+    });
   }
 }

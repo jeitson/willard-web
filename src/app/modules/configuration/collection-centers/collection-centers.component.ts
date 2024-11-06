@@ -29,8 +29,8 @@ export class CollectionCentersComponent {
     referenceWLL: '',
     referencePH: '',
   };
-  listData: any = [];
-  listBase: any = [];
+  listData: any[] = [];
+  listBase: any[] = [];
 
   viewoptions = true;
   action: any = {
@@ -47,8 +47,8 @@ export class CollectionCentersComponent {
   modalConfirm: any;
   pagination: any = {};
   searchTerm$ = new Subject<any>();
-  paginatedList: any = [];
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
+  paginatedList: any = [];
   currentPage: number = 1; // Página actual
   itemsPerPage: number = 5; // Cantidad de elementos por página
   totalPages: number = 0; // Total de páginas
@@ -65,10 +65,11 @@ export class CollectionCentersComponent {
       document.getElementById('modalconfirm'),
       { backdrop: 'static', keyboard: false }
     );
-    this.selectData();
+    
+    this.lisKey();
   }
 
-  selectData(): void {
+  lisKey(){
     this._Service.getCollectionSites().subscribe({
       next: (response: any) => {
         this.listData = response.data.items;
@@ -76,12 +77,16 @@ export class CollectionCentersComponent {
         this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Total de páginas
         this.pagination.totalItems = response.data.length;
         this.updatePaginatedList(); // Actualiza la lista paginada
-
+        this.search();
+        this.selectData();
       },
       error: (error: any) => {
         console.error('Error al obtener centros de recolección:', error);
       },
     });
+  }
+  selectData(): void {
+
   
     this._settings.getCatalogChildrenByKey('PAIS').subscribe({
       next: (response: any) => {
@@ -224,7 +229,7 @@ export class CollectionCentersComponent {
     };
   }
    handleSuccess(response: any): void {
-    this.selectData();
+    this.lisKey();
     this.modal.hide();
   }
 
@@ -307,18 +312,14 @@ export class CollectionCentersComponent {
       .map((x, i) => i + 1);
   }
   
-  onSearchChange(value: string): void {
-    if (!value) {
-      this.listData = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
-    } else {
-      this.listData = this.listBase.filter((item: any) => {
-        const itemValues: any = Object.values(item);
-        return itemValues.some((val: string) =>
-          String(val).toLowerCase().includes(value.toLowerCase())
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.listData = this.listBase.filter(item => {
+        const itemValues = Object.values(item);
+        return itemValues.some(item =>
+          String(item).toLowerCase().includes(value.toLowerCase()),
         );
       });
-    }
-    this.currentPage = 1; // Reinicia a la primera página
-    this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
+    });
   }
 }

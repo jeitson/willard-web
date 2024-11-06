@@ -50,13 +50,14 @@ export class UsersComponent {
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
   totalItems = 0;
   itemsPerPage: number = 10; // Cambiar a 10 para que se muestren 10 usuarios por página
-totalPages: number = 0;
-currentPage: number = 1;
+  totalPages: number = 0;
+  currentPage: number = 1;
   constructor(
     private userService: UsersService,
     private rolesService: RolesService,
     private _toast: ToastService,
-    private http: ApiService
+    private http: ApiService,
+    private api: ApiService
   ) {}
 
   ngOnInit(): void {
@@ -80,21 +81,17 @@ currentPage: number = 1;
     });
   }
 
-
-
-
   loadUsers(item: any): void {
-    this.userService.allUsers().subscribe({
+    this.api.get(`users?page=${item}`).subscribe({
       next: (response: any) => {
-        const users = response.data.items;
-        this.users = users;
-        this.listBase = users;
+        this.users = response.data.items;
+        this.listBase = this.users; // Guarda la lista original para filtrar
         this.totalItems = response.data.meta.totalItems; // Total de solicitudes
-        this.totalPages = Math.ceil(this.users.length / this.itemsPerPage); // Total de páginas
-        this.updatePaginatedList(); // Actualiza la lista paginada
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
+        this.search();
       },
       error: (error: any) => {
-        console.error('Error loading users:', error);
+        console.error('Error al crear usuario:', error);
       },
     });
   }
@@ -184,46 +181,51 @@ currentPage: number = 1;
       collectionSites: [],
     };
   }
-  
-   // paginación
-   updatePaginatedList() {
+
+  // paginación
+  updatePaginatedList() {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     this.paginatedList = this.users.slice(startIndex, endIndex);
-    this.totalPages = Math.ceil(this.users.length / this.itemsPerPage); // Calcula el total de páginas
   }
-  
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList();
+      this.loadUsers(page);
+    }
+  }
+
   onPageChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const selectedPage = Number(selectElement.value);
     this.goToPage(selectedPage);
   }
-  
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.updatePaginatedList(); // Actualiza la lista para la nueva página
-    }
-  }
+
   get pagesArray() {
     return Array(this.totalPages)
       .fill(0)
       .map((x, i) => i + 1);
   }
-  
-  onSearchChange(value: string): void {
-    if (!value) {
-      this.users = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
-    } else {
-      this.users = this.listBase.filter((item: any) => {
-        const itemValues: any = Object.values(item);
-        return itemValues.some((val: string) =>
-          String(val).toLowerCase().includes(value.toLowerCase())
-        );
-      });
-    }
-    this.currentPage = 1; // Reinicia a la primera página
-    this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
-  }
 
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.users = this.listBase.filter((item) => {
+        // Comprobamos si alguno de los roles del usuario contiene el término de búsqueda
+        const rolesMatch = item.roles?.some((role: any) =>
+          role.role.name.toLowerCase().includes(value.toLowerCase())
+        );
+
+        // También permitimos filtrar por cualquier otro campo del objeto usuario
+        const itemValues = Object.values(item);
+        const generalMatch = itemValues.some((item) =>
+          String(item).toLowerCase().includes(value.toLowerCase())
+        );
+
+        // El filtro se activa si cualquiera de las condiciones de coincidencia se cumple
+        return rolesMatch || generalMatch;
+      });
+    });
+  }
 }

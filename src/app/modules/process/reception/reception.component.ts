@@ -84,6 +84,8 @@ export class ReceptionComponent implements OnInit {
         this.listBase = this.listReceptions; // Guardamos la lista original para filtrar
         this.totalItems = this.listReceptions.length; // Total de solicitudes
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
+        this.search();
+
       },
       error: (error: any) => {
         console.error('Error al crear usuario:', error);
@@ -391,20 +393,16 @@ export class ReceptionComponent implements OnInit {
         .map((x, i) => i + 1);
     }
 
-  onSearchChange(value: string): void {
-    if (!value) {
-      this.listReceptions = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
-    } else {
-      this.listReceptions = this.listBase.filter((item: any) => {
-        const itemValues: any = Object.values(item);
-        return itemValues.some((val: string) =>
-          String(val).toLowerCase().includes(value.toLowerCase())
-        );
+    search(): void {
+      this.searchTerm$.subscribe(({ value }: { value: string }) => {
+        this.listReceptions = this.listBase.filter(item => {
+          const itemValues = Object.values(item);
+          return itemValues.some(item =>
+            String(item).toLowerCase().includes(value.toLowerCase()),
+          );
+        });
       });
     }
-    this.currentPage = 1; // Reinicia a la primera página
-    this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
-  }
 
 
 }

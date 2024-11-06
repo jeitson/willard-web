@@ -66,6 +66,7 @@ export class CustomersComponent {
         this.totalItems = response.data.meta.totalItems; // Total de solicitudes
         this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Total de páginas
         // this.pagination.totalItems = response.data.length;
+        this.search();
         this.updatePaginatedList(); // Actualiza la lista paginada
 
 
@@ -270,19 +271,15 @@ export class CustomersComponent {
       .map((x, i) => i + 1);
   }
   
-  onSearchChange(value: string): void {
-    if (!value) {
-      this.listData = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
-    } else {
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
       this.listData = this.listBase.filter((item: any) => {
-        const itemValues: any = Object.values(item);
-        return itemValues.some((val: string) =>
-          String(val).toLowerCase().includes(value.toLowerCase())
+        const itemValues = Object.values(item);
+        return itemValues.some(item =>
+          String(item).toLowerCase().includes(value.toLowerCase()),
         );
       });
-    }
-    this.currentPage = 1; // Reinicia a la primera página
-    this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
+    });
   }
 
 }
