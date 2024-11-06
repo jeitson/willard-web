@@ -267,7 +267,7 @@ export class CollectionCentersComponent {
   changeStatus() {
     this._Service.changeCollectionSiteStatus(this.itemId).subscribe({
       next: () => {
-        this.selectData();
+        this.lisKey();
         this.modalConfirm.hide();
       },
       error: () => {},
@@ -277,7 +277,7 @@ export class CollectionCentersComponent {
   delete() {
     this._Service.deleteCollectionSite(this.itemId).subscribe({
       next: () => {
-        this.selectData();
+        this.lisKey();
         this.modalConfirm.hide();
       },
       error: () => {},
