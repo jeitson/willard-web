@@ -31,6 +31,7 @@
     "moment": "^2.30.1",
     "ngx-danisoft-utils": "^4.1.0",
     "ngx-pagination": "^6.0.3",
+    "ngx-skeleton-loader": "^9.0.0",
     "ngx-toastr": "^19.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

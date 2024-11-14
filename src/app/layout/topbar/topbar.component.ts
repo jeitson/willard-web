@@ -17,6 +17,7 @@ export class TopbarComponent implements OnInit, AfterViewInit {
   constructor(private storageService:StorageService, private auth0Service:Auth0Service){}
 
   async ngAfterViewInit(){
+
     this.auth0Service.getUser().subscribe(user => {
       this.user = user;
     });
@@ -26,8 +27,8 @@ export class TopbarComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    // this.name = this.capitalizeTexto(JSON.parse(sessionStorage.getItem("currentUser") || '{}').name.toLowerCase());
-    // this.role = JSON.parse(sessionStorage.getItem("currentUser") || '{}').role.name
+    const data = JSON.parse(sessionStorage.getItem('profileData') || '{}')
+    this.name = data?.name;
   }
 
   onToggleSidebar() {
