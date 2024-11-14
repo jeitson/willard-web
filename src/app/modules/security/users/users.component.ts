@@ -115,7 +115,7 @@ export class UsersComponent {
     this.modal.show();
     if (item != null) {
       this.userId = item.id;
-      this.role = item.roles[0].roleId;
+      this.role = item.roles[0]?.roleId;
       this.action.name = 'Actualizar';
       this.viewoptions = false;
       this.user = {
@@ -128,7 +128,7 @@ export class UsersComponent {
         referenceWLL: item.referenceWLL,
         referencePH: item.referencePH,
         roles: item.roles,
-        collectionSites: item.collectionSites,
+        collectionSites: item.collectionSites.length > 0 ? item.collectionSites[0].collectionSiteId : '',
       };
     }
   }

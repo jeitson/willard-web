@@ -9,7 +9,6 @@ import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 import { Auth0Interceptor } from './core/interceptors/auth0.interceptor';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxDanisoftUtilsModule } from 'ngx-danisoft-utils';
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,7 +27,6 @@ import { NgxDanisoftUtilsModule } from 'ngx-danisoft-utils';
       authorizationParams: {
         redirect_uri: window.location.origin + '/#/landing',
       },
-
     }),
   ],
   providers: [

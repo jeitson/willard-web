@@ -52,6 +52,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
           this._users.getProfile().subscribe({
             next: response => {
               if (response?.data) {
+                //this.isLoading = false;
                 const roleId = response?.data.roles?.[0]?.roleId || null;
                 sessionStorage.setItem('profileData', JSON.stringify(response.data));
                 sessionStorage.setItem('RoleId', roleId);

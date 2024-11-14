@@ -36,6 +36,13 @@ const routes: Routes = [
 			import('../process/shipping/shipping.module').then(
 				({ ShippingModule }) => ShippingModule,
 			),
+	},
+  {
+		path: 'conciliation',
+		loadChildren: () =>
+			import('../process/conciliation/conciliation.module').then(
+				({ ConciliationModule }) => ConciliationModule,
+			),
 	}
 ];
 
