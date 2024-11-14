@@ -28,7 +28,6 @@ import { NgxDanisoftUtilsModule } from 'ngx-danisoft-utils';
       authorizationParams: {
         redirect_uri: window.location.origin + '/#/landing',
       },
-
     }),
   ],
   providers: [

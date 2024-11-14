@@ -128,7 +128,7 @@ export class UsersComponent {
         referenceWLL: item.referenceWLL,
         referencePH: item.referencePH,
         roles: item.roles,
-        collectionSites: item.collectionSites,
+        collectionSites: item.collectionSites.length > 0 ? item.collectionSites[0].collectionSiteId : '',
       };
     }
   }
