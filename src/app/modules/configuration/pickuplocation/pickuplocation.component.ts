@@ -97,6 +97,7 @@ export class PickuplocationComponent {
   getPickUpLocations(): void {
     this._Service.getPickUpLocations().subscribe({
       next: (response: any) => {
+        console.log('data');
         this.listData = response.data.items;
         this.listBase = this.listData; // Guardamos la lista original para filtrar
         this.pagination.totalItems = response.data.length;
