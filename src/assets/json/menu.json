@@ -51,6 +51,13 @@
         "id": "25",
         "route": "shipping",
         "status": false
+      },
+      {
+        "name": "Conciliation",
+        "type": "link",
+        "id": "26",
+        "route": "conciliation",
+        "status": false
       }
     ]
   },

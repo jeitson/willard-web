@@ -115,7 +115,7 @@ export class UsersComponent {
     this.modal.show();
     if (item != null) {
       this.userId = item.id;
-      this.role = item.roles[0].roleId;
+      this.role = item.roles[0]?.roleId;
       this.action.name = 'Actualizar';
       this.viewoptions = false;
       this.user = {
