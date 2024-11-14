@@ -19,6 +19,7 @@ export class TopbarComponent implements OnInit, AfterViewInit {
   async ngAfterViewInit(){
     this.auth0Service.getUser().subscribe(user => {
       this.user = user;
+      console.log(this.user);
     });
     if (!(await this.auth0Service.isAuthenticated())) {
       this._login();
