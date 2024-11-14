@@ -16,7 +16,7 @@ import { ReceptionComponent } from './reception/reception.component';
     RequestagencyComponent,
     DetailrequestComponent,
     RequestlogisticsComponent,
-    ReceptionComponent
+    // ReceptionComponent
   ],
   imports: [
     CommonModule,
