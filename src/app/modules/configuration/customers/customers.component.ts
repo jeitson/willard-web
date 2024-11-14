@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Subject } from 'rxjs';
 import { CustomersService } from 'src/app/core/services/process/customers.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
 declare var bootstrap: any;
@@ -34,9 +35,17 @@ export class CustomersComponent {
 
   currentPage= 1;
   listData: any = [];
+  listBase: any = [];
   paisData: any = [];
   typeDocuments: any = [];
   viewoptions = true;
+  pagination: any = {};
+  searchTerm$ = new Subject<any>();
+  paginatedList: any = [];
+  searchTerm: string = ''; // Para almacenar el texto de búsqueda
+  itemsPerPage: number = 5; // Cantidad de elementos por página
+  totalPages: number = 0; // Total de páginas
+  totalItems = 0;
   constructor(
     private _Service: CustomersService,
     private _settings: SettingsService
@@ -53,6 +62,14 @@ export class CustomersComponent {
     this._Service.getClients().subscribe({
       next: (response: any) => {
         this.listData = response.data.items;
+        this.listBase = this.listData; // Guardamos la lista original para filtrar
+        this.totalItems = response.data.meta.totalItems; // Total de solicitudes
+        this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Total de páginas
+        // this.pagination.totalItems = response.data.length;
+        this.search();
+        this.updatePaginatedList(); // Actualiza la lista paginada
+
+
         
         // Llamadas individuales a los otros servicios
         this._settings.getCatalogChildrenByKey('TIPO_DOCUMENTO').subscribe({
@@ -225,6 +242,43 @@ export class CustomersComponent {
       }, error: ()=>{
 
       }
+    });
+  }
+
+   // paginación
+   updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listData.slice(startIndex, endIndex);
+    this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Calcula el total de páginas
+  }
+  
+  onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
+  
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList(); // Actualiza la lista para la nueva página
+    }
+  }
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
+  
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.listData = this.listBase.filter((item: any) => {
+        const itemValues = Object.values(item);
+        return itemValues.some(item =>
+          String(item).toLowerCase().includes(value.toLowerCase()),
+        );
+      });
     });
   }
 

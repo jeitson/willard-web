@@ -62,14 +62,9 @@ export class CatalogueComponent implements OnInit {
   searchTerm$ = new Subject<any>();
 
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
-
-
   currentPage: number = 1; // Página actual
-itemsPerPage: number = 5; // Cantidad de elementos por página
-totalPages: number = 0; // Total de páginas
-
-
-
+  itemsPerPage: number = 5; // Cantidad de elementos por página
+  totalPages: number = 0; // Total de páginas
   constructor(private api: ApiService, private cdr: ChangeDetectorRef, private router: Router){
 
   }
@@ -90,6 +85,7 @@ totalPages: number = 0; // Total de páginas
         this.listBase = this.list; // Guardamos la lista original para filtrar
         this.pagination.totalItems = response.data.length;
         this.updatePaginatedList(); // Actualiza la lista paginada
+        this.search();
       },
       error: (error: any) => {
         console.error('Error al obtener datos:', error);
@@ -285,19 +281,15 @@ totalPages: number = 0; // Total de páginas
     }
 
 
-    onSearchChange(value: string): void {
-      if (!value) {
-        this.list = [...this.listBase]; // Restablecer la lista original si no hay búsqueda
-      } else {
-        this.list = this.listBase.filter((item: any) => {
-          const itemValues: any = Object.values(item);
-          return itemValues.some((val: string) =>
-            String(val).toLowerCase().includes(value.toLowerCase())
+    search(): void {
+      this.searchTerm$.subscribe(({ value }: { value: string }) => {
+        this.list = this.listBase.filter(item => {
+          const itemValues = Object.values(item);
+          return itemValues.some(item =>
+            String(item).toLowerCase().includes(value.toLowerCase()),
           );
         });
-      }
-      this.currentPage = 1; // Reinicia a la primera página
-      this.updatePaginatedList(); // Actualiza la lista paginada después del filtrado
+      });
     }
 
 }

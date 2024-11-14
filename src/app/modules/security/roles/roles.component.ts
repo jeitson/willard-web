@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { RolesService } from 'src/app/core/services/security/roles.service';
 import { Observable, Subject, forkJoin, fromEvent } from 'rxjs';
 import { ToastService } from 'src/app/core/services/toast.service';
+import { GeneralService } from 'src/app/core/services/general.service';
 declare var bootstrap: any;
 @Component({
   selector: 'wlrd-roles',
@@ -28,251 +29,26 @@ export class RolesComponent implements OnInit {
     value: '',
     color: '',
   };
-  modulesBase = [
-    {
-      route: 'dashboard',
-      short_label: 'D',
-      name: 'Inicio',
-      type: 'link',
-      status: false,
-      id: '1',
-      icon: 'ai-dashboard'
-    },
-    {
-      route: 'process',
-      short_label: 'P',
-      name: 'Proceso',
-      type: 'sub',
-      status: false,
-      id: '2',
-      icon: 'ai-settings-horizontal',
-      subMenu: [
-        {
-          name: 'Solicitudes (planeador)',
-          type: 'link',
-          id: '21',
-          route: 'requestplanner',
-          status: false
-        },
-        {
-          name: 'Solicitudes (Agencia)',
-          type: 'link',
-          id: '22',
-          route: 'requestagency',
-          status: false
-        },
-        {
-          name: 'Solicitudes (logistics)',
-          type: 'link',
-          id: '23',
-          route: 'requestlogistics',
-          status: false
-        },
-        {
-          name: 'Recepción',
-          type: 'link',
-          id: '24',
-          route: 'reception',
-          status: false
-        }
-      ]
-    },
-    {
-      route: 'security',
-      short_label: 'P',
-      name: 'Seguridad',
-      type: 'sub',
-      status: false,
-      id: '3',
-      icon: 'ai-lock-on',
-      subMenu: [
-        {
-          name: 'Usuarios',
-          type:'link',
-          id: '31',
-          route: 'users',
-          status: false
-        },
-        {
-          name: 'Roles',
-          type:'link',
-          id: '32',
-          route: 'roles',
-          status: false
-        },
-        {
-          name: 'Auditoria',
-          type:'link',
-          id: '33',
-          route: 'request',
-          status: false
-        }
-      ]
-    },
-    {
-      route: 'settings',
-      short_label: 'C',
-      name: 'Configuraciones',
-      type: 'sub',
-      status: false,
-      id: '4',
-      icon: 'ai-gear',
-      subMenu: [
-        {
-          name: 'Pais',
-          type: 'link',
-          id: '41',
-          route: 'country',
-          status: false
-        },
-        {
-          name: 'Departamento',
-          type: 'link',
-          id: '42',
-          route: 'department',
-          status: false
-        },
-        {
-          name: 'Ciudad',
-          type: 'link',
-          id: '43',
-          route: 'city',
-          status: false
-        },
-        {
-          name: 'Tipos sedes acopio',
-          type: 'link',
-          id: '44',
-          route: 'headquartercopy',
-          status: false
-        },
-        {
-          name: 'Tipo lugar de recogida ',
-          type: 'link',
-          id: '45',
-          route: 'locationdeparture',
-          status: false
-        },
-        {
-          name: 'Tipos de documento',
-          type: 'link',
-          id: '46',
-          route: 'typedocuments',
-          status: false
-        },
-        {
-          name: 'Unidad de medida',
-          type: 'link',
-          id: '47',
-          route: 'unitymetrics',
-          status: false
-        },
-        {
-          name: 'Tipo producto',
-          type: 'link',
-          id: '48',
-          route: 'typeproducts',
-          status: false
-        },
-        {
-          name: 'Tipo guía',
-          type: 'link',
-          id: '49',
-          route: 'typeguide',
-          status: false
-        },
-        {
-          name: 'Tipo evidencia',
-          type: 'link',
-          id: '410',
-          route: 'typeevidence',
-          status: false
-        },
-        {
-          name: 'Zona',
-          type: 'link',
-          id: '411',
-          route: 'zone',
-          status: false
-        },
-        {
-          name: 'Tipo de Camión',
-          type: 'link',
-          id: '412',
-          route: 'trucktype',
-          status: false
-        },
-        {
-          name: 'Tipo de Cliente',
-          type: 'link',
-          id: '413',
-          route: 'typecustomer',
-          status: false
-        },
-        {
-          name: 'Motivo Especial',
-          type: 'link',
-          id: '414',
-          route: 'specialreason',
-          status: false
-        },
-        {
-          name: 'Estado de rutas',
-          type: 'link',
-          id: '415',
-          route: 'routestatus',
-          status: false
-        },
-        {
-          name: 'Productos',
-          type: 'link',
-          id: '416',
-          route: 'product',
-          status: false
-        },
-        {
-          name: 'Clientes',
-          type: 'link',
-          id: '417',
-          route: 'customer',
-          status: false
-        },
-        {
-          name: 'Sedes de Acopio',
-          type: 'link',
-          id: '418',
-          route: 'collection',
-          status: false
-        },
-        {
-          name: 'Transportador',
-          type: 'link',
-          id: '419',
-          route: 'conveyor',
-          status: false
-        },
-        {
-          name: 'Asesor',
-          type: 'link',
-          id: '420',
-          route: 'adviser',
-          status: false
-        },
-        {
-          name: 'Lugares de Recogida',
-          type: 'link',
-          id: '421',
-          route: 'pickuplocation',
-          status: false
-        }
-      ]
-    },
-  ];
+  modulesBase: any[] = [];
   modules: any[] = [];
   modal: any;
   mmenu: any;
-  constructor(private _rolesService: RolesService, private _toast: ToastService) {}
+  listBase: any[] = [];
+  paginatedList: any = [];
+  searchTerm$ = new Subject<any>();
+  searchTerm: string = ''; // Para almacenar el texto de búsqueda
+  totalItems = 0;
+  itemsPerPage: number = 10; // Cambiar a 10 para que se muestren 10 usuarios por página
+totalPages: number = 0;
+currentPage: number = 1;
+
+  constructor(private _rolesService: RolesService, private _toast: ToastService, private general:GeneralService) {}
   ngOnInit(): void {
+    this.general.getMenu().subscribe({
+      next: (mods: any)=>{
+        this.modulesBase = mods;
+      }
+    });
     this.modal = new bootstrap.Modal(document.getElementById('modalRol'), {backdrop: 'static', keyboard: false});
     this.mmenu = new bootstrap.Modal(document.getElementById('modalMenu'), {backdrop: 'static', keyboard: false});
     this.selectData();
@@ -283,6 +59,11 @@ export class RolesComponent implements OnInit {
       next: (value: any) => {
         console.log(value);
         this.listData = value.data.items;
+        this.listBase = this.listData;
+        this.totalItems = value.data.meta.totalItems; // Total de solicitudes
+        this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Total de páginas
+        this.updatePaginatedList(); // Actualiza la lista paginada
+        this.search();
       },
       error: (error) => {
         console.log(error);
@@ -447,5 +228,43 @@ export class RolesComponent implements OnInit {
   handleSuccess(response: any): void {
     this.selectData();
     this.close();
+  }
+
+
+   // paginación
+   updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listData.slice(startIndex, endIndex);
+    this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Calcula el total de páginas
+  }
+  
+  onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
+  
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList(); // Actualiza la lista para la nueva página
+    }
+  }
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
+  
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.listData = this.listBase.filter(item => {
+        const itemValues = Object.values(item);
+        return itemValues.some(item =>
+          String(item).toLowerCase().includes(value.toLowerCase()),
+        );
+      });
+    });
   }
 }

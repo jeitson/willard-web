@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Subject } from 'rxjs';
 import { CentersService } from 'src/app/core/services/process/centers.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
 // declare var $: any;
@@ -28,9 +29,10 @@ export class CollectionCentersComponent {
     referenceWLL: '',
     referencePH: '',
   };
-  listData: any = [];
+  listData: any[] = [];
+  listBase: any[] = [];
+
   viewoptions = true;
-  currentPage = 1;
   action: any = {
     icon: '',
     name: '',
@@ -43,6 +45,13 @@ export class CollectionCentersComponent {
   typeCenters: any = [];
   modal: any;
   modalConfirm: any;
+  pagination: any = {};
+  searchTerm$ = new Subject<any>();
+  searchTerm: string = ''; // Para almacenar el texto de búsqueda
+  paginatedList: any = [];
+  currentPage: number = 1; // Página actual
+  itemsPerPage: number = 5; // Cantidad de elementos por página
+  totalPages: number = 0; // Total de páginas
   constructor(
     private _Service: CentersService,
     private _settings: SettingsService
@@ -56,18 +65,28 @@ export class CollectionCentersComponent {
       document.getElementById('modalconfirm'),
       { backdrop: 'static', keyboard: false }
     );
-    this.selectData();
+    
+    this.lisKey();
   }
 
-  selectData(): void {
+  lisKey(){
     this._Service.getCollectionSites().subscribe({
       next: (response: any) => {
         this.listData = response.data.items;
+        this.listBase = this.listData; // Guardamos la lista original para filtrar
+        this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Total de páginas
+        this.pagination.totalItems = response.data.length;
+        this.updatePaginatedList(); // Actualiza la lista paginada
+        this.search();
+        this.selectData();
       },
       error: (error: any) => {
         console.error('Error al obtener centros de recolección:', error);
       },
     });
+  }
+  selectData(): void {
+
   
     this._settings.getCatalogChildrenByKey('PAIS').subscribe({
       next: (response: any) => {
@@ -148,9 +167,7 @@ export class CollectionCentersComponent {
     };
   }
 
-  close(): void {
-    this.modal.hide();
-  }
+ 
 
   updateCollection(): void {
     if (this.centers.siteTypeId) {
@@ -212,8 +229,8 @@ export class CollectionCentersComponent {
     };
   }
    handleSuccess(response: any): void {
-    this.selectData();
-    this.close();
+    this.lisKey();
+    this.modal.hide();
   }
 
   removeItem(id: string) {
@@ -250,7 +267,7 @@ export class CollectionCentersComponent {
   changeStatus() {
     this._Service.changeCollectionSiteStatus(this.itemId).subscribe({
       next: () => {
-        this.selectData();
+        this.lisKey();
         this.modalConfirm.hide();
       },
       error: () => {},
@@ -260,10 +277,49 @@ export class CollectionCentersComponent {
   delete() {
     this._Service.deleteCollectionSite(this.itemId).subscribe({
       next: () => {
-        this.selectData();
+        this.lisKey();
         this.modalConfirm.hide();
       },
       error: () => {},
+    });
+  }
+
+  
+  
+   // paginación
+   updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listData.slice(startIndex, endIndex);
+    this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Calcula el total de páginas
+  }
+  
+  onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
+  
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList(); // Actualiza la lista para la nueva página
+    }
+  }
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
+  
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.listData = this.listBase.filter(item => {
+        const itemValues = Object.values(item);
+        return itemValues.some(item =>
+          String(item).toLowerCase().includes(value.toLowerCase()),
+        );
+      });
     });
   }
 }

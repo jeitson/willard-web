@@ -12,8 +12,7 @@ declare var bootstrap: any;
   styleUrls: ['./users.component.scss'],
 })
 export class UsersComponent {
-
-  p:number = 1;
+  p: number = 1;
   totalItemsRender: number = 10;
   pagination: any = {};
   currentSection: string = 'List';
@@ -33,7 +32,7 @@ export class UsersComponent {
     referenceWLL: '',
     referencePH: '',
     roles: [],
-    collectionSites: []
+    collectionSites: [],
   };
   listData: any;
   listCollections: any[] = [];
@@ -45,20 +44,33 @@ export class UsersComponent {
     color: '',
   };
   modal: any;
+  listBase: any[] = [];
+  paginatedList: any = [];
+  searchTerm$ = new Subject<any>();
+  searchTerm: string = ''; // Para almacenar el texto de búsqueda
+  totalItems = 0;
+  itemsPerPage: number = 10; // Cambiar a 10 para que se muestren 10 usuarios por página
+  totalPages: number = 0;
+  currentPage: number = 1;
   constructor(
     private userService: UsersService,
     private rolesService: RolesService,
     private _toast: ToastService,
-    private http: ApiService
+    private http: ApiService,
+    private api: ApiService
   ) {}
 
   ngOnInit(): void {
-    this.modal = new bootstrap.Modal(document.getElementById('userModal'), {backdrop: 'static', keyboard: false})
-    this.selectData();
+    this.modal = new bootstrap.Modal(document.getElementById('userModal'), {
+      backdrop: 'static',
+      keyboard: false,
+    });
+    this.loadUsers(this.currentPage);
+    this.loadRoles();
     this.listCollectionCopy();
   }
 
-  listCollectionCopy(){
+  listCollectionCopy() {
     this.http.get('collection-sites').subscribe({
       next: (response: any) => {
         this.listCollections = response.data.items;
@@ -69,31 +81,32 @@ export class UsersComponent {
     });
   }
 
-  selectData(): void {
-    // Obtener todos los usuarios
-    this.userService.allUsers().subscribe({
-      next: (usersResponse: any) => {
-        const users = usersResponse.data.items;
-        this.users = users;
-        this.pagination = usersResponse.data.meta;
-        // Obtener todos los roles
-        this.rolesService.allRoles().subscribe({
-          next: (rolesResponse: any) => {
-            const roles = rolesResponse.data.items;
-            this.listData = roles;
-          },
-          error: (error: any) => {
-            console.error('Error loading roles:', error);
-          },
-        });
+  loadUsers(item: any): void {
+    this.api.get(`users?page=${item}`).subscribe({
+      next: (response: any) => {
+        this.users = response.data.items;
+        this.listBase = this.users; // Guarda la lista original para filtrar
+        this.totalItems = response.data.meta.totalItems; // Total de solicitudes
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
+        this.search();
       },
       error: (error: any) => {
-        console.error('Error loading users:', error);
+        console.error('Error al crear usuario:', error);
       },
     });
   }
 
-
+  loadRoles(): void {
+    this.rolesService.allRoles().subscribe({
+      next: (rolesResponse: any) => {
+        const roles = rolesResponse.data.items;
+        this.listData = roles; // Guardamos los roles
+      },
+      error: (error: any) => {
+        console.error('Error loading roles:', error);
+      },
+    });
+  }
 
   createOrUpdateUser(item: any | null): void {
     this.resetUser();
@@ -102,7 +115,7 @@ export class UsersComponent {
     this.modal.show();
     if (item != null) {
       this.userId = item.id;
-      this.role = item.roles[0].roleId
+      this.role = item.roles[0].roleId;
       this.action.name = 'Actualizar';
       this.viewoptions = false;
       this.user = {
@@ -120,37 +133,34 @@ export class UsersComponent {
     }
   }
 
-
   updateeUser(): void {
-      const data = {
-        ...this.user,
-        roles: [Number(this.role)],
-        collectionSites: [Number(this.collectionSites)]
-      }
-      this.userService
-        .updateUser(this.userId, data)
-        .subscribe({
-          next: (response: any) => {
-            this.selectData();
-            this._toast.success('Completado','Usuario actualizado exitosamente');
-            this.modal.hide();
-          },
-          error: (error: any) =>
-            console.error('Error al actualizar el registro:', error),
-        });
+    const data = {
+      ...this.user,
+      roles: [Number(this.role)],
+      collectionSites: [Number(this.collectionSites)],
+    };
+    this.userService.updateUser(this.userId, data).subscribe({
+      next: (response: any) => {
+        this.loadUsers(this.currentPage);
+        this._toast.success('Completado', 'Usuario actualizado exitosamente');
+        this.modal.hide();
+      },
+      error: (error: any) =>
+        console.error('Error al actualizar el registro:', error),
+    });
   }
 
   createeUser(): void {
     const data = {
       ...this.user,
       roles: [Number(this.role)],
-      collectionSites: [Number(this.collectionSites)]
-    }
+      collectionSites: [Number(this.collectionSites)],
+    };
     this.userService.createUser(data).subscribe({
       next: (response: any) => {
-        this.selectData();
+        this.loadUsers(this.currentPage);
         this.modal.hide();
-        this._toast.success('Completado','Usuario creado exitosamente')
+        this._toast.success('Completado', 'Usuario creado exitosamente');
       },
       error: (error: any) =>
         console.error('Error al crear el registro:', error),
@@ -168,7 +178,54 @@ export class UsersComponent {
       referenceWLL: '',
       referencePH: '',
       roles: [],
-      collectionSites: []
+      collectionSites: [],
+    };
+  }
+
+  // paginación
+  updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.users.slice(startIndex, endIndex);
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList();
+      this.loadUsers(page);
     }
+  }
+
+  onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
+
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
+
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.users = this.listBase.filter((item) => {
+        // Comprobamos si alguno de los roles del usuario contiene el término de búsqueda
+        const rolesMatch = item.roles?.some((role: any) =>
+          role.role.name.toLowerCase().includes(value.toLowerCase())
+        );
+
+        // También permitimos filtrar por cualquier otro campo del objeto usuario
+        const itemValues = Object.values(item);
+        const generalMatch = itemValues.some((item) =>
+          String(item).toLowerCase().includes(value.toLowerCase())
+        );
+
+        // El filtro se activa si cualquiera de las condiciones de coincidencia se cumple
+        return rolesMatch || generalMatch;
+      });
+    });
   }
 }

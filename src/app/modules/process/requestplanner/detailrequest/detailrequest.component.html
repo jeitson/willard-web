@@ -92,16 +92,32 @@
         <div class="col-md-6">
           <div class="row">
             <div class="col-md-12 mb-3">
-              <h5>Datos Recogida</h5>
+              <h5>Datos de Recogida</h5>
               <div class="divider"></div>
-              <span><strong>Dirección:</strong> {{ listData?.pickUpLocation || 'No disponible' }}</span><br>
+            
+              <!-- Datos del Lugar de Recogida -->
+              <span><strong>Nombre Lugar:</strong> {{ listData?.pickUpLocation?.name || 'No disponible' }}</span><br>
+              <span><strong>Dirección:</strong> {{ listData?.pickUpLocation?.address || 'No disponible' }}</span><br>
+              <span><strong>Barrio:</strong> {{ listData?.pickUpLocation?.neighborhood || 'No disponible' }}</span><br>
+              <span><strong>Latitud:</strong> {{ listData?.pickUpLocation?.latitude || 'No disponible' }}</span><br>
+              <span><strong>Longitud:</strong> {{ listData?.pickUpLocation?.longitude || 'No disponible' }}</span><br>
+            
+              <!-- Datos de la Ciudad y Zona -->
               <span><strong>Ciudad:</strong> {{ listData?.city || 'No disponible' }}</span><br>
-              <span><strong>Pais:</strong> {{ listData?.country || 'No disponible' }}</span><br>
-              <span><strong>Contacto:</strong> {{ listData?.transporter?.contactName || 'No disponible' }}</span><br>
-              <span><strong>Telefono:</strong> {{ listData?.transporter?.referencePH || 'No disponible' }}</span><br>
-              <span><strong>Email:</strong> {{ listData?.transporter?.contactEmail || 'No disponible' }}</span><br>
-              <span><strong>Aprobado:</strong> {{ listData?.transporter?.modifiedBy || 'No disponible' }}</span><br>
+              <span><strong>Zona:</strong> {{ listData?.zoneId || 'No disponible' }}</span><br>
+            
+              <!-- Datos de Contacto -->
+              <h6>Contacto del Transportista</h6>
+              <span><strong>Nombre Contacto:</strong> {{ listData?.pickUpLocation?.contactName || 'No disponible' }}</span><br>
+              <span><strong>Teléfono:</strong> {{ listData?.pickUpLocation?.contactPhone || 'No disponible' }}</span><br>
+              <span><strong>Email:</strong> {{ listData?.pickUpLocation?.contactEmail || 'No disponible' }}</span><br>
+            
+              <!-- Referencias -->
+              <h6>Referencias</h6>
+              <span><strong>Referencia WLL:</strong> {{ listData?.pickUpLocation?.referenceWLL || 'No disponible' }}</span><br>
+              <span><strong>Referencia PH:</strong> {{ listData?.pickUpLocation?.referencePH || 'No disponible' }}</span><br>
             </div>
+            
             <div class="col-md-12">
               <h5>Datos Transportadora</h5>
               <div class="divider"></div>

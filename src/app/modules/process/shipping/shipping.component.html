@@ -1,12 +1,12 @@
 <div class="container" *ngIf="!editpanel">
   <div class="page-header">
     <div class="d-flex flex-column">
-      <h5 class="primary title noselect">RECEPTCIÓN DE BUPAS</h5>
-      <p class="secundary mb-1">En este módulo podras hacer la recepción de las bupas</p>
+      <h5 class="primary title noselect">ENVIO DE BUPAS</h5>
+      <p class="secundary mb-1">En este módulo podras hacer los diferentes envios de las bupas</p>
     </div>
     <div class="d-flex flex-rows gap-10">
-      <button type="button" class="btn btn-sm bg-success2" (click)="addReception()">Agregar <i class="fa-solid fa-add"></i></button>
-      <button type="button" class="btn btn-sm btn-dark" (click)="getReceptions(1);">Recargar <i class="fa-solid fa-rotate-right"></i></button>
+      <button type="button" class="btn btn-sm bg-success2" (click)="addShipments()">Agregar <i class="fa-solid fa-add"></i></button>
+      <button type="button" class="btn btn-sm btn-dark" (click)="getShipments(1);">Recargar <i class="fa-solid fa-rotate-right"></i></button>
     </div>
   </div>
   <div class="page-divider mb-3">
@@ -44,12 +44,12 @@
                 </thead>
                 <tbody style="background-color: white;">
                   <!-- <tr *ngFor="let item of listsReceptions | paginate: { itemsPerPage: totalItemsRender, currentPage: p }; let i = index;"> -->
-                    <tr *ngFor="let item of listReceptions; let i = index;">
+                    <tr *ngFor="let item of listShipping; let i = index;">
                         <td class="text-center"> {{item.guideNumber}} </td>
                         <td class="text-center"> {{item.createdAt | date:'short'}} </td>
                         <td class="text-center"> {{item.licensePlate | uppercase}} </td>
                         <td class="text-left"> {{item.driver}}</td>
-                        <td class="text-center">{{sumQuantity(item.receptionDetails) | number}}</td>
+                        <td class="text-center">{{sumQuantity(item.shipmentDetails) | number}}</td>
                         <td class="text-center">
                             <h5 *ngIf="item.status == true" style="color: white;"><span class="badge bg-success2 t-small">Activo</span></h5>
                             <h5 *ngIf="item.status == false" style="color: white;"><span class="badge bg-danger t-small">Inactivo</span></h5>
@@ -92,14 +92,13 @@
         </div>
         </div>
       </div>
-
   </div>
 </div>
 
 <div class="container" *ngIf="editpanel">
   <div class="page-header">
     <div class="d-flex flex-column">
-      <h5 class="primary title noselect">RECEPCIÓN DE BUPAS</h5>
+      <h5 class="primary title noselect">ENVIO DE BUPAS</h5>
     </div>
     <div class="d-flex flex-rows gap-10">
     </div>
@@ -111,12 +110,12 @@
     <div style="padding-bottom: 80px;">
       <div class="row">
         <div class="col-md-12 mb-3">
-          <label class="form-control">{{role==='18'?'Agencia PH':'Recuperadora'}}: {{headacopi}}</label>
+          <label class="form-control">Agencia PH {{headacopi}}</label>
         </div>
         <div class="col-sm-6 col-md-6 mb-3">
           <label class="pricolor">Transportadora</label>
           <div class="input-group">
-            <select class="form-control form-select" name="transporter" [(ngModel)]="receptionForm.transporterId" required>
+            <select class="form-control form-select" name="transporter" [(ngModel)]="shipmentForm.transporterId" required>
                 <option value="" selected>Seleccionar</option>
                 <option *ngFor="let opt of listTransporters" value="{{opt.id}}">{{opt.name}}</option>
             </select>
@@ -124,23 +123,33 @@
         </div>
         <div class="col-sm-6 col-md-6 mb-3">
           <label for="" class="pricolor">Placa</label>
-          <input type="text" class="form-control uppercase" name="plate" [(ngModel)]="receptionForm.licensePlate" autocomplete="off" required>
+          <input type="text" class="form-control uppercase" name="plate" [(ngModel)]="shipmentForm.licensePlate" autocomplete="off" required>
         </div>
         <div class="col-sm-6 col-md-6 mb-3">
           <label for="" class="pricolor">Conductor</label>
-          <input type="text" class="form-control" name="datedelivery" [(ngModel)]="receptionForm.driver" autocomplete="off" required>
+          <input type="text" class="form-control" name="datedelivery" [(ngModel)]="shipmentForm.driver" autocomplete="off" required>
         </div>
         <div class="col-sm-6 col-md-6 mb-3">
           <label for="" class="pricolor"># Guía</label>
-          <input type="text" class="form-control" name="guideNumber" [(ngModel)]="receptionForm.guideNumber" autocomplete="off" required>
+          <input type="text" class="form-control" name="guideNumber" [(ngModel)]="shipmentForm.guideNumber" autocomplete="off" required>
         </div>
-        <div class="col-sm-6 col-md-6 mb-3" *ngIf="role==='18'">
+        <div class="col-sm-6 col-md-6 mb-3">
           <label for="" class="pricolor">Doc Referencia 1</label>
-          <input type="number" maxlength="10" class="form-control" name="reference1" [(ngModel)]="receptionForm.referenceDoc1" autocomplete="off" required>
+          <input type="number" maxlength="10" class="form-control" name="reference1" [(ngModel)]="shipmentForm.referenceDoc1" autocomplete="off" required>
         </div>
-        <div class="col-sm-6 col-md-6 mb-3" *ngIf="role==='18'">
+        <div class="col-sm-6 col-md-6 mb-3">
           <label for="" class="pricolor">Doc Referencia 2</label>
-          <input type="number" maxlength="10" class="form-control" name="reference2" [(ngModel)]="receptionForm.referenceDoc2" autocomplete="off" required>
+          <input type="number" maxlength="10" class="form-control" name="reference2" [(ngModel)]="shipmentForm.referenceDoc2" autocomplete="off" required>
+        </div>
+        <div class="col-sm-6 col-md-6 mb-3">
+          <label for="" class="pricolor">ERC</label>
+          <div class="input-group mb-2">
+            <input type="text" class="form-control" name="erccode" [(ngModel)]="erc" autocomplete="off" required (keypress.enter)="addErc()">
+            <span class="input-group-text pointer bg-success2" id="inputGroup-sizing-sm" (click)="addErc()">Agregar</span>
+          </div>
+          <div class="d-flex justify-content-start gap-10 ">
+            <span class="bg-reasign badge pointer" *ngFor="let item of shipmentForm.erc" (click)="removeErc(item)">{{item}} <i class="fa-solid fa-close"></i></span>
+          </div>
         </div>
         <div class="col-md-12 mb-3">
           <div class="accordion">
@@ -193,8 +202,8 @@
       </div>
     </div>
     <div class="fixed-footer">
-      <button class="btn btn-sm btn-dark" (click)="cancelReception()">Cancelar <i class="fa-solid fa-close"></i></button>
-      <button class="btn btnsm bg-success2" (click)="confirmReception()">Guardar <i class="fa-solid fa-paper-plane"></i></button>
+      <button class="btn btn-sm btn-dark" (click)="cancelShipments()">Cancelar <i class="fa-solid fa-close"></i></button>
+      <button class="btn btnsm bg-success2" (click)="confirmShipments()">Guardar <i class="fa-solid fa-paper-plane"></i></button>
     </div>
   </div>
 </div>
@@ -215,6 +224,57 @@
                 <button class="btn btn-sm btn-danger" (click)="deleteEvidence(imageselect)"> Eliminar <i class="fa-solid fa-trash"></i></button>
               </div>
             </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalconfirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+      <div class="modal-content">
+          <div class="modal-body">
+              <div class="col-md-12 text-center pb5">
+                   <i class="{{actionmodal.icon}} noselect f-xx-large" [style.color]="actionmodal.color"></i>
+              </div>
+              <div class="col-md-12 mt-4">
+                  <div class="row">
+                      <div class="col-md-12 text-center d-flex flex-column">
+                        <span><strong># Guia:</strong> {{shipmentForm.guideNumber}}</span>
+                        <span><strong>Transportadora:</strong> {{getNameTransporter(shipmentForm.transporterId)}}</span>
+                        <span><strong>Conductor:</strong> {{shipmentForm.driver}}</span>
+                        <span><strong>Placa:</strong> {{shipmentForm.licensePlate | uppercase}}</span>
+                        <span><strong>Referencias:</strong> {{shipmentForm.referenceDoc1}} {{shipmentForm.referenceDoc2}}</span>
+                        <span><strong>Evidencias:</strong> {{photos.length}} </span>
+                        <hr>
+                        <div class="text-left mb-2">
+                          <span><strong>ERC:</strong></span>
+                          <div class="d-flex flex-row justify-content-start gap-10 mt-1">
+                            <span *ngFor="let erc of shipmentForm.erc" class="badge p-2 bg-principal">{{erc}}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                          <span><strong>Productos:</strong></span>
+                          <table class="table table-bordered mt-3">
+                            <tbody>
+                              <tr *ngFor="let item of products">
+                                <th class="text-left">{{getNamePropuct(item.productId)}}</th>
+                                <td class="text-center">{{item.quantity}}</td>
+                              </tr>
+                              <tr>
+                                <th class="text-left">Total</th>
+                                <td class="text-center">{{sumQuantity(products)}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+              <hr>
+              <div class="col-md-12 d-flex justify-content-around">
+                  <button class="btn btn-sm text-white btn-dark" data-bs-dismiss="modal"> Cancelar </button>
+                  <button class="btn btn-sm text-white bg-success2" (click)="uploadData()"> Confirmar </button>
+              </div>
           </div>
       </div>
   </div>
@@ -242,51 +302,6 @@
               </div>
               <p class="loader-message">{{messageLoading}}</p>
             </div>
-          </div>
-      </div>
-  </div>
-</div>
-
-<div class="modal fade" id="modalconfirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
-      <div class="modal-content">
-          <div class="modal-body">
-              <div class="col-md-12 text-center pb5">
-                   <i class="{{actionmodal.icon}} noselect f-xx-large" [style.color]="actionmodal.color"></i>
-              </div>
-              <div class="col-md-12 mt-4">
-                  <div class="row">
-                      <div class="col-md-12 text-center d-flex flex-column mb-3">
-                        <span><strong># Guia:</strong> {{receptionForm.guideNumber}}</span>
-                        <span><strong>Transportadora:</strong> {{getNameTransporter(receptionForm.transporterId)}}</span>
-                        <span><strong>Conductor:</strong> {{receptionForm.driver}}</span>
-                        <span><strong>Placa:</strong> {{receptionForm.licensePlate | uppercase}}</span>
-                        <span><strong>Referencias:</strong> {{receptionForm.referenceDoc1}} {{receptionForm.referenceDoc2}}</span>
-                        <span><strong>Evidencias:</strong> {{photos.length}} </span>
-                        <hr>
-                      </div>
-                      <div class="col-md-12">
-                          <span><strong>Productos:</strong></span>
-                          <table class="table table-bordered mt-3">
-                            <tbody>
-                              <tr *ngFor="let item of products">
-                                <th class="text-left">{{getNamePropuct(item.productId)}}</th>
-                                <td class="text-center">{{item.quantity}}</td>
-                              </tr>
-                              <tr>
-                                <th class="text-left">Total</th>
-                                <td class="text-center">{{sumQuantity(products)}}</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                      </div>
-                  </div>
-              </div>
-              <hr>
-              <div class="col-md-12 d-flex justify-content-around">
-                  <button class="btn btn-sm text-white btn-dark" data-bs-dismiss="modal"> Cancelar </button>
-                  <button class="btn btn-sm text-white bg-success2" (click)="uploadEvidence()"> Confirmar </button>
-              </div>
           </div>
       </div>
   </div>

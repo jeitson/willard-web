@@ -29,6 +29,13 @@ const routes: Routes = [
 			import('../process/reception/reception.module').then(
 				({ ReceptionModule }) => ReceptionModule,
 			),
+	},
+  {
+		path: 'shipping',
+		loadChildren: () =>
+			import('../process/shipping/shipping.module').then(
+				({ ShippingModule }) => ShippingModule,
+			),
 	}
 ];
 

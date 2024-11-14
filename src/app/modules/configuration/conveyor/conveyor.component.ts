@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Subject } from 'rxjs';
 import { ConvenyorService } from 'src/app/core/services/process/convenyor.service';
 // declare var $: any;
 declare var bootstrap: any;
@@ -29,14 +30,26 @@ export class ConveyorComponent {
     referenceWLL: '',
     referencePH: '',
   };
-  currentPage = 1;
   listData: any = [];
-
+  listBase: any = [];
+  pagination: any = {};
+  searchTerm$ = new Subject<any>();
+  paginatedList: any = [];
+  searchTerm: string = ''; // Para almacenar el texto de búsqueda
+  currentPage: number = 1; // Página actual
+  itemsPerPage: number = 5; // Cantidad de elementos por página
+  totalPages: number = 0; // Total de páginas
   constructor(private _Service: ConvenyorService) {}
 
   ngOnInit(): void {
-    this.modal = new bootstrap.Modal(document.getElementById('modalconveyor'), {backdrop: 'static', keyboard: false})
-    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false})
+    this.modal = new bootstrap.Modal(document.getElementById('modalconveyor'), {
+      backdrop: 'static',
+      keyboard: false,
+    });
+    this.modalConfirm = new bootstrap.Modal(
+      document.getElementById('modalconfirm'),
+      { backdrop: 'static', keyboard: false }
+    );
     this.selectData();
   }
 
@@ -44,13 +57,16 @@ export class ConveyorComponent {
     this._Service.getTransportadores().subscribe({
       next: (response: any) => {
         this.listData = response.data.items;
+        this.listBase = this.listData; // Guardamos la lista original para filtrar
+        this.pagination.totalItems = response.data.length;
+        this.updatePaginatedList(); // Actualiza la lista paginada
+        this.search();
       },
       error: (error: any) => {
         console.error('Error al obtener transportadores:', error);
       },
     });
   }
-  
 
   createOrUpdateconveyor(item: any | null): void {
     this.resetconveyor();
@@ -93,8 +109,6 @@ export class ConveyorComponent {
     this.modal.hide();
   }
 
- 
-
   updateConveyor(): void {
     if (this.conveyor.id) {
       this._Service
@@ -127,7 +141,7 @@ export class ConveyorComponent {
       referenceWLL,
       referencePH,
     } = this.conveyor;
-  
+
     return {
       id,
       name,
@@ -140,7 +154,7 @@ export class ConveyorComponent {
       referencePH,
     };
   }
-   handleSuccess(response: any): void {
+  handleSuccess(response: any): void {
     this.selectData();
     this.close();
   }
@@ -193,6 +207,42 @@ export class ConveyorComponent {
         this.modalConfirm.hide();
       },
       error: () => {},
+    });
+  }
+
+  // paginación
+  onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList();
+    }
+  }
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
+
+  updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listData.slice(startIndex, endIndex);
+    this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Calcula el total de páginas
+  }
+
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.listData = this.listBase.filter((item: any) => {
+        const itemValues = Object.values(item);
+        return itemValues.some((item) =>
+          String(item).toLowerCase().includes(value.toLowerCase())
+        );
+      });
     });
   }
 }

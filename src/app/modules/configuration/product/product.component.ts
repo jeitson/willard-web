@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Subject } from 'rxjs';
 import { ProductsService } from 'src/app/core/services/process/products.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
 declare var bootstrap: any;
@@ -17,7 +18,6 @@ export class ProductComponent {
     value:'',
     color:''
   };
-  currentPage = 1;
   itemId: string = '';
   product = {
     id: null,
@@ -36,49 +36,69 @@ export class ProductComponent {
   };
 
   listData: any = [];
+  listBase: any = [];
   listProduct: any = [];
   Measure:any = [];
   modal: any;
   modalConfirm: any;
+
+  pagination: any = {};
+  searchTerm$ = new Subject<any>();
+  paginatedList: any = [];
+  searchTerm: string = ''; // Para almacenar el texto de búsqueda
+  currentPage: number = 1; // Página actual
+  itemsPerPage: number = 5; // Cantidad de elementos por página
+  totalPages: number = 0; // Total de páginas
   constructor(private _Service: ProductsService, private _settings: SettingsService) {}
 
   ngOnInit(): void {
     this.modal = new bootstrap.Modal(document.getElementById('modalproduct'), {backdrop: 'static', keyboard: false})
     this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false})
-    this.selectData();
+  this.getProducts();
   }
-  selectData(): void {
-    // Obtener productos
+  getProducts(): void {
     this._Service.getProducts().subscribe({
       next: (productsResponse: any) => {
         this.listData = productsResponse.data.items;
-
-        // Obtener tipo de producto
-        this._settings.getCatalogChildrenByKey('TIPO_PRODUCTO').subscribe({
-          next: (typeProductResponse: any) => {
-            this.listProduct = typeProductResponse.data;
-
-            // Obtener medidas
-            this._settings.getCatalogChildrenByKey('UNIDAD_MEDIDA').subscribe({
-              next: (medidasResponse: any) => {
-                this.Measure = medidasResponse.data;
-              },
-              error: (error: any) => {
-                console.error('Error al obtener medidas:', error);
-              },
-            });
-          },
-          error: (error: any) => {
-            console.error('Error al obtener tipo de producto:', error);
-          },
-        });
+        this.listBase = this.listData; // Guardamos la lista original para filtrar
+        this.pagination.totalItems = productsResponse.data.length;
+        this.search();
+        this.updatePaginatedList(); // Actualiza la lista paginada
+  
+        // Después de obtener productos, obtener tipos de producto
+        this.getProductTypes();
+        this.getMeasurements();
       },
       error: (error: any) => {
         console.error('Error al obtener productos:', error);
       },
     });
   }
+  
+  getProductTypes(): void {
+    this._settings.getCatalogChildrenByKey('TIPO_PRODUCTO').subscribe({
+      next: (typeProductResponse: any) => {
+        this.listProduct = typeProductResponse.data;
+  
+        // Después de obtener tipos de producto, obtener medidas
 
+      },
+      error: (error: any) => {
+        console.error('Error al obtener tipo de producto:', error);
+      },
+    });
+  }
+  
+  getMeasurements(): void {
+    this._settings.getCatalogChildrenByKey('UNIDAD_MEDIDA').subscribe({
+      next: (medidasResponse: any) => {
+        this.Measure = medidasResponse.data;
+      },
+      error: (error: any) => {
+        console.error('Error al obtener medidas:', error);
+      },
+    });
+  }
 
   createOrUpdateproduct(item: any | null): void {
     this.resetUser();
@@ -189,7 +209,7 @@ export class ProductComponent {
 
    handleSuccess(response: any): void {
     this.modal.hide();
-    this.selectData();
+    this.getProducts();
     this.close();
   }
 
@@ -227,7 +247,7 @@ export class ProductComponent {
   changeStatus(){
     this._Service.changeProductStatus(this.itemId).subscribe({
       next: ()=>{
-        this.selectData();
+        this.getProducts();
         this.modalConfirm.hide();
       }, error: ()=>{
 
@@ -238,12 +258,52 @@ export class ProductComponent {
   delete(){
     this._Service.deleteProduct(this.itemId).subscribe({
       next: ()=>{
-        this.selectData();
+        this.getProducts();
         this.modalConfirm.hide();
       }, error: ()=>{
 
       }
     });
   }
+   // paginación
+   onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList();
+    }
+  }
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
 
+  updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listData.slice(startIndex, endIndex);
+    this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Calcula el total de páginas
+  }
+
+
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      const searchTerm = value.toLowerCase();
+      this.listData = this.listBase.filter((item: any) => {
+        // Obtén todos los valores, incluyendo `productType.name`
+        const itemValues = [...Object.values(item), item.productType?.name];
+  
+        // Verifica si alguno de los valores contiene el término de búsqueda
+        return itemValues.some(val =>
+          String(val).toLowerCase().includes(searchTerm),
+        );
+      });
+    });
+  }
+  
 }
