@@ -58,6 +58,13 @@
         "id": "26",
         "route": "conciliation",
         "status": false
+      },
+      {
+        "name": "bulkrequest",
+        "type": "link",
+        "id": "27",
+        "route": "bulkrequest",
+        "status": false
       }
     ]
   },

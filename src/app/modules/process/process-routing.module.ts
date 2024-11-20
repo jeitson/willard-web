@@ -43,6 +43,13 @@ const routes: Routes = [
 			import('../process/conciliation/conciliation.module').then(
 				({ ConciliationModule }) => ConciliationModule,
 			),
+	},
+	{
+		path: 'bulkrequest',
+		loadChildren: () =>
+			import('../process/bulkrequest/bulkrequest.module').then(
+				({ BulkrequestModule }) => BulkrequestModule,
+			),
 	}
 ];
 
