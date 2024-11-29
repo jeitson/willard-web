@@ -171,7 +171,7 @@
               </div>
 
               <!-- Segunda Fila: Razón Social y Tipo de Documento -->
-              <div class="col-md-4">
+              <!-- <div class="col-md-4">
                 <label for="businessName" class="form-label text-black">Razón Social</label>
                 <div class="input-group mb-3">
                   <input
@@ -184,7 +184,25 @@
                     [(ngModel)]="client.businessName"
                   />
                 </div>
-              </div>
+              </div> -->
+
+              
+                       <!-- Tercera Fila: País y Número de Documento -->
+                       <div class="col-md-4">
+                        <label for="countryId" class="form-label text-black">País</label>
+                        <div class="input-group mb-3">
+                          <select
+                            class="form-select h-46"
+                            name="CountryId"
+                            id="countryId"
+                            [(ngModel)]="client.countryId"
+                          >
+                            <option *ngFor="let pais of paisData" [value]="pais.id">
+                              {{ pais.name }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
               <div class="col-md-4">
                 <label for="documentTypeId" class="form-label text-black">Tipo de Documento</label>
                 <div class="input-group mb-3">
@@ -201,22 +219,7 @@
                 </div>
               </div>
 
-              <!-- Tercera Fila: País y Número de Documento -->
-              <div class="col-md-4">
-                <label for="countryId" class="form-label text-black">País</label>
-                <div class="input-group mb-3">
-                  <select
-                    class="form-select h-46"
-                    name="CountryId"
-                    id="countryId"
-                    [(ngModel)]="client.countryId"
-                  >
-                    <option *ngFor="let pais of paisData" [value]="pais.id">
-                      {{ pais.name }}
-                    </option>
-                  </select>
-                </div>
-              </div>
+    
               <div class="col-md-4">
                 <label for="documentNumber" class="form-label text-black">Número de Documento</label>
                 <div class="input-group mb-3">
@@ -231,6 +234,7 @@
                   />
                 </div>
               </div>
+
 
               <!-- Cuarta Fila: Referencia WLL y Referencia PH -->
               <div class="col-md-4">

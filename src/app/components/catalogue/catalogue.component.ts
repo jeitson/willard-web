@@ -65,6 +65,7 @@ export class CatalogueComponent implements OnInit {
   currentPage: number = 1; // Página actual
   itemsPerPage: number = 5; // Cantidad de elementos por página
   totalPages: number = 0; // Total de páginas
+
   constructor(private api: ApiService, private cdr: ChangeDetectorRef, private router: Router){
 
   }
@@ -255,32 +256,30 @@ export class CatalogueComponent implements OnInit {
 
       return allFieldsValid;
     }
+ // paginación
+ onPageChange(event: Event) {
+  const selectElement = event.target as HTMLSelectElement;
+  const selectedPage = Number(selectElement.value);
+  this.goToPage(selectedPage);
+}
+goToPage(page: number) {
+  if (page >= 1 && page <= this.totalPages) {
+    this.currentPage = page;
+    this.updatePaginatedList();
+  }
+}
+get pagesArray() {
+  return Array(this.totalPages)
+    .fill(0)
+    .map((x, i) => i + 1);
+}
 
-
-    // paginación
-    onPageChange(event: Event) {
-      const selectElement = event.target as HTMLSelectElement;
-      const selectedPage = Number(selectElement.value);
-      this.goToPage(selectedPage);
-    }
-    goToPage(page: number) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page;
-        this.updatePaginatedList();
-      }
-    }
-    get pagesArray() {
-      return Array(this.totalPages)
-        .fill(0)
-        .map((x, i) => i + 1);
-    }
-
-    updatePaginatedList() {
-      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-      const endIndex = startIndex + this.itemsPerPage;
-      this.paginatedList = this.list.slice(startIndex, endIndex);
-      this.totalPages = Math.ceil(this.list.length / this.itemsPerPage); // Calcula el total de páginas
-    }
+updatePaginatedList() {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  this.paginatedList = this.list.slice(startIndex, endIndex);
+  this.totalPages = Math.ceil(this.list.length / this.itemsPerPage); // Calcula el total de páginas
+}
 
 
     search(): void {
@@ -294,4 +293,9 @@ export class CatalogueComponent implements OnInit {
       });
     }
 
+
+
+  // prueba 
+
+  
 }

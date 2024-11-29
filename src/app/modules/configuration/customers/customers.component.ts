@@ -109,7 +109,7 @@ export class CustomersComponent {
         id: item.id,
         name: item.name,
         description: item.description,
-        businessName: item.businessName,
+        businessName: item.name,
         documentTypeId: item.documentTypeId,
         countryId: item.countryId,
         documentNumber: item.documentNumber,
@@ -177,7 +177,7 @@ export class CustomersComponent {
     return {
       name,
       description,
-      businessName,
+      businessName: name,
       documentTypeId,
       countryId,
       documentNumber,
