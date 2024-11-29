@@ -144,7 +144,7 @@ export class UsersComponent {
         referencePH: item.referencePH,
         roles: item.roles,
         collectionSites: item.collectionSites.length > 0 ? item.collectionSites[0].collectionSiteId : '',
-        zones: item.listZones.length > 0 ? item.zones[0].id : '',
+        zones: item.zones.length > 0 ? item.zones[0].id : '',
       };
     }
   }
