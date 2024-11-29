@@ -20,6 +20,7 @@ export class UsersComponent {
   showForm = false;
   users: any[] = [];
   collectionSites = '';
+  zone = '';
   role = '';
   userId = '';
   user = {
@@ -33,9 +34,11 @@ export class UsersComponent {
     referencePH: '',
     roles: [],
     collectionSites: [],
+    zones: [],
   };
   listData: any;
   listCollections: any[] = [];
+  listZones: any[] = [];
   viewoptions = true;
   action: any = {
     icon: '',
@@ -68,6 +71,7 @@ export class UsersComponent {
     this.loadUsers(this.currentPage);
     this.loadRoles();
     this.listCollectionCopy();
+    this.getZona();
   }
 
   listCollectionCopy() {
@@ -77,6 +81,17 @@ export class UsersComponent {
       },
       error: (error: any) => {
         console.error('Error al obtener centros de recolección:', error);
+      },
+    });
+  }
+
+  getZona() {
+    this.http.get('catalogs/key/ZONA').subscribe({
+      next: (response: any) => {
+        this.listZones = response.data;
+      },
+      error: (error: any) => {
+        console.error('Error al obtener las zonas', error);
       },
     });
   }
@@ -129,6 +144,7 @@ export class UsersComponent {
         referencePH: item.referencePH,
         roles: item.roles,
         collectionSites: item.collectionSites.length > 0 ? item.collectionSites[0].collectionSiteId : '',
+        zones: item.listZones.length > 0 ? item.zones[0].id : '',
       };
     }
   }
@@ -138,6 +154,7 @@ export class UsersComponent {
       ...this.user,
       roles: [Number(this.role)],
       collectionSites: [Number(this.collectionSites)],
+      zones: [ Number(this.zone)]
     };
     this.userService.updateUser(this.userId, data).subscribe({
       next: (response: any) => {
@@ -155,6 +172,7 @@ export class UsersComponent {
       ...this.user,
       roles: [Number(this.role)],
       collectionSites: [Number(this.collectionSites)],
+      zones: [ Number(this.zone)]
     };
     this.userService.createUser(data).subscribe({
       next: (response: any) => {
@@ -179,6 +197,7 @@ export class UsersComponent {
       referencePH: '',
       roles: [],
       collectionSites: [],
+      zones:[],
     };
   }
 

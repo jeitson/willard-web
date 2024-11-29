@@ -144,6 +144,12 @@
                   <option *ngFor="let item of listCollections" [value]="item.id">{{item.name}}</option>
                 </select>
               </div>
+              <div class="mb-3" *ngIf="role === '14'">
+                <label for="role" class="form-label">Zonas</label>
+                <select class="form-control form-select"  [(ngModel)]="zone">
+                  <option *ngFor="let item of listZones" [value]="item.id">{{item.name}}</option>
+                </select>
+              </div>
             </div>
             <div class="row mt-3">
               <div class="col-md-12 d-flex flex-rows gap-10">
