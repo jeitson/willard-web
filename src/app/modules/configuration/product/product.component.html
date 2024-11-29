@@ -124,8 +124,7 @@
             </div>
           </div>
           <div class="col-md-12 d-flex justify-content-around">
-            <button class="btn btn-sm text-white btn-dark" data-dismiss="modal"
-              aria-label="Close"> Cancelar </button>
+            <button class="btn btn-sm btn-dark" data-bs-dismiss="modal"> Cerrar</button>
             <button class="btn btn-sm text-white"
               [style.background]="action.color" (click)="actionConfirm()">
               Confirmar </button>
@@ -168,7 +167,7 @@
                   de Medida ID</label>
                 <div class="input-group mb-3">
                   <select
-                    class="form-control h-46"
+                    class="form-select h-46"
                     name="DocumentTypeId"
                     id="documentTypeId"
                     [(ngModel)]="product.unitMeasureId"
@@ -214,7 +213,7 @@
                 <label for="esCertificable" class="form-label text-black">¿Es
                   Certificable?</label>
                 <div class="input-group mb-3">
-                  <select class="form-control h-46" name="EsCertificable"
+                  <select class="form-select h-46" name="EsCertificable"
                     id="esCertificable" [(ngModel)]="product.isCertifiable">
                     <option value="true">Sí</option>
                     <option value="false">No</option>

@@ -1,0 +1,105 @@
+<div class="container">
+    <div class="page-header">
+      <div class="d-flex flex-column">
+        <h3 class="primary title noselect">Cargue de archivo</h3>
+        <p class="secundary mb-1">En este modulo podrás subir el archivo masivo </p>
+      </div>
+      <div class="d-flex flex-rows gap-10">
+        <button type="button" class="btn btn-sm bg-add" (click)="cardJson.tab = 'C'">
+          Agregar <i class="fa-solid fa-add"></i>
+        </button>
+        <button type="button" class="btn btn-sm btn-dark" (click)="reloadPage()">
+          Recargar <i class="fa-solid fa-rotate-right"></i>
+        </button>
+      </div>
+    </div>
+    <div class="page-divider mb-3">
+      <hr class="mt-1 mb-1">
+    </div>
+  
+    <div class="page-body">
+      <div class="col-md-12">
+        <!-- Vista de lista -->
+        <div class="row" *ngIf="cardJson.tab === 'L'">
+          <div class="col-md-12">
+            <div class="table-responsive">
+              <div class="mb-3 col-4">
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="Buscar..."
+                />
+              </div>
+              <table class="table table-sm">
+                <thead class="bg-white">
+                  <tr>
+                    <th class="text-left">Nombre</th>
+                    <th class="text-center">Fecha Creación</th>
+                    <th class="text-center">Fecha Actualización</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody style="background-color: white;">
+                  <tr style="font-size: smaller;">
+                    <td class="text-left">1</td>
+                    <td class="text-center">2</td>
+                    <td class="text-center">2</td>
+                    <td class="text-center">
+                      <h5 style="color: white;">
+                        <span class="badge bg-success2">Activo</span>
+                      </h5>
+                    </td>
+                    <td class="text-center">
+                      <i class="fa-solid f-larger pointer fa-pencil"></i>
+                      <i class="fa-solid f-larger pointer fa-sync"></i>
+                      <i class="fa-solid f-larger pointer fa-trash"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+          <!-- Vista para cargar archivo -->
+          <div class="row" *ngIf="cardJson.tab === 'C'">
+            <div class="col-md-12">
+              <div class="mb-3">
+                <label for="fileUpload" class="form-label">Sube un archivo Excel:</label>
+                <input
+                  type="file"
+                  id="fileUpload"
+                  class="form-control"
+                  (change)="onFileChange($event)"
+                  accept=".xlsx, .xls"
+                />
+              </div>
+              <div *ngIf="tableData && tableData.length > 0">
+                <h5>Datos cargados:</h5>
+                <div class="table-responsive">
+                  <table class="table table-sm">
+                    <thead class="bg-white">
+                      <tr>
+                        <th class="text-left">Nombre</th>
+                        <th class="text-center">Referencia Wll</th>
+                        <th class="text-center">Referencia Ph</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let row of tableData" style="font-size: smaller;">
+                        <td class="text-left">{{ row.Nombre }}</td>
+                        <td class="text-center">{{ row.referenciaWll }}</td>
+                        <td class="text-center">{{ row.referenciaPh }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+    
+      </div>
+    </div>
+  </div>
+  

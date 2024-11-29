@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
 import { AdviserService } from 'src/app/core/services/process/adviser.service';
+import { CentersService } from 'src/app/core/services/process/centers.service';
 import { CustomersService } from 'src/app/core/services/process/customers.service';
 import { UsersService } from 'src/app/core/services/security/users.service';
 import { PickuplocationService } from 'src/app/core/services/settings/pickuplocation.service';
@@ -70,6 +71,7 @@ export class PickuplocationComponent {
     private _Adviser: AdviserService,
     private _Settings: SettingsService,
     private userService: UsersService,
+    private _Center: CentersService,
   ) {}
 
   ngOnInit(): void {
@@ -92,11 +94,13 @@ export class PickuplocationComponent {
     this.getCatalogChildren('TIPOS_SEDES_ACOPIO');
     this.getCatalogChildren('CIUDAD');
     this.getCatalogChildren('ZONA');
+    this.getsite();
   }
 
   getPickUpLocations(): void {
     this._Service.getPickUpLocations().subscribe({
       next: (response: any) => {
+        console.log('data');
         this.listData = response.data.items;
         this.listBase = this.listData; // Guardamos la lista original para filtrar
         this.pagination.totalItems = response.data.length;
@@ -147,9 +151,9 @@ export class PickuplocationComponent {
           case 'TIPO_LUGAR_RECOGIDA':
             this.listTipos = response.data;
             break;
-          case 'TIPOS_SEDES_ACOPIO':
-            this.listSedes = response.data;
-            break;
+          // case 'TIPOS_SEDES_ACOPIO':
+          //   this.listSedes = response.data;
+          //   break;
           case 'CIUDAD':
             this.listCiudades = response.data;
             break;
@@ -163,6 +167,18 @@ export class PickuplocationComponent {
       },
       error: (error: any) => {
         console.error(`Error al obtener ${key}:`, error);
+      },
+    });
+  }
+
+  getsite(){
+    this._Center.getCollectionSites().subscribe({
+      next: (centersResponse: any) => {
+        const centers = centersResponse.data.items;
+        this.listSedes = centers; // Almacenar los centros
+      },
+      error: (error: any) => {
+        console.error('Error al obtener centros:', error);
       },
     });
   }

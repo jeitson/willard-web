@@ -10,6 +10,7 @@ import { RequestlogisticsComponent } from './requestlogistics/requestlogistics.c
 import { ReceptionComponent } from './reception/reception.component';
 import { ShippingComponent } from './shipping/shipping.component';
 import { ConciliationComponent } from './conciliation/conciliation.component';
+import { BulkrequestComponent } from './bulkrequest/bulkrequest.component';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { ConciliationComponent } from './conciliation/conciliation.component';
     RequestlogisticsComponent,
     ReceptionComponent,
     ShippingComponent,
-    ConciliationComponent
+    ConciliationComponent,
+    BulkrequestComponent
   ],
   imports: [
     CommonModule,

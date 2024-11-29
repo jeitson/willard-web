@@ -120,8 +120,7 @@
               </div>
             </div>
             <div class="col-md-12 d-flex justify-content-around">
-              <button class="btn btn-sm text-white btn-dark" data-dismiss="modal"
-                aria-label="Close"> Cancelar </button>
+              <button class="btn btn-sm btn-dark" data-bs-dismiss="modal"> Cerrar</button>
               <button class="btn btn-sm text-white"
                 [style.background]="action.color" (click)="actionConfirm()">
                 Confirmar </button>
@@ -145,7 +144,7 @@
                     <label for="tipoLugarId" class="form-label text-black">Tipo de Lugar</label>
                     <div class="input-group mb-3">
                       <select class="form-select h-46" name="tipoLugarId" id="tipoLugarId" [(ngModel)]="lugar.placeTypeId">
-                        <option *ngFor="let tipo of listData" [value]="tipo.id">{{ tipo.name }}</option>
+                        <option *ngFor="let tipo of listTipos" [value]="tipo.id">{{ tipo.name }}</option>
                       </select>
                     </div>
                   </div>
