@@ -183,15 +183,15 @@ export class CatalogueComponent implements OnInit {
       ...this.item
     };
     console.log(data);
-    // this.api.post(`catalogs`, data).subscribe({
-    //   next: (response: any) => {
-    //     this.listKey();
-    //     this.modal.hide();
-    //   },
-    //   error: (error: any) => {
-    //     console.error('Error al crear catalogo:', error);
-    //   },
-    // });
+    this.api.post(`catalogs`, data).subscribe({
+      next: (response: any) => {
+        this.listKey();
+        this.modal.hide();
+      },
+      error: (error: any) => {
+        console.error('Error al crear catalogo:', error);
+      },
+    });
   }
 
   update(){
