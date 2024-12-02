@@ -43,8 +43,8 @@
                     </thead>
                     <tbody style="background-color: white;">
                         <tr *ngFor="let item of list " style="font-size: smaller;">
-                            <td class="text-left"> {{item.name}} </td>
-                            <td class="text-left"> {{item.description}} </td>
+                            <td class="text-left"> {{item.name || 'NO REGISTRA'}} </td>
+                            <td class="text-left"> {{item.description || 'NO REGISTRA'}} </td>
                             <td class="text-center"> {{item.createdAt | date:'EEEE dd MMM yyyy'}} </td>
                             <td class="text-center">
                                 <h5 *ngIf="item.status == true" style="color: white;"><span class="badge bg-success2 t-small">Activo</span></h5>

@@ -193,11 +193,12 @@ export class PickuplocationComponent {
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
+  
   this.lugar = {
     id:item.id,
     placeTypeId:item.placeTypeId,
-    clientId: '', // No hay valor en `this.DATA`, se deja vacío
-    collectionSiteId: '', // No hay valor en `this.DATA`, se deja vacío
+    clientId: item.client.id, // No hay valor en `this.DATA`, se deja vacío
+    collectionSiteId: item.collectionSite.id, // No hay valor en `this.DATA`, se deja vacío
     consultantId: '', // No hay valor en `this.DATA`, se deja vacío
     cityId:item.cityId,
     zoneId:item.zoneId,
