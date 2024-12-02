@@ -1,0 +1,36 @@
+.card-body > div > i{
+  font-size: 2em;
+}
+
+.text-left{
+  text-align: left;
+}
+
+
+
+
+#modalConfirm {
+  z-index: 2001 !important; /* Por encima del modal de formulario */
+}
+
+/* Aumentar el z-index del backdrop del modal de confirmación */
+#modalConfirm ~ .modal-backdrop {
+  z-index: 2000 !important; /* Justo debajo del modal de confirmación */
+}
+
+/* Reducir el z-index del modal de formulario */
+#modaldetail {
+  z-index: 1051 !important; /* Menor al modal de confirmación */
+}
+
+/* Reducir el z-index del backdrop del modal de formulario */
+#modaldetail ~ .modal-backdrop {
+  z-index: 1050 !important; /* Menor al modal de confirmación */
+}
+
+.form-opt{
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+
+}

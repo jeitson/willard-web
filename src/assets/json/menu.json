@@ -53,7 +53,7 @@
         "status": false
       },
       {
-        "name": "Conciliation",
+        "name": "Conciliación",
         "type": "link",
         "id": "26",
         "route": "conciliation",
