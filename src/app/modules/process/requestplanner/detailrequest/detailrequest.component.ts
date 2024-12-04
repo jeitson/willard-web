@@ -19,6 +19,7 @@ export class DetailrequestComponent {
     // Obtener el parámetro 'id' de la ruta
     if(this.requestId !== null && this.requestId !== ''){
       this.listData = JSON.parse(this.requestId);
+      console.log(this.listData);
     } else{
       this.route.params.subscribe(params => {
         this.requestId = params['id']; // El '+' convierte el string a número

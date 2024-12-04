@@ -47,6 +47,9 @@
                 </tr>
               </thead>
               <tbody style="background-color: white">
+                <tr *ngIf="listsrequest.length === 0">
+                  <td colspan="8" class="text-center">No hay registros disponibles.</td>
+                </tr>
                 <tr
                   *ngFor="let item of listsrequest"
                   style="font-size: smaller"
@@ -432,7 +435,7 @@
                     >Lugar de Recogida</label
                   >
                   <select
-                    class="form-select"
+                    class="form-select"  
                     id="pickUpLocationId"
                     [(ngModel)]="request.pickUpLocationId"
                     name="pickUpLocationId"
@@ -466,7 +469,7 @@
                     [(ngModel)]="request.observations"
                     name="observations"
                     rows="2"
-                    placeholder="observation de la solicitud"
+                    placeholder="observación de la solicitud"
                     maxlength="2000"
                     required
                     (blur)="validateFields()"

@@ -21,3 +21,46 @@
   height: 100%;
   overflow-x: hidden;
 }
+
+
+/*DETALLE*/
+.card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem; /* Ajuste de padding para más compacidad */
+ 
+}
+.card-h{
+  height: 35vh;
+}
+.cardground1 {
+  background-color: #FAFAFD;
+}
+
+.cardground2 {
+  background-color: #F3F5F6;
+}
+
+.card-title {
+  font-size: 1rem; /* Tamaño de fuente reducido */
+  margin-bottom: 0.5rem; /* Espacio reducido */
+}
+
+.card-body p {
+  margin: 0.25rem 0; /* Espaciado reducido entre párrafos */
+  font-size: 0.8rem; /* Tamaño de fuente reducido */
+}
+
+.card-body strong {
+  display: inline-block;
+  min-width: 150px; /* Asegura que las etiquetas tengan un ancho uniforme */
+}
+
+.badge {
+  font-size: 0.8rem; /* Tamaño de fuente reducido para las badges */
+}
+
+i {
+  font-size: 0.7rem; /* Tamaño de los íconos ajustado */
+  margin-right: 0.3rem; /* Espacio entre el ícono y el texto */
+}
