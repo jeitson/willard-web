@@ -24,6 +24,11 @@ export class PickuplocationService {
     return this._api.get('pick-up-locations');
   }
   
+  // Obtener el listado de lugares de recogida con opción de paginación y filtrado por clientId
+getPickUpLocationsClient(clientId: string): Observable<any> {
+  return this._api.get(`pick-up-locations?clientId=${clientId}`);
+}
+
   // Obtener un lugar de recogida específico por su ID
   getPickUpLocationById(id: any): Observable<any> {
     return this._api.get(`pick-up-locations/${id}`);

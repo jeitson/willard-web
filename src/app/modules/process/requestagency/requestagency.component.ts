@@ -136,14 +136,7 @@ export class RequestagencyComponent {
       },
     });
 
-    this._pickUp.getPickUpLocations().subscribe({
-      next: (response: any) => {
-        this.listTipos = response.data.items;
-      },
-      error: (error: any) => {
-        console.error('Error al obtener tipos de recogida:', error);
-      },
-    });
+    
 
     this._Settings.getCatalogChildrenByKey('TIPOS_SEDES_ACOPIO').subscribe({
       next: (response: any) => {
@@ -197,6 +190,17 @@ export class RequestagencyComponent {
       },
     });
   }
+
+  pickuplocation(item:any){
+    this._pickUp.getPickUpLocationsClient(item).subscribe({
+      next: (response: any) => {
+        this.listTipos = response.data.items;
+      },
+      error: (error: any) => {
+        console.error('Error al obtener tipos de recogida:', error);
+      },
+    });
+  }
   createRequest() {
     this.clearData();
     this.actionSave = false;
@@ -233,6 +237,7 @@ export class RequestagencyComponent {
     target: 'selectedClient' | 'selectedTransportador' | 'selectedTipo'
   ) {
     this[target] = list.find((item: any) => item.id === id);
+    this.pickuplocation(id);
   }
 
   clearData() {
