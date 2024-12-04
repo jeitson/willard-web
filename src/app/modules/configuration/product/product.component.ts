@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ProductsService } from 'src/app/core/services/process/products.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
+import { ToastService } from 'src/app/core/services/toast.service';
 declare var bootstrap: any;
 @Component({
   selector: 'wlrd-product',
@@ -49,7 +50,7 @@ export class ProductComponent {
   currentPage: number = 1; // Página actual
   itemsPerPage: number = 5; // Cantidad de elementos por página
   totalPages: number = 0; // Total de páginas
-  constructor(private _Service: ProductsService, private _settings: SettingsService) {}
+  constructor(private _Service: ProductsService, private _settings: SettingsService,  private _toast: ToastService) {}
 
   ngOnInit(): void {
     this.modal = new bootstrap.Modal(document.getElementById('modalproduct'), {backdrop: 'static', keyboard: false})
@@ -166,12 +167,39 @@ export class ProductComponent {
   }
 
   createProduct(): void {
-    this._Service.createProduct(this.getProductPayload()).subscribe({
-      next: (response: any) => this.handleSuccess(response),
-      error: (error: any) =>
-        console.error('Error al crear el registro:', error),
-    });
+    if (this.areFieldsValid()) {
+      this._Service.createProduct(this.getProductPayload()).subscribe({
+        next: (response: any) => this.handleSuccess(response),
+        error: (error: any) =>
+          console.error('Error al crear el registro:', error),
+      });
+    }
   }
+  private areFieldsValid(): boolean {
+    const fields = [
+      { value: this.product.productTypeId, message: 'El campo Tipo de Producto es obligatorio.' },
+      { value: this.product.unitMeasureId, message: 'El campo Unidad de Medida es obligatorio.' },
+      { value: this.product.name, message: 'El campo Nombre es obligatorio.' },
+      { value: this.product.averageKg, message: 'El campo Promedio de Kilogramos es obligatorio.' },
+      { value: this.product.recoveryPercentage, message: 'El campo Porcentaje de Recuperación es obligatorio.' },
+      { value: this.product.reference1, message: 'El campo Referencia 1 es obligatorio.' },
+      { value: this.product.reference2, message: 'El campo Referencia 2 es obligatorio.' },
+      { value: this.product.reference3, message: 'El campo Referencia 3 es obligatorio.' },
+      { value: this.product.description, message: 'El campo Descripción es obligatorio.' },
+      { value: this.product.referenceWLL, message: 'El campo Referencia WLL es obligatorio.' },
+      { value: this.product.referencePH, message: 'El campo Referencia PH es obligatorio.' },
+    ];
+  
+    for (const field of fields) {
+      if (!field.value) {
+        this._toast.info('Importante',field.message);
+        return false;
+      }
+    }
+  
+    return true;
+  }
+  
 
   getProductPayload() {
     const {

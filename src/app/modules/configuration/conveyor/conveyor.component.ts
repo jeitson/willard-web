@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ConvenyorService } from 'src/app/core/services/process/convenyor.service';
+import { ToastService } from 'src/app/core/services/toast.service';
 // declare var $: any;
 declare var bootstrap: any;
 @Component({
@@ -39,7 +40,7 @@ export class ConveyorComponent {
   currentPage: number = 1; // Página actual
   itemsPerPage: number = 5; // Cantidad de elementos por página
   totalPages: number = 0; // Total de páginas
-  constructor(private _Service: ConvenyorService) {}
+  constructor(private _Service: ConvenyorService, private _toast: ToastService) {}
 
   ngOnInit(): void {
     this.modal = new bootstrap.Modal(document.getElementById('modalconveyor'), {
@@ -122,13 +123,43 @@ export class ConveyorComponent {
   }
 
   createConveyor(): void {
-    this._Service.createTransportador(this.getConveyorPayload()).subscribe({
-      next: (response: any) => this.handleSuccess(response),
-      error: (error: any) =>
-        console.error('Error al crear el registro:', error),
-    });
+    if (this.areFieldsValid()) {
+      this._Service.createTransportador(this.getConveyorPayload()).subscribe({
+        next: (response: any) => this.handleSuccess(response),
+        error: (error: any) =>
+          console.error('Error al crear el registro:', error),
+      });
+    }
   }
-
+  
+  private areFieldsValid(): boolean {
+    const fields = [
+      { value: this.conveyor.name, message: 'El campo Nombre es obligatorio.' },
+      { value: this.conveyor.taxId, message: 'El campo Tax ID es obligatorio.' },
+      { value: this.conveyor.description, message: 'El campo Descripción es obligatorio.' },
+      { value: this.conveyor.contactName, message: 'El campo Nombre de Contacto es obligatorio.' },
+      { value: this.conveyor.contactEmail, message: 'El campo Email de Contacto es obligatorio.' },
+      { value: this.conveyor.referenceWLL, message: 'El campo Referencia WLL es obligatorio.' },
+      { value: this.conveyor.referencePH, message: 'El campo Referencia PH es obligatorio.' },
+    ];
+  
+    for (const field of fields) {
+      if (!field.value) {
+        this._toast.info('Importante',field.message);
+        return false;
+      }
+    }
+  
+    // Validar el formato del correo electrónico
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.conveyor.contactEmail)) {
+      this._toast.info('Importante', 'El campo Email de Contacto no tiene un formato válido.');
+      return false;
+    }
+  
+    return true;
+  }
+  
   getConveyorPayload() {
     const {
       id,

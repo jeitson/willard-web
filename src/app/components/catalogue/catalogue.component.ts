@@ -66,6 +66,7 @@ export class CatalogueComponent implements OnInit {
   itemsPerPage: number = 5; // Cantidad de elementos por página
   totalPages: number = 0; // Total de páginas
 
+  
   constructor(private api: ApiService, private cdr: ChangeDetectorRef, private router: Router){
 
   }
@@ -85,8 +86,11 @@ export class CatalogueComponent implements OnInit {
         this.list = response.data;
         this.listBase = this.list; // Guardamos la lista original para filtrar
         this.pagination.totalItems = response.data.length;
+        this.totalPages = Math.ceil(this.list.length / this.itemsPerPage); // Calcula el total de páginas
         this.updatePaginatedList(); // Actualiza la lista paginada
         this.search();
+     
+
       },
       error: (error: any) => {
         console.error('Error al obtener datos:', error);
@@ -256,29 +260,31 @@ export class CatalogueComponent implements OnInit {
 
       return allFieldsValid;
     }
- // paginación
- onPageChange(event: Event) {
+ // Función para actualizar la lista paginada
+updatePaginatedList() {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  this.paginatedList = this.list.slice(startIndex, endIndex);
+}
+
+// Función que se llama cuando se selecciona una página en el selector
+onPageChange(event: Event) {
   const selectElement = event.target as HTMLSelectElement;
   const selectedPage = Number(selectElement.value);
   this.goToPage(selectedPage);
 }
+
+// Función para cambiar de página
 goToPage(page: number) {
   if (page >= 1 && page <= this.totalPages) {
     this.currentPage = page;
     this.updatePaginatedList();
   }
 }
-get pagesArray() {
-  return Array(this.totalPages)
-    .fill(0)
-    .map((x, i) => i + 1);
-}
 
-updatePaginatedList() {
-  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-  const endIndex = startIndex + this.itemsPerPage;
-  this.paginatedList = this.list.slice(startIndex, endIndex);
-  this.totalPages = Math.ceil(this.list.length / this.itemsPerPage); // Calcula el total de páginas
+// Método getter para crear el array de páginas
+get pagesArray() {
+  return Array.from({ length: this.totalPages }, (_, i) => i + 1);
 }
 
 

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
 import { CustomersService } from 'src/app/core/services/process/customers.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
+import { ToastService } from 'src/app/core/services/toast.service';
 declare var bootstrap: any;
 @Component({
   selector: 'wlrd-customers',
@@ -48,7 +49,8 @@ export class CustomersComponent {
   totalItems = 0;
   constructor(
     private _Service: CustomersService,
-    private _settings: SettingsService
+    private _settings: SettingsService,
+    private _toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -155,13 +157,37 @@ export class CustomersComponent {
   }
 
   createClient(): void {
-    this._Service.createClient(this.getClientPayload()).subscribe({
-      next: (response: any) => this.handleSuccess(response),
-      error: (error: any) =>
-        console.error('Error al crear el registro:', error),
-    });
+    if (this.areFieldsValid()) {
+      this._Service.createClient(this.getClientPayload()).subscribe({
+        next: (response: any) => this.handleSuccess(response),
+        error: (error: any) =>
+          console.error('Error al crear el registro:', error),
+      });
+    }
   }
+  
+  private areFieldsValid(): boolean {
+    const fields = [
+      { value: this.client.name, message: 'El campo Nombre es obligatorio.' },
+      { value: this.client.description, message: 'El campo Descripción es obligatorio.' },
+      { value: this.client.documentTypeId, message: 'El campo Tipo de Documento es obligatorio.' },
+      { value: this.client.countryId, message: 'El campo País es obligatorio.' },
+      { value: this.client.documentNumber, message: 'El campo Número de Documento es obligatorio.' },
+      { value: this.client.referenceWLL, message: 'El campo Referencia WLL es obligatorio.' },
+      { value: this.client.referencePH, message: 'El campo Referencia PH es obligatorio.' },
+    ];
+  
+    for (const field of fields) {
+      if (!field.value) {
+        this._toast.info('Importante',field.message);
+        return false;
+      }
+    }
 
+  
+    return true;
+  }
+  
   getClientPayload() {
     const {
       name,

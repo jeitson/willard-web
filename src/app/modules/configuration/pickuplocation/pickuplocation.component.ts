@@ -6,6 +6,7 @@ import { CustomersService } from 'src/app/core/services/process/customers.servic
 import { UsersService } from 'src/app/core/services/security/users.service';
 import { PickuplocationService } from 'src/app/core/services/settings/pickuplocation.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
+import { ToastService } from 'src/app/core/services/toast.service';
 // declare var $: any;
 declare var bootstrap: any;
 
@@ -72,6 +73,7 @@ export class PickuplocationComponent {
     private _Settings: SettingsService,
     private userService: UsersService,
     private _Center: CentersService,
+    private _toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -191,26 +193,28 @@ export class PickuplocationComponent {
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
-      this.lugar = {
-        id: '', // Cambiar todos los números a cadenas
-        placeTypeId: '',
-        clientId: '',
-        collectionSiteId: '',
-        consultantId: '',
-        cityId: '',
-        zoneId: '',
-        name: '',
-        description: '',
-        neighborhood: '',
-        address: '',
-        latitude: '',
-        longitude: '',
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        referenceWLL: '',
-        referencePH: '',
-      };
+  
+  this.lugar = {
+    id:item.id,
+    placeTypeId:item.placeTypeId,
+    clientId: item.client.id, // No hay valor en `this.DATA`, se deja vacío
+    collectionSiteId: item.collectionSite.id, // No hay valor en `this.DATA`, se deja vacío
+    consultantId: '', // No hay valor en `this.DATA`, se deja vacío
+    cityId:item.cityId,
+    zoneId:item.zoneId,
+    name:item.name,
+    description:item.description,
+    neighborhood:item.neighborhood,
+    address:item.address,
+    latitude:item.latitude,
+    longitude:item.longitude,
+    contactName:item.contactName,
+    contactEmail:item.contactEmail,
+    contactPhone:item.contactPhone,
+    referenceWLL:item.referenceWLL,
+    referencePH:item.referencePH,
+};
+
     }
   }
 
@@ -254,13 +258,51 @@ export class PickuplocationComponent {
   }
 
   createLugar(): void {
-    this._Service.createPickUpLocation(this.getLugarPayload()).subscribe({
-      next: (response: any) => this.handleSuccess(response),
-      error: (error: any) =>
-        console.error('Error al crear el registro:', error),
-    });
+    if (this.areFieldsValid()) {
+      this._Service.createPickUpLocation(this.getLugarPayload()).subscribe({
+        next: (response: any) => this.handleSuccess(response),
+        error: (error: any) =>
+          console.error('Error al crear el registro:', error),
+      });
+    }
   }
+  private areFieldsValid(): boolean {
+    const fields = [
+      { value: this.lugar.placeTypeId, message: 'El campo Tipo de Lugar es obligatorio.' },
+      { value: this.lugar.clientId, message: 'El campo Cliente es obligatorio.' },
+      { value: this.lugar.collectionSiteId, message: 'El campo Sitio de Recolección es obligatorio.' },
+      { value: this.lugar.consultantId, message: 'El campo Consultor es obligatorio.' },
+      { value: this.lugar.cityId, message: 'El campo Ciudad es obligatorio.' },
+      { value: this.lugar.zoneId, message: 'El campo Zona es obligatorio.' },
+      { value: this.lugar.name, message: 'El campo Nombre es obligatorio.' },
+      { value: this.lugar.description, message: 'El campo Descripción es obligatorio.' },
+      { value: this.lugar.neighborhood, message: 'El campo Barrio es obligatorio.' },
+      { value: this.lugar.address, message: 'El campo Dirección es obligatorio.' },
+      { value: this.lugar.contactName, message: 'El campo Nombre de Contacto es obligatorio.' },
+      { value: this.lugar.contactEmail, message: 'El campo Email de Contacto es obligatorio.' },
+      { value: this.lugar.contactPhone, message: 'El campo Teléfono de Contacto es obligatorio.' },
+      { value: this.lugar.referenceWLL, message: 'El campo Referencia WLL es obligatorio.' },
+      { value: this.lugar.referencePH, message: 'El campo Referencia PH es obligatorio.' },
+    ];
+  
+    for (const field of fields) {
+      if (!field.value) {
+        this._toast.info('Importante',field.message);
+        return false;
+      }
+    }
 
+  
+    // Validar que el email sea válido
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(this.lugar.contactEmail)) {
+      this._toast.info('Importante', 'El campo Email de Contacto no tiene un formato válido.');
+      return false;
+    }
+  
+    return true;
+  }
+    
   getLugarPayload() {
     const {
       placeTypeId,
