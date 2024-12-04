@@ -5,7 +5,7 @@
       <p class="secundary mb-1">En este módulo podras realizar las conciliaciones de las recepciones</p>
     </div>
     <div class="d-flex flex-rows gap-10">
-      <button type="button" class="btn btn-sm btn-dark" (click)="getReceptions();">Recargar <i class="fa-solid fa-rotate-right"></i></button>
+      <button type="button" class="btn btn-sm btn-dark" (click)="getReceptions(1);">Recargar <i class="fa-solid fa-rotate-right"></i></button>
     </div>
   </div>
   <div class="page-divider mb-3">
@@ -26,23 +26,23 @@
                       <th class="text-left"> Zona </th>
                       <th class="text-left"> Recuperadora </th>
                       <th class="text-left"> Transportadora </th>
-                      <th class="text-center"> Cant. Total </th>
-                      <th class="text-right"> Glosa </th>
+                  <!--<th class="text-center"> Cant. Total </th>
+                      <th class="text-right"> Glosa </th>-->
                       <th class="text-center"> Estado </th>
                       <th class="text-center"> </th>
                   </tr>
               </thead>
               <tbody style="background-color: white;">
                   <tr *ngFor="let item of listReceptions " style="font-size: smaller;">
-                      <td class="text-left"> {{item.guide}} </td>
-                      <td class="text-left"> {{item.createdAt | date:'EEEE dd MMM yyyy'}} </td>
-                      <td class="text-left"> {{item.zone}} </td>
-                      <td class="text-left"> {{item.recuperadora}} </td>
-                      <td class="text-left"> {{item.transporter}} </td>
-                      <td class="text-center"> {{item.cantTotal}} </td>
-                      <td class="text-right"> {{item.glosa}} </td>
+                      <td class="text-left"> {{item.guideNumber}} </td>
+                      <td class="text-left"> {{item.date}} </td>
+                      <td class="text-left"> {{item.zone?.name || '-' }} </td>
+                      <td class="text-left"> {{item.recuperator?.name || '-'}} </td>
+                      <td class="text-left"> {{item.transporter?.name || '-'}} </td>
+                      <!-- <td class="text-center"> {{item.cantTotal}} </td>
+                      <td class="text-right"> {{item.glosa}} </td> -->
                       <td class="text-center">
-                          <h5 style="color: white;"><span class="badge bg-success2 t-small">Activo</span></h5>
+                          <h5 style="color: white;"><span class="badge t-small" [class]="setColorStatus(item.requestStatusId)">{{item.requestStatus?.name}}</span></h5>
                       </td>
                       <td class="text-center">
                         <i class="fa-solid f-larger pointer fa-eye" (click)="viewDetail(item)"></i>
@@ -90,9 +90,9 @@
           <div class="modal-header">
             <div class="col-md-12">
                 <h5 class="modal-title pricolor" id="modal-title-notification">Detalle de conciliación</h5>
-                <h5>Guia: #948950</h5>
-                <span>Fecha: 10-10-2024</span> <br>
-                <span>Zona: Norte</span>
+                <h5>Guia: #{{audit.guideNumber}}</h5>
+                <span>Fecha: {{audit.date}}</span> <br>
+                <span>Zona: {{audit.zone?.name}}</span>
               </div>
           </div>
           <div class="modal-body">
@@ -103,13 +103,14 @@
                     <div class="text-center d-flex flex-column">
                       <i class="fa-solid fa-truck"></i>
                       <span>Transportadora</span>
-                      <p>700</p>
+                      <span>{{audit.transporter?.name}}</span>
+                      <p>{{audit.auditGuiaDetails?.transporter?.quantityCollection}}</p>
                       <span><strong>Productos:</strong></span>
                       <table class="table table-bordered mt-3">
                         <tbody>
-                          <tr *ngFor="let item of [1,2,3]">
-                            <th class="text-left">producto {{item}}</th>
-                            <td class="text-center">{{100*item}}</td>
+                          <tr *ngFor="let item of audit.auditGuiaDetails?.transporter?.detail">
+                            <th class="text-left">{{item.product?.name}}</th>
+                            <td class="text-center">{{item.quantityCollection}}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -123,13 +124,14 @@
                     <div class="text-center d-flex flex-column">
                       <i class="fa-solid fa-car-battery"></i>
                       <span>Recuperadora</span>
-                      <p>600</p>
+                      <span>{{audit.recuperator?.name}}</span>
+                      <p>{{audit.auditGuiaDetails?.recuperator?.quantityCollection}}</p>
                       <span><strong>Productos:</strong></span>
                       <table class="table table-bordered mt-3">
                         <tbody>
-                          <tr *ngFor="let item of [1,2,3]">
-                            <th class="text-left">producto {{item}}</th>
-                            <td class="text-center">{{100*item}}</td>
+                          <tr *ngFor="let item of audit.auditGuiaDetails?.recuperator?.detail">
+                            <th class="text-left">{{item.product?.name}}</th>
+                            <td class="text-center">{{item.quantityCollection}}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -159,7 +161,7 @@
                   <thead class="bg-white">
                       <tr>
                           <th class="text-left"> Sitio Recogida</th>
-                          <th class="text-center"> Es Agencia </th>
+                          <!-- <th class="text-center"> Es Agencia </th> -->
                           <th class="text-left"> Tipo </th>
                           <th class="text-left"> Fecha </th>
                           <th class="text-center"> Cantidad </th>
@@ -167,10 +169,10 @@
                       </tr>
                   </thead>
                   <tbody style="background-color: white;">
-                      <tr *ngFor="let item of listReceptions " style="font-size: smaller;">
-                        <td class="text-left"> AutoCar </td>
+                      <tr *ngFor="let item of audit.auditsGuiasRoutes " style="font-size: smaller;">
+                        <td class="text-left"> {{item.transporterTravel.siteName}} </td>
                         <td class="text-center"> No </td>
-                        <td class="text-left"> Recogida</td>
+                        <td class="text-left"> {{item.transporterTravel.type}}</td>
                         <td class="text-left"> {{'10/10/2024' | date:'EEEE dd MMM yyyy'}} </td>
                         <td class="text-center"> 500 </td>
                         <td class="text-center">

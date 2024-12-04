@@ -18,21 +18,21 @@
     "icon": "ai-settings-horizontal",
     "subMenu": [
       {
-        "name": "Solicitudes (planeador)",
+        "name": "Solicitudes",
         "type": "link",
         "id": "21",
         "route": "requestplanner",
         "status": false
       },
       {
-        "name": "Solicitudes (Agencia)",
+        "name": "Solicitudes",
         "type": "link",
         "id": "22",
         "route": "requestagency",
         "status": false
       },
       {
-        "name": "Solicitudes (logistics)",
+        "name": "Solicitudes",
         "type": "link",
         "id": "23",
         "route": "requestlogistics",
