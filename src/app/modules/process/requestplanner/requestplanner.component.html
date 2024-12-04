@@ -43,7 +43,7 @@
                         <tr *ngFor="let item of listsrequest">
                             <td class="text-center"> {{item.id}} </td>
                             <td class="text-center"> {{item.createdAt | date:'shortDate'}} </td>
-                            <td class="text-left"> {{item.acopiCenter }} </td>
+                            <td class="text-left"> {{item.collectionSite.name }} </td>
                             <td class="text-center"> {{item.estimatedQuantity }} </td>
                             <td class="text-left"> {{item.estimatedPickUpDate}} {{item.estimatedPickUpTime}} </td>
                             <td class="text-left"> {{item.client?.name }} </td>
