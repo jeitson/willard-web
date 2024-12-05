@@ -17,7 +17,11 @@ export class CentersService {
   getCollectionSites(params?: any): Observable<any> {
     return this._api.get('collection-sites', params);
   }
-
+  // Obtener el listado de centros de acopio con opción de paginación
+  getCollectionSitesPickup(item?: any): Observable<any> {
+    return this._api.get(`collection-sites?pickUpLocationId=${item}`);
+  }
+  
   // Obtener un centro de acopio por su ID
   getCollectionSiteById(id: string): Observable<any> {
     return this._api.get(`collection-sites/${id}`);

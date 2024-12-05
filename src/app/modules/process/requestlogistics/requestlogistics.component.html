@@ -51,9 +51,10 @@
                   <tr *ngFor="let item of listsrequest" style="font-size: smaller">
                     <td class="text-center">{{ item.id }}</td>
                     <td class="text-center">
-                      {{ item.createdAt | date : "short" }}
+                      {{ item.createdAt | date: "yyyy-MM-dd" }}
                     </td>
-                    <td class="text-center">{{ item.collectionSite || 'No registra' }}</td>
+                    
+                    <td class="text-center">{{ item.collectionSite || 'Por definir' }}</td>
                     <td class="text-center">{{ item.estimatedQuantity }}</td>
                     <td class="text-center">
                       {{ item.estimatedPickUpDate }}
@@ -131,7 +132,7 @@
                      <div class="col-md-12">
                          <!-- Cambiar Recuperador -->
                          <div class="mb-3">
-                           <label for="changeRetriever" class="form-label">Seleccionar Usuario</label>
+                           <label for="changeRetriever" class="form-label">Seleccionar Planeador de Transporte</label>
                            <select class="form-select" id="changeRetriever" [(ngModel)]="data.consultantId">
                              <option *ngFor="let retriever of users" [value]="retriever.id">{{ retriever.name }}</option>
                            </select>
