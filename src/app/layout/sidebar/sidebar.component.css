@@ -305,3 +305,20 @@ a {
     width: 250px; /* Asegura que tenga el ancho completo cuando se abre en móvil */
   }
 }
+
+.infouser {
+  display: flex;
+  flex-direction: column; /* Coloca los elementos en una columna */
+  align-items: center; /* Alinea los elementos a la izquierda */
+  justify-content: center;
+}
+
+.infouser .name-user {
+  font-size: 0.9rem; /* Tamaño de fuente para el nombre de usuario principal */
+}
+
+.infouser .name {
+  font-size: 0.7rem; /* Tamaño de fuente más pequeño para el nombre */
+  opacity: 0.8; /* Hace el texto más sutil */
+}
+

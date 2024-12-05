@@ -18,7 +18,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   items: any[] = [];
   name: string = '';
   role: string = '';
-
+  nameUser: string = '';
   private activeSubMenu: HTMLElement | null = null;
   private rolSubscription: any;
   private rolTimer: any;
@@ -43,6 +43,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       next: (menu: any)=>{
         this.itemsMenu = menu;
         this.role = sessionStorage.getItem("RoleId") || '';
+        this.nameUser = JSON.parse(sessionStorage.getItem("profileData") || '{}')?.name;
         if(this.role !== ''){
           this.name = JSON.parse(sessionStorage.getItem("profileData") || '{}')?.roles[0].role.name;
           console.log(JSON.parse(sessionStorage.getItem("profileData") || '{}'));
