@@ -5,6 +5,7 @@ import { ApiService } from 'src/app/core/services/api/api.service';
 import { Auth0Service } from 'src/app/core/services/auth0.service';
 import { GeneralService } from 'src/app/core/services/general.service';
 import { UsersService } from 'src/app/core/services/security/users.service';
+import { StorageService } from 'src/app/core/services/storage.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -26,8 +27,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
   constructor(private el: ElementRef,
     private renderer: Renderer2,
     private router: Router,
-    private http:GeneralService,
-    private _users: UsersService) {
+    private http: GeneralService,
+    private _users: UsersService,
+    private _storage: StorageService) {
 
   }
 
@@ -40,33 +42,62 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.http.getMenu().subscribe({
-      next: (menu: any)=>{
+      next: (menu: any) => {
         this.itemsMenu = menu;
-        this.role = sessionStorage.getItem("RoleId") || '';
-        this.nameUser = JSON.parse(sessionStorage.getItem("profileData") || '{}')?.name;
-        if(this.role !== ''){
-          this.name = JSON.parse(sessionStorage.getItem("profileData") || '{}')?.roles[0].role.name;
-          console.log(JSON.parse(sessionStorage.getItem("profileData") || '{}'));
-          const modules = JSON.parse(sessionStorage.getItem("profileData") || '{}')?.roles[0].role.menu
-          this.preloadModules(modules);
-        } else {
-          this._users.getProfile().subscribe({
-            next: response => {
-              if (response?.data) {
-                //this.isLoading = false;
-                const roleId = response?.data.roles?.[0]?.roleId || null;
-                sessionStorage.setItem('profileData', JSON.stringify(response.data));
-                sessionStorage.setItem('RoleId', roleId);
-                this.name = JSON.parse(sessionStorage.getItem("profileData") || '{}')?.roles[0].role.name;
-                this.role = sessionStorage.getItem("RoleId") || '';
-                const modules = JSON.parse(sessionStorage.getItem("profileData") || '{}')?.roles[0].role.menu
-                this.preloadModules(modules);
-              }
-            }
-          });
-        }
+        this.initUserData();
+      },
+      error: (err) => {
+        console.error('Error al obtener el menú:', err);
       }
-    })
+    });
+  }
+
+  private initUserData(): void {
+    this._storage.getData().subscribe({
+      next: (response) => {
+        if (response) {
+          this.handleStoredUserData(response);
+        } else {
+          this.fetchAndStoreUserProfile();
+        }
+      },
+      error: (err) => {
+        console.error('Error al obtener los datos almacenados:', err);
+      }
+    });
+  }
+
+  private handleStoredUserData(response: any): void {
+    this.role = sessionStorage.getItem("RoleId") || '';
+    this.nameUser = response.name;
+
+    if (this.role) {
+      this.name = response.roles?.[0]?.role.name || '';
+      const modules = response.roles?.[0]?.role.menu || [];
+      this.preloadModules(modules);
+    }
+  }
+
+  private fetchAndStoreUserProfile(): void {
+    this._users.getProfile().subscribe({
+      next: (response) => {
+        const profileData = response?.data;
+        if (profileData) {
+          this._storage.setData(profileData);
+          sessionStorage.setItem('profileData', JSON.stringify(profileData));
+          const roleId = profileData.roles?.[0]?.roleId || '';
+          sessionStorage.setItem('RoleId', roleId);
+
+          this.name = profileData.roles?.[0]?.role.name || '';
+          this.role = roleId;
+          const modules = profileData.roles?.[0]?.role.menu || [];
+          this.preloadModules(modules);
+        }
+      },
+      error: (err) => {
+        console.error('Error al obtener el perfil del usuario:', err);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -91,14 +122,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
             subItem.status = true; // Marcar los hijos en true si coinciden
           }
           return subItem;
-        }).filter((x:any)=> x.status === true);
+        }).filter((x: any) => x.status === true);
       } else if (savedModule && savedModule.type === 'link') {
         // Si es un módulo link, marcar como true
         module.status = true;
       }
 
       return module;
-    }).filter((x:any)=>x.status === true);
+    }).filter((x: any) => x.status === true);
     setTimeout(() => {
       const subMenus = this.el.nativeElement.querySelectorAll(".sub-menu") as NodeListOf<HTMLElement>;
       const buttons = this.el.nativeElement.querySelectorAll(".sidebar ul a") as NodeListOf<HTMLButtonElement>;

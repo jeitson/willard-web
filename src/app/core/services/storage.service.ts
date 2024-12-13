@@ -7,8 +7,9 @@ import { Parser } from 'bowser';
 import { UtilsLocalStorageService } from 'ngx-danisoft-utils';
 import { environment } from 'src/environments/environment';
 import { AuthService } from '@auth0/auth0-angular';
+import { BehaviorSubject, Observable } from 'rxjs';
 
-const { app_name} = environment;
+const { app_name } = environment;
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +17,9 @@ const { app_name} = environment;
 export class StorageService {
   private browser: Parser.ParsedResult | any;
   isDarkModeActive: boolean | null = false;
+
+  private user = new BehaviorSubject<any>(null);
+
   constructor(
     private auth: AuthService,
     private _localStorage: UtilsLocalStorageService
@@ -89,4 +93,26 @@ export class StorageService {
     );
   }
 
+  setUser(data: any): any {
+    const roleId = data.roles?.[0]?.roleId || null;
+
+    sessionStorage.setItem('profileData', JSON.stringify(data));
+    sessionStorage.setItem('RoleId', roleId);
+  }
+
+  getUser(): any {
+    JSON.parse(sessionStorage.getItem("profileData") || '{}')
+  }
+  getRole(): any {
+    sessionStorage.getItem("RoleId") || '';
+  }
+
+  setData(data: any): void {
+    this.setUser(data);
+    this.user.next(data);
+  }
+
+  getData(): Observable<any> {
+    return this.user.asObservable();
+  }
 }
