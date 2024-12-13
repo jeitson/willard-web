@@ -14,10 +14,14 @@
       </button>
       <div class="profile-dropdown">
         <button class="profile-btn">
-          <img src="{{ user?.picture || 'assets/images/users/avatar-5.jpg'}}" alt="Avatar" class="avatar">
-          <span class="ismovil">{{ name }}</span>
-          <i class="ai-chevron-down"></i>
+          <img src="{{ user?.picture || 'assets/images/users/avatar-5.jpg' }}" alt="Avatar" class="avatar">
+          <div class="ismovil-container">
+            <span class="name">{{ name }}</span>
+            <span class="role">{{ nameRole }}</span>
+          </div>
+          <i class="p-2 ai-chevron-down"></i>
         </button>
+        
         <ul class="dropdown-menu">
           <li><a href="javascript:void(0)" (click)="_logout()">Cerrar sesión</a></li>
           <!-- <li><a href="javascript:void(0)">Cambiar contraseña</a></li> -->

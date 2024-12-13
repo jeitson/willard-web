@@ -9,6 +9,16 @@ import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 import { Auth0Interceptor } from './core/interceptors/auth0.interceptor';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxDanisoftUtilsModule } from 'ngx-danisoft-utils';
+
+const _location = location.hash.split('redirect');
+let url = '';
+
+if (_location.length > 0){
+    url = _location[_location.length - 1];
+}
+
+url = url.replace('==#', '=');
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -25,7 +35,7 @@ import { NgxDanisoftUtilsModule } from 'ngx-danisoft-utils';
       domain: 'dev-tf6rjjtc.auth0.com',
       clientId: 'WZNm59oARsrlUlcSjdDrxqRfM6DtmqSz',
       authorizationParams: {
-        redirect_uri: window.location.origin + '/#/landing',
+        redirect_uri: window.location.origin + '/#/landing?redirect=' + url,
       },
     }),
   ],

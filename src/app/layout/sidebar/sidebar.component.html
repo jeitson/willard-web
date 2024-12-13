@@ -7,7 +7,11 @@
   </header>
   <div class="profile d-grid justify-content-center text-center pb-2">
     <img src="assets/images/default-user2.png" alt="Avatar" class="avatar m-auto">
-    <span class="infouser text-white t-small mt-3">{{name}}</span>
+    <span class="infouser text-white t-small mt-3">
+      <span class="name-user">{{nameUser}}</span>
+      <span class="name small">{{name}}</span>
+    </span>
+    
   </div>
     <ul class="menu scroll">
       <li *ngFor="let menu of items">

@@ -13,23 +13,27 @@ export class TopbarComponent implements OnInit, AfterViewInit {
   @Output() toggleSidebar = new EventEmitter<void>();
   name: string = '';
   role: string = '';
+  nameRole: string = '';
   user: any = {};
   constructor(private storageService:StorageService, private auth0Service:Auth0Service){}
 
   async ngAfterViewInit(){
-
     this.auth0Service.getUser().subscribe(user => {
       this.user = user;
-      console.log(this.user);
     });
+
     if (!(await this.auth0Service.isAuthenticated())) {
       this._login();
     }
   }
 
   ngOnInit(): void {
-    const data = JSON.parse(sessionStorage.getItem('profileData') || '{}')
-    this.name = data?.name;
+    this.storageService.getData().subscribe({
+      next: data => {
+        this.name = data?.name;
+        this.nameRole = data?.roles[0].role.name
+      }
+    })
   }
 
   onToggleSidebar() {

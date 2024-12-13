@@ -60,10 +60,13 @@ export class RequestlogisticsComponent {
     private _pickUp: PickuplocationService,
     private _toast: ToastService,
     private _Service: CentersService,
-    private userService: UsersService,
+    private userService: UsersService
   ) {}
   ngOnInit(): void {
-    this.modal = new bootstrap.Modal(document.getElementById('modalRequestlogistics'), {backdrop: 'static', keyboard: false})
+    this.modal = new bootstrap.Modal(
+      document.getElementById('modalRequestlogistics'),
+      { backdrop: 'static', keyboard: false }
+    );
     this.getRequest(this.currentPage);
     this.getData();
   }
@@ -80,7 +83,7 @@ export class RequestlogisticsComponent {
   getData() {
     this.getTransportadores();
     this.getAsesores(); // Llamar al siguiente método
-    this.getCentros(); // Llamar al siguiente método
+
   }
 
   private getTransportadores() {
@@ -110,13 +113,22 @@ export class RequestlogisticsComponent {
     this.userService.allUsers().subscribe({
       next: (usersResponse: any) => {
         const users = usersResponse.data.items;
-        this.users = users;
-      }
+        // Filtrar usuarios con rol "PLANEADOR DE TRANSPORTE" y roleId "14"
+        const filteredUsers = users.filter((user: any) =>
+          user.roles.some(
+            (role: any) =>
+              role.role.name === 'PLANEADOR DE TRANSPORTE' &&
+              role.roleId === '14'
+          )
+        );
+
+        this.users = filteredUsers;
+      },
     });
   }
 
-  private getCentros() {
-    this._Service.getCollectionSites().subscribe({
+  private getCentros(item: any) {
+    this._Service.getCollectionSitesPickup(item).subscribe({
       next: (centersResponse: any) => {
         const centers = centersResponse.data.items;
         this.listCenters = centers; // Almacenar los centros
@@ -136,10 +148,9 @@ export class RequestlogisticsComponent {
       consultantId: item.consultant,
       transporterId: item.transporter,
     };
-
+    this.getCentros(item.pickUpLocation.id); // Llamar al siguiente método
     this.modal.show();
   }
-
 
   saveData() {
     this._requests
@@ -166,7 +177,6 @@ export class RequestlogisticsComponent {
     };
   }
 
-  
   // paginación
   updatePaginatedList() {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
@@ -196,18 +206,17 @@ export class RequestlogisticsComponent {
 
   search(): void {
     this.searchTerm$.subscribe(({ value }: { value: string }) => {
-        const lowerValue = value.toLowerCase();
-        this.listsrequest = this.listCopy.filter(item =>
-            [
-                item.id?.toString(),                             // Id
-                item.requestDate,                                // Fecha
-                item.pickUpLocation?.name,                       // Acopio
-                item.estimatedQuantity?.toString(),              // Cantidad
-                item.estimatedPickUpDate,                        // Recogida
-                item.client?.name                                // Cliente
-            ].some(field => field?.toLowerCase().includes(lowerValue))
-        );
+      const lowerValue = value.toLowerCase();
+      this.listsrequest = this.listCopy.filter((item) =>
+        [
+          item.id?.toString(), // Id
+          item.requestDate, // Fecha
+          item.pickUpLocation?.name, // Acopio
+          item.estimatedQuantity?.toString(), // Cantidad
+          item.estimatedPickUpDate, // Recogida
+          item.client?.name, // Cliente
+        ].some((field) => field?.toLowerCase().includes(lowerValue))
+      );
     });
-}
-
+  }
 }
