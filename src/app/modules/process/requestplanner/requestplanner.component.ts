@@ -23,6 +23,7 @@ export class RequestplannerComponent implements OnInit {
     tripStartTime: '',
     tripEndDate: '',
     tripEndTime: '',
+    routeId:'',
     plate: '',
     truckTypeId: 0,
     deliveryDateToCollectionSite: '',
@@ -34,7 +35,7 @@ export class RequestplannerComponent implements OnInit {
       document: ''
     }
   }
-  listsrequest: any[] = [];
+  listroutes: any[] = [];
   requestId: string = '';
   action: any = {
     icon:'',
@@ -80,9 +81,9 @@ export class RequestplannerComponent implements OnInit {
   getRequests(page: any){
     this.api.get(`collection-request?page=${page}`).subscribe({
       next: (response: any) => {
-        this.listsrequest = response.data.items;//.filter((x: any)=> x.requestStatusId === 1);
-        this.listCopy = this.listsrequest; // Hacemos una copia de la lista original
-        this.totalItems = this.listsrequest.length; // Total de solicitudes
+        this.listroutes = response.data.items;//.filter((x: any)=> x.requestStatusId === 1);
+        this.listCopy = this.listroutes; // Hacemos una copia de la lista original
+        this.totalItems = this.listroutes.length; // Total de solicitudes
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
         this.search();
       },
@@ -178,6 +179,7 @@ export class RequestplannerComponent implements OnInit {
       tripStartDate: '',
       tripStartTime: '',
       tripEndDate: '',
+      routeId:'',
       tripEndTime: '',
       plate: '',
       truckTypeId: 0,
@@ -197,7 +199,7 @@ export class RequestplannerComponent implements OnInit {
   updatePaginatedList() {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-    this.paginatedList = this.listsrequest.slice(startIndex, endIndex);
+    this.paginatedList = this.listroutes.slice(startIndex, endIndex);
   }
 
   goToPage(page: number) {
@@ -222,7 +224,7 @@ export class RequestplannerComponent implements OnInit {
 
   search(): void {
     this.searchTerm$.subscribe(({ value }: { value: string }) => {
-      this.listsrequest = this.listCopy.filter(item => {
+      this.listroutes = this.listCopy.filter(item => {
         const itemValues = Object.values(item);
         return itemValues.some(item =>
           String(item).toLowerCase().includes(value.toLowerCase()),
