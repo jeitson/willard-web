@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
+import { Subject } from 'rxjs';
 import { CentersService } from 'src/app/core/services/process/centers.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
-declare var $: any;
+import { ToastService } from 'src/app/core/services/toast.service';
+// declare var $: any;
+declare var bootstrap: any;
 @Component({
   selector: 'wlrd-collection-centers',
   templateUrl: './collection-centers.component.html',
@@ -10,6 +13,7 @@ declare var $: any;
 export class CollectionCentersComponent {
   // Actualiza el objeto record con la nueva estructura
   centers = {
+    id: '',
     siteTypeId: '',
     countryId: '',
     cityId: '',
@@ -27,7 +31,9 @@ export class CollectionCentersComponent {
     referenceWLL: '',
     referencePH: '',
   };
-  listData: any = [];
+  listData: any[] = [];
+  listBase: any[] = [];
+
   viewoptions = true;
   action: any = {
     icon: '',
@@ -39,23 +45,51 @@ export class CollectionCentersComponent {
   countries: any = [];
   cities: any = [];
   typeCenters: any = [];
+  modal: any;
+  modalConfirm: any;
+  pagination: any = {};
+  searchTerm$ = new Subject<any>();
+  searchTerm: string = ''; // Para almacenar el texto de búsqueda
+  paginatedList: any = [];
+  currentPage: number = 1; // Página actual
+  itemsPerPage: number = 5; // Cantidad de elementos por página
+  totalPages: number = 0; // Total de páginas
   constructor(
     private _Service: CentersService,
-    private _settings: SettingsService
+    private _settings: SettingsService,
+    private _toast: ToastService
   ) {}
   ngOnInit(): void {
-    this.selectData();
+    this.modal = new bootstrap.Modal(document.getElementById('modalCenter'), {
+      backdrop: 'static',
+      keyboard: false,
+    });
+    this.modalConfirm = new bootstrap.Modal(
+      document.getElementById('modalconfirm'),
+      { backdrop: 'static', keyboard: false }
+    );
+    
+    this.lisKey();
   }
 
-  selectData(): void {
+  lisKey(){
     this._Service.getCollectionSites().subscribe({
       next: (response: any) => {
         this.listData = response.data.items;
+        this.listBase = this.listData; // Guardamos la lista original para filtrar
+        this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Total de páginas
+        this.pagination.totalItems = response.data.length;
+        this.updatePaginatedList(); // Actualiza la lista paginada
+        this.search();
+        this.selectData();
       },
       error: (error: any) => {
         console.error('Error al obtener centros de recolección:', error);
       },
     });
+  }
+  selectData(): void {
+
   
     this._settings.getCatalogChildrenByKey('PAIS').subscribe({
       next: (response: any) => {
@@ -90,18 +124,19 @@ export class CollectionCentersComponent {
     this.resetCenter();
     this.action.name = 'Crear';
     this.viewoptions = true;
-    $('#modalCenter').modal('show');
+    this.modal.show();
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
       this.centers = {
+        id: item.id,
         siteTypeId: item.siteTypeId || '',
         countryId: item.countryId || '',
         cityId: item.cityId || '',
         name: item.name || '',
         description: item.description || '',
         nit: item.nit || '',
-        businessName: item.businessName || '',
+        businessName: item.name || '',
         neighborhood: item.neighborhood || '',
         address: item.address || '',
         latitude: item.latitude || '',
@@ -117,6 +152,7 @@ export class CollectionCentersComponent {
 
   resetCenter(): void {
     this.centers = {
+      id: '',
       siteTypeId: '',
       countryId: '',
       cityId: '',
@@ -136,14 +172,12 @@ export class CollectionCentersComponent {
     };
   }
 
-  close(): void {
-    $('#modalCenter').modal('hide');
-  }
+ 
 
   updateCollection(): void {
-    if (this.centers.siteTypeId) {
+    if (this.centers.id) {
       this._Service
-        .updateCollectionSite(this.centers.siteTypeId, this.getCenterPayload())
+        .updateCollectionSite(this.centers.id, this.getCenterPayload())
         .subscribe({
           next: (response: any) => this.handleSuccess(response),
           error: (error: any) =>
@@ -151,16 +185,56 @@ export class CollectionCentersComponent {
         });
     }
   }
-
   createCollection(): void {
-    this._Service.createCollectionSite(this.getCenterPayload()).subscribe({
-      next: (response: any) => this.handleSuccess(response),
-      error: (error: any) =>
-        console.error('Error al crear el registro:', error),
-    });
+    if (this.areFieldsValid()) {
+      this._Service.createCollectionSite(this.getCenterPayload()).subscribe({
+        next: (response: any) => this.handleSuccess(response),
+        error: (error: any) =>
+          this._toast.error('Importante','Error al crear el registro')
+        });
+    } else {
+      this._toast.warning('Importante','Por favor, completa todos los campos obligatorios.');
+    }
   }
-
-  getCenterPayload() {
+  
+  private areFieldsValid(): boolean {
+    const fields = [
+      { value: this.centers.siteTypeId, message: 'El campo Tipo de Sitio es obligatorio.' },
+      { value: this.centers.countryId, message: 'El campo País es obligatorio.' },
+      { value: this.centers.cityId, message: 'El campo Ciudad es obligatorio.' },
+      { value: this.centers.name, message: 'El campo Nombre es obligatorio.' },
+      { value: this.centers.description, message: 'El campo Descripción es obligatorio.' },
+      { value: this.centers.nit, message: 'El campo NIT es obligatorio.' },
+      { value: this.centers.neighborhood, message: 'El campo Barrio es obligatorio.' },
+      { value: this.centers.address, message: 'El campo Dirección es obligatorio.' },
+      { value: this.centers.latitude, message: 'El campo Latitud es obligatorio.' },
+      { value: this.centers.longitude, message: 'El campo Longitud es obligatorio.' },
+      { value: this.centers.contactName, message: 'El campo Nombre de Contacto es obligatorio.' },
+      { value: this.centers.contactEmail, message: 'El campo Email de Contacto es obligatorio.' },
+      { value: this.centers.contactPhone, message: 'El campo Teléfono de Contacto es obligatorio.' },
+      { value: this.centers.referenceWLL, message: 'El campo Referencia WLL es obligatorio.' },
+      { value: this.centers.referencePH, message: 'El campo Referencia PH es obligatorio.' },
+    ];
+  
+    for (const field of fields) {
+      if (!field.value) {
+        this._toast.info('Importante',field.message);
+        return false;
+      }
+    }
+  
+    // Validar el formato del correo electrónico
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.centers.contactEmail)) {
+      this._toast.info('Importante', 'El campo Email de Contacto no tiene un formato válido.');
+      return false;
+    }
+  
+    return true;
+  }
+  
+  
+  private getCenterPayload() {
     const {
       siteTypeId,
       countryId,
@@ -179,7 +253,7 @@ export class CollectionCentersComponent {
       referenceWLL,
       referencePH,
     } = this.centers;
-
+  
     return {
       siteTypeId,
       countryId,
@@ -187,7 +261,7 @@ export class CollectionCentersComponent {
       name,
       description,
       nit,
-      businessName,
+      businessName: name,
       neighborhood,
       address,
       latitude,
@@ -199,9 +273,10 @@ export class CollectionCentersComponent {
       referencePH,
     };
   }
+  
    handleSuccess(response: any): void {
-    this.selectData();
-    this.close();
+    this.lisKey();
+    this.modal.hide();
   }
 
   removeItem(id: string) {
@@ -210,7 +285,7 @@ export class CollectionCentersComponent {
     this.action.value = 'delete';
     this.action.color = '#dc3545';
     this.action.icon = 'fa-solid fa-trash';
-    $('#modalconfirm').modal('show');
+    this.modalConfirm.show();
   }
 
   editState(id: string) {
@@ -219,7 +294,7 @@ export class CollectionCentersComponent {
     this.action.value = 'changestatus';
     this.action.color = '#ffc107';
     this.action.icon = 'fa-solid fa-sync';
-    $('#modalconfirm').modal('show');
+    this.modalConfirm.show();
   }
 
   actionConfirm() {
@@ -238,8 +313,8 @@ export class CollectionCentersComponent {
   changeStatus() {
     this._Service.changeCollectionSiteStatus(this.itemId).subscribe({
       next: () => {
-        this.selectData();
-        $('#modalconfirm').modal('hide');
+        this.lisKey();
+        this.modalConfirm.hide();
       },
       error: () => {},
     });
@@ -248,10 +323,49 @@ export class CollectionCentersComponent {
   delete() {
     this._Service.deleteCollectionSite(this.itemId).subscribe({
       next: () => {
-        this.selectData();
-        $('#modalconfirm').modal('hide');
+        this.lisKey();
+        this.modalConfirm.hide();
       },
       error: () => {},
+    });
+  }
+
+  
+  
+   // paginación
+   updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listData.slice(startIndex, endIndex);
+    this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Calcula el total de páginas
+  }
+  
+  onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
+  
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList(); // Actualiza la lista para la nueva página
+    }
+  }
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
+  
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.listData = this.listBase.filter(item => {
+        const itemValues = Object.values(item);
+        return itemValues.some(item =>
+          String(item).toLowerCase().includes(value.toLowerCase()),
+        );
+      });
     });
   }
 }

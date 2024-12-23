@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AdviserService } from 'src/app/core/services/process/adviser.service';
+import { ToastService } from 'src/app/core/services/toast.service';
 declare var $: any;
 @Component({
   selector: 'wlrd-adviser',
@@ -25,7 +26,7 @@ export class AdviserComponent {
     color: '',
   };
   itemId: string = '';
-  constructor(private _Service: AdviserService) {}
+  constructor(private _Service: AdviserService, private _toast: ToastService) {}
 
   ngOnInit(): void {
     this.selectData();
@@ -87,25 +88,40 @@ export class AdviserComponent {
         });
     }
   }
+//
+createAdviser(): void {
+  if (!this.isAdviserValid()) {
+    this._toast.info('Importante','Por favor, complete todos los campos requeridos.');
+    return;
+  }
 
-  createAdviser(): void {
-    if (!this.adviser.id) {
-      this._Service.createConsultant(this.getadviserPayload()).subscribe({
-        next: (response: any) => this.handleSuccess(response),
-        error: (error: any) =>
-          console.error('Error al crear el registro:', error),
-      });
-    }
+  if (!this.adviser.id) {
+    this._Service.createConsultant(this.getadviserPayload()).subscribe({
+      next: (response: any) => this.handleSuccess(response),
+      error: (error: any) =>
+        console.error('Error al crear el registro:', error),
+    });
   }
-  private getadviserPayload() {
-    const { name, email, phone, description, referencePH } = this.adviser;
-    return { name, email, phone, description, referencePH };
-  }
+}
+
+private isAdviserValid(): boolean {
+  const { name, email, phone, description, referencePH } = this.adviser;
+
+  // Validar que todos los campos requeridos no estén vacíos
+  return !!(name?.trim() && email?.trim() && phone?.trim() && description?.trim() && referencePH?.trim());
+}
+
+private getadviserPayload() {
+  const { name, email, phone, description, referencePH } = this.adviser;
+  return { name, email, phone, description, referencePH };
+}
+
   private handleSuccess(response: any): void {
     this.selectData();
     this.close();
   }
-
+  
+//
   removeItem(id: string) {
     this.itemId = id;
     this.action.name = 'Eliminar';

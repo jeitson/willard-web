@@ -22,6 +22,34 @@ const routes: Routes = [
 			import('../process/requestlogistics/requestlogistics.module').then(
 				({ RequestlogisticsModule }) => RequestlogisticsModule,
 			),
+	},
+  {
+		path: 'reception',
+		loadChildren: () =>
+			import('../process/reception/reception.module').then(
+				({ ReceptionModule }) => ReceptionModule,
+			),
+	},
+  {
+		path: 'shipping',
+		loadChildren: () =>
+			import('../process/shipping/shipping.module').then(
+				({ ShippingModule }) => ShippingModule,
+			),
+	},
+  {
+		path: 'conciliation',
+		loadChildren: () =>
+			import('../process/conciliation/conciliation.module').then(
+				({ ConciliationModule }) => ConciliationModule,
+			),
+	},
+	{
+		path: 'bulkrequest',
+		loadChildren: () =>
+			import('../process/bulkrequest/bulkrequest.module').then(
+				({ BulkrequestModule }) => BulkrequestModule,
+			),
 	}
 ];
 

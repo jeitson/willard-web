@@ -26,3 +26,62 @@
   padding: 20px 20px 0px 20px;
 
 }
+
+
+
+
+/* Responsividad para móviles */
+@media (max-width: 768px) {
+  .layout-container {
+    flex-direction: column;
+  }
+
+  .sidebar-container {
+    position: fixed;
+    top: 0;
+    left: -250px; /* Oculto por defecto */
+    width: 250px;
+    height: 100%;
+    background: #ffffff00; /* Asegúrate de que el fondo sea visible */
+    z-index: 1000;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar-container.open {
+    left: 0; /* Visible cuando se abre */
+  }
+
+  .main-container {
+    margin-left: 0;
+  }
+
+  /* Topbar ocupa el 100% del ancho */
+  .main-container app-topbar {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1001; /* Por encima del sidebar */
+  }
+
+  /* Ajustar el contenido para que no quede debajo de la topbar */
+  .content-container {
+    margin-top: 60px; /* Altura de la topbar */
+  }
+
+  /* Opcional: Fondo cuando el sidebar está abierto */
+  .overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+
+  .overlay.active {
+    display: block;
+  }
+}

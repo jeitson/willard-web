@@ -3,7 +3,7 @@
     <div class="d-flex flex-column">
       <h3 class="primary title noselect">TRANSPORTADOR</h3>
       <p class="secundary mb-1">En este modulo podras configurar transportadores realizando
-        acciones como: crear | editar | eliminar | cambiar estado </p>
+        acciones como: crear, editar, eliminar, cambiar estado </p>
     </div>
     <div class="d-flex flex-rows gap-10">
       <button type="button" class="btn btn-sm bg-add"
@@ -22,6 +22,14 @@
       <div class="row">
         <div class="col-md-12">
           <div class="table-responsive">
+            <div class="mb-3 col-4">
+              <input 
+              type="text"
+              class="form-control form-control-sm"
+              placeholder="Buscar..."
+              (keyup)="searchTerm$.next($event.target)"
+              />
+            </div>
             <table class="table table-sm">
               <thead class="bg-white">
                 <tr>
@@ -54,6 +62,38 @@
                 </tr>
               </tbody>
             </table>
+             <!-- Paginación -->
+             <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-between">
+                <!-- Select para seleccionar la página -->
+                <div class="d-flex align-items-center">
+                  <li class="page-item d-flex align-items-center">
+                    <span class="me-2">Pag</span>
+                    <select class="form-select form-select-sm me-2" (change)="onPageChange($event)">
+                      <option *ngFor="let i of pagesArray" [value]="i" [selected]="currentPage === i">{{ i }}</option>
+                    </select>
+                    <span class="me-2">de</span>
+                    <span>{{ totalPages }}</span>
+                  </li>
+                </div>
+                <!-- Controles Anterior y Siguiente alineados a la derecha -->
+                <div class="d-flex">
+                  <li class="page-item" [class.disabled]="currentPage === 1">
+                    <a class="page-link" style="color: #198754;" (click)="goToPage(currentPage - 1)">
+                      <i class="fa-solid fa-angle-left"></i>
+                    </a>
+                  </li>
+                  <li
+                    class="page-item"
+                    [class.disabled]="currentPage === totalPages"
+                  >
+                    <a class="page-link"  style="color: #198754;" (click)="goToPage(currentPage + 1)">
+                      <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                  </li>
+                </div>
+              </ul>
+            </nav> 
           </div>
         </div>
       </div>
@@ -95,7 +135,7 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title pricolor" id="modal-title-notification">{{action.name | uppercase}} PRODUCTO</h5>
+          <h5 class="modal-title pricolor" id="modal-title-notification">{{action.name | uppercase}} TRANSPORTADOR</h5>
         </div>
         <div class="modal-body">
           <div class="col-md-12 pb-3">
@@ -104,13 +144,13 @@
               <div class="col-md-4">
                 <label for="taxId" class="form-label text-black">NIT</label>
                 <div class="input-group mb-3">
-                  <input type="text" class="form-control h-46"
-                    placeholder="ID Fiscal" autocomplete="off"
+                  <input type="numner" class="form-control h-46"
+                    placeholder="Nit" autocomplete="off"
                     name="taxId" id="taxId"
                     [(ngModel)]="conveyor.taxId" />
                 </div>
               </div>
-              <div class="col-md-4">
+              <!-- <div class="col-md-4">
                 <label for="businessName" class="form-label text-black">Nombre de Negocio</label>
                 <div class="input-group mb-3">
                   <input type="text" class="form-control h-46"
@@ -118,7 +158,7 @@
                     name="businessName" id="businessName"
                     [(ngModel)]="conveyor.businessName" />
                 </div>
-              </div>
+              </div> -->
 
               <!-- Segunda Fila: Nombre y Descripción -->
               <div class="col-md-4">
@@ -182,9 +222,9 @@
             </div>
             <div class="row mt-5">
               <div class="col-md-12 d-flex flex-rows gap-10">
+                <button class="btn btn-sm btn-dark" data-bs-dismiss="modal"> Cerrar</button>
                 <button class="btn btn-sm btn-success" *ngIf="viewoptions == true" (click)="createConveyor()"> Crear </button>
                 <button class="btn btn-sm btn-warning" *ngIf="viewoptions == false" (click)="updateConveyor()"> Actualizar </button>
-                <button class="btn btn-sm btn-dark" data-dismiss="modal" aria-label="Close"> Cancelar </button>
               </div>
             </div>
           </div>

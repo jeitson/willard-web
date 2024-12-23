@@ -2,7 +2,7 @@
   <div class="page-header">
     <div class="d-flex flex-column">
       <h5 class="primary title noselect">CONFIGURACIÓN DE {{keypluralspanish | uppercase}}</h5>
-      <p class="secundary mb-1">En este modulo podras configurar {{keypluralspanish | lowercase}}, realizando acciones como: crear | editar | eliminar | cambiar estado </p>
+      <p class="secundary mb-1">En este modulo podras configurar {{keypluralspanish | lowercase}}, realizando acciones como: Crear, Editar, Eliminar y Cambiar Estado </p>
     </div>
     <div class="d-flex flex-rows gap-10">
       <button type="button" class="btn btn-sm bg-add" (click)="addItem()">Agregar <i class="fa-solid fa-add"></i></button>
@@ -15,41 +15,81 @@
   <div class="page-body">
     <div class="col-md-12">
         <div class="row">
-          <div class="col-md-6">
+          <!-- <div class="col-md-6">
             <h6>Total {{pagination.totalItems}}</h6>
-          </div>
-          <div class="col-md-6 d-flex justify-content-end">
+          </div> -->
+          <!-- <div class="col-md-6 d-flex justify-content-end">
             <pagination-controls class="pagination" (pageChange)="p = $event" [responsive]="true" previousLabel="Atras" nextLabel="Siguiente" [autoHide]="false"></pagination-controls>
-          </div>
+          </div> -->
           <div class="col-md-12">
               <div class="table-responsive">
-                <table class="table table-sm">
+                <div class="mb-3 col-4">
+                  <input 
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="Buscar..."
+                  (keyup)="searchTerm$.next($event.target)"
+                  />
+                  </div>
+                  <table class="table table-sm">
                     <thead class="bg-white">
-                        <tr>
-                            <th class="text-left"> Nombre</th>
-                            <th class="text-left"> Descripción </th>
-                            <th class="text-center"> Creación </th>
-                            <th class="text-center"> Estado </th>
-                            <th class="text-center"> </th>
-                        </tr>
+                      <tr>
+                        <th class="text-left">Nombre</th>
+                        <th class="text-left">Descripción</th>
+                        <th class="text-center">Creación</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center"></th>
+                      </tr>
                     </thead>
                     <tbody style="background-color: white;">
-                        <tr *ngFor="let item of list | paginate: { itemsPerPage: totalItemsRender, currentPage: p }" style="font-size: smaller;">
-                            <td class="text-left"> {{item.name}} </td>
-                            <td class="text-left"> {{item.description}} </td>
-                            <td class="text-center"> {{item.createdAt | date:'EEEE dd MMM yyyy'}} </td>
-                            <td class="text-center">
-                                <h5 *ngIf="item.status == true" style="color: white;"><span class="badge bg-success2 t-small">Activo</span></h5>
-                                <h5 *ngIf="item.status == false" style="color: white;"><span class="badge bg-danger t-small">Inactivo</span></h5>
-                            </td>
-                            <td class="text-center">
-                              <i class="fa-solid f-larger pointer fa-pencil" (click)="editItem(item)"></i>
-                              <i class="fa-solid f-larger pointer fa-sync" (click)="editState(item.id)"></i>
-                              <i class="fa-solid f-larger pointer fa-trash" (click)="removeItem(item.id)"></i>
-                            </td>
-                        </tr>
+                      <tr *ngFor="let item of paginatedList" style="font-size: smaller;">
+                        <td class="text-left">{{ item.name || 'NO REGISTRA' }}</td>
+                        <td class="text-left">{{ item.description || 'NO REGISTRA' }}</td>
+                        <td class="text-center">{{ item.createdAt | date:'EEEE dd MMM yyyy' }}</td>
+                        <td class="text-center">
+                          <h5 *ngIf="item.status == true" style="color: white;"><span class="badge bg-success2 t-small">Activo</span></h5>
+                          <h5 *ngIf="item.status == false" style="color: white;"><span class="badge bg-danger t-small">Inactivo</span></h5>
+                        </td>
+                        <td class="text-center">
+                          <i class="fa-solid f-larger pointer fa-pencil" (click)="editItem(item)"></i>
+                          <i class="fa-solid f-larger pointer fa-sync" (click)="editState(item.id)"></i>
+                          <i class="fa-solid f-larger pointer fa-trash" (click)="removeItem(item.id)"></i>
+                        </td>
+                      </tr>
                     </tbody>
-                </table>
+                  </table>
+                  
+          <!-- Paginación -->
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-between">
+    <!-- Select para seleccionar la página -->
+    <div class="d-flex align-items-center">
+      <li class="page-item d-flex align-items-center">
+        <span class="me-2">Pag</span>
+        <select class="form-select form-select-sm me-2" (change)="onPageChange($event)">
+          <option *ngFor="let i of pagesArray" [value]="i" [selected]="currentPage === i">{{ i }}</option>
+        </select>
+        <span class="me-2">de</span>
+        <span>{{ totalPages }}</span>
+      </li>
+    </div>
+    <!-- Controles Anterior y Siguiente alineados a la derecha -->
+    <div class="d-flex">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <a class="page-link" style="color: #198754;" (click)="goToPage(currentPage - 1)">
+          <i class="fa-solid fa-angle-left"></i>
+        </a>
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <a class="page-link" style="color: #198754;" (click)="goToPage(currentPage + 1)">
+          <i class="fa-solid fa-angle-right"></i>
+        </a>
+      </li>
+    </div>
+  </ul>
+</nav>
+
+                
             </div>
           </div>
         </div>
@@ -62,9 +102,9 @@
                     <h5 class="modal-title pricolor" id="modal-title-notification">{{action.name | uppercase}} {{keyspanish | uppercase}}</h5>
                 </div>
                 <div class="modal-body">
-                    <h6 style="text-transform: none; font-weight: 300;">A través de esta funcionalidad podrá realizar el proceso de {{action.name}} de {{keyspanish}}. Diligenciar la información y seleccionar la opción {{action.name | lowercase}}.</h6>
+                    <h6 style="text-transform: none; font-weight: 300;">A través de esta funcionalidad podrá realizar el proceso de {{action.name === 'Crear'?'creación':'actualización'}}. Diligenciar la información y seleccionar la opción {{action.name | lowercase}}.</h6>
                     <div class="col-md-12">
-                        <form>
+                        <div>
                             <div class="row">
                                 <div class="col-md-6 text-left" *ngIf="parent !== 'null'">
                                     <label for="basic-url" class="pricolor">{{parentspanish}}</label>
@@ -81,10 +121,29 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-12">
+                                <!-- <div class="col-md-12">
                                     <label for="" class="pricolor">Descripción</label>
                                     <textarea type="textarea" class="form-control" placeholder="Descripción" name="describe" autocomplete="off" [(ngModel)]="item.description"></textarea>
-                                </div>
+                                </div> -->
+                                
+                                <div class="col-12">
+                                    <label for="Descripción" class="form-label"  [ngClass]="{'text-danger': labelsValidation.description}">Observaciones</label>
+                                    <textarea
+                                    class="form-control"
+                                    id="Descripción"
+                                    [(ngModel)]="item.description"
+                                    name="Descripción"
+                                    rows="2"
+                                    placeholder="Descripción"
+                                    maxlength="250"
+                                    required
+                                    (blur)="validateFields()"
+                                    autocomplete="off"
+                                    ></textarea>
+                                    <div class="text-end">
+                                    <small>{{ item.description?.length || 0 }}/250 caracteres</small>
+                                    </div>
+                                </div>    
                             </div>
                             <div class="row mt-5">
                                 <div class="col-md-12 d-flex flex-rows gap-10">
@@ -93,7 +152,7 @@
                                   <button class="btn btn-sm btn-dark" data-bs-dismiss="modal"> Cancelar </button>
                                 </div>
                             </div>
-                        </form>
+                          </div>
                     </div>
                 </div>
             </div>

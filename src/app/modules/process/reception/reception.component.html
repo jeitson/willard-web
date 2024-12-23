@@ -1,0 +1,293 @@
+<div class="container" *ngIf="!editpanel">
+  <div class="page-header">
+    <div class="d-flex flex-column">
+      <h5 class="primary title noselect">RECEPCIÓN DE BUPAS</h5>
+      <p class="secundary mb-1">En este módulo podras hacer la recepción de las BUPAs</p>
+    </div>
+    <div class="d-flex flex-rows gap-10">
+      <button type="button" class="btn btn-sm bg-success2" (click)="addReception()">Agregar <i class="fa-solid fa-add"></i></button>
+      <button type="button" class="btn btn-sm btn-dark" (click)="getReceptions(1);">Recargar <i class="fa-solid fa-rotate-right"></i></button>
+    </div>
+  </div>
+  <div class="page-divider mb-3">
+    <hr class="mt-1 mb-1">
+  </div>
+  <div class="page-body">
+      <div class="row">
+        <div class="col-md-6">
+          <h6>Total {{pagination.totalItems}}</h6>
+        </div>
+        <div class="col-md-6 d-flex justify-content-end">
+          <!-- <pagination-controls class="pagination" (pageChange)="p = $event" [responsive]="true" previousLabel="Atras" nextLabel="Siguiente" [autoHide]="false"></pagination-controls> -->
+        </div>
+        <div class="col-md-12">
+          <div class="table-responsive">
+            <div class="mb-3 col-4">
+              <input
+              type="text"
+              class="form-control form-control-sm"
+              placeholder="Buscar..."
+              (keyup)="searchTerm$.next($event.target)"
+              />
+            </div>
+            <table class="table table-sm">
+                <thead class="bg-white">
+                    <tr>
+                        <th class="text-center"> # Guia</th>
+                        <th class="text-center"> Fecha </th>
+                        <th class="text-center"> Placa </th>
+                        <th class="text-left"> Conductor</th>
+                        <th class="text-center"> Cantidad Total </th>
+                        <th class="text-center"> Estado </th>
+                        <th class="text-center"> </th>
+                    </tr>
+                </thead>
+                <tbody style="background-color: white;">
+                  <!-- <tr *ngFor="let item of listsReceptions | paginate: { itemsPerPage: totalItemsRender, currentPage: p }; let i = index;"> -->
+                    <tr *ngFor="let item of listReceptions; let i = index;">
+                        <td class="text-center"> {{item.guideNumber}} </td>
+                        <td class="text-center"> {{item.createdAt | date:'short'}} </td>
+                        <td class="text-center"> {{item.licensePlate | uppercase}} </td>
+                        <td class="text-left"> {{item.driver}}</td>
+                        <td class="text-center">{{sumQuantity(item.receptionDetails) | number}}</td>
+                        <td class="text-center">
+                            <h5 *ngIf="item.status == true" style="color: white;"><span class="badge bg-success2 t-small">Activo</span></h5>
+                            <h5 *ngIf="item.status == false" style="color: white;"><span class="badge bg-danger t-small">Inactivo</span></h5>
+                        </td>
+                        <td class="text-center">
+                          <!-- <i class="fa-solid f-larger pointer fa-pencil" (click)="editReception(item)"></i> -->
+                          <!-- <i class="fa-solid f-larger pointer fa-eye" [routerLink]="[item.id]"></i> -->
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-between">
+                <!-- Select para seleccionar la página -->
+                <div class="d-flex align-items-center">
+                  <li class="page-item d-flex align-items-center">
+                    <span class="me-2">Pag</span>
+                    <select class="form-select form-select-sm me-2" (change)="onPageChange($event)">
+                      <option *ngFor="let i of pagesArray" [value]="i" [selected]="currentPage === i">{{ i }}</option>
+                    </select>
+                    <span class="me-2">de</span>
+                    <span>{{ totalPages }}</span>
+                  </li>
+                </div>
+                <!-- Controles Anterior y Siguiente alineados a la derecha -->
+                <div class="d-flex">
+                  <li class="page-item" [class.disabled]="currentPage === 1">
+                    <a class="page-link" (click)="goToPage(currentPage - 1)">
+                      <i class="fa-solid fa-angle-left"></i>
+                    </a>
+                  </li>
+                  <li class="page-item" [class.disabled]="currentPage === totalPages">
+                    <a class="page-link" (click)="goToPage(currentPage + 1)">
+                      <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                  </li>
+                </div>
+              </ul>
+            </nav>
+        </div>
+        </div>
+      </div>
+
+  </div>
+</div>
+
+<div class="container" *ngIf="editpanel">
+  <div class="page-header">
+    <div class="d-flex flex-column">
+      <h5 class="primary title noselect">RECEPCIÓN DE BUPAS</h5>
+    </div>
+    <div class="d-flex flex-rows gap-10">
+    </div>
+  </div>
+  <div class="page-divider mb-3">
+    <hr class="mt-1 mb-1">
+  </div>
+  <div class="page-body">
+    <div style="padding-bottom: 80px;">
+      <div class="row">
+        <div class="col-md-12 mb-3">
+          <label class="form-control">{{role==='18'?'Agencia PH':'Recuperadora'}}: {{headacopi}}</label>
+        </div>
+        <div class="col-sm-6 col-md-6 mb-3">
+          <label class="pricolor">Transportadora</label>
+          <div class="input-group">
+            <select class="form-control form-select" name="transporter" [(ngModel)]="receptionForm.transporterId" required>
+                <option value="" selected>Seleccionar</option>
+                <option *ngFor="let opt of listTransporters" value="{{opt.id}}">{{opt.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-6 mb-3">
+          <label for="" class="pricolor">Placa</label>
+          <input type="text" class="form-control uppercase" name="plate" [(ngModel)]="receptionForm.licensePlate" autocomplete="off" required>
+        </div>
+        <div class="col-sm-6 col-md-6 mb-3">
+          <label for="" class="pricolor">Conductor</label>
+          <input type="text" class="form-control" name="datedelivery" [(ngModel)]="receptionForm.driver" autocomplete="off" required>
+        </div>
+        <div class="col-sm-6 col-md-6 mb-3">
+          <label for="" class="pricolor"># Guía</label>
+          <input type="text" class="form-control" name="guideNumber" [(ngModel)]="receptionForm.guideNumber" autocomplete="off" required>
+        </div>
+        <div class="col-sm-6 col-md-6 mb-3" *ngIf="role==='18'">
+          <label for="" class="pricolor">Doc Referencia 1</label>
+          <input type="number" maxlength="10" class="form-control" name="reference1" [(ngModel)]="receptionForm.referenceDoc1" autocomplete="off" required>
+        </div>
+        <div class="col-sm-6 col-md-6 mb-3" *ngIf="role==='18'">
+          <label for="" class="pricolor">Doc Referencia 2</label>
+          <input type="number" maxlength="10" class="form-control" name="reference2" [(ngModel)]="receptionForm.referenceDoc2" autocomplete="off" required>
+        </div>
+        <div class="col-md-12 mb-3">
+          <div class="accordion">
+            <div class="accordion-item" *ngFor="let typep of listTypeProducts">
+              <div class="accordion-header" (click)="toggleSection(typep.id)">
+                <div class="d-flex justify-content-between">
+                  <span>{{typep.name}}</span>
+                  <span>{{countQuantity(typep.id) || 0 | number}} <small>und</small></span>
+                </div>
+              </div>
+              <div class="accordion-content" [ngStyle]="{ 'height': activeSection === typep.id ? 'auto' : '0', 'padding': activeSection === typep.id ? '15px' : '0' }">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="mb-2" *ngFor="let item of filterProductBytype(typep.id, listProducts)">
+                      <div class="form-group">
+                        <label>{{item.name}}</label>
+                        <input type="number" class="form-control" name="cuantity" placeholder="cantidad" [(ngModel)]="item.quantity">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-12 mb-3 d-flex justify-content-between gap-3">
+          <div class="card w-100 pointer" (click)="openGallery()">
+            <div class="card-body text-center">
+              <p>Cargar Imagenes</p>
+              <i class="fa-solid fa-image f-xxxlarge animate-bell"></i>
+            </div>
+          </div>
+          <div class="card w-100 pointer" (click)="openCamera()">
+            <div class="card-body text-center">
+              <p>Tomar Foto</p>
+              <i class="fa-solid fa-camera f-xxxlarge animate-bell"></i>
+            </div>
+          </div>
+        </div>
+        <div class="photo-grid mb-3" *ngIf="photos.length > 0">
+          <div class="photo-item" *ngFor="let photo of photos" (click)="viewPhoto(photo)">
+            <img [src]="photo.url" alt="Miniatura" />
+          </div>
+        </div>
+        <div class="col-md-12 mb-3" *ngIf="photos.length === 0">
+          <div class="text-center w-100" >
+            <p>No hay fotos adjuntas </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fixed-footer">
+      <button class="btn btn-sm btn-dark" (click)="cancelReception()">Cancelar <i class="fa-solid fa-close"></i></button>
+      <button class="btn btnsm bg-success2" (click)="confirmReception()">Guardar <i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalevidence" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title pricolor" id="modal-title-notification">Soporte Adjunto</h5>
+          </div>
+          <div class="modal-body">
+            <img src="{{imageselect.url}}" class="w-100" alt="">
+          </div>
+          <div class="modal-footer">
+            <div class="w-100">
+              <div class="d-flex flex-rows gap-10 justify-content-between">
+                <button class="btn btn-sm btn-dark" data-bs-dismiss="modal"> Cerrar <i class="fa-solid fa-circle-xmark"></i></button>
+                <button class="btn btn-sm btn-danger" (click)="deleteEvidence(imageselect)"> Eliminar <i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="camera-overlay" *ngIf="showCamera">
+  <video #video autoplay playsinline></video>
+  <div class="fixed-footer-cam">
+    <button class="btn btn-sm btn-dark" (click)="closeCamera()">Cerrar <i class="fa-solid fa-close"></i></button>
+    <button class="btn btnsm bg-success2" (click)="capturePhoto()">Capturar <i class="fa-solid fa-camera"></i></button>
+  </div>
+</div>
+
+<input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none" (change)="onFileSelected($event)">
+
+<div class="modal fade" id="modalLoading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+      <div class="modal-content">
+          <div class="modal-body p-0">
+            <div class="loader-container pt-4 h-auto">
+              <div class="loader">
+                <div class="circle circle1"></div>
+                <div class="circle circle2"></div>
+                <div class="circle circle3"></div>
+              </div>
+              <p class="loader-message">{{messageLoading}}</p>
+            </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalconfirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+      <div class="modal-content">
+          <div class="modal-body">
+              <div class="col-md-12 text-center pb5">
+                   <i class="{{actionmodal.icon}} noselect f-xx-large" [style.color]="actionmodal.color"></i>
+              </div>
+              <div class="col-md-12 mt-4">
+                  <div class="row">
+                      <div class="col-md-12 text-center d-flex flex-column mb-3">
+                        <span><strong># Guia:</strong> {{receptionForm.guideNumber}}</span>
+                        <span><strong>Transportadora:</strong> {{getNameTransporter(receptionForm.transporterId)}}</span>
+                        <span><strong>Conductor:</strong> {{receptionForm.driver}}</span>
+                        <span><strong>Placa:</strong> {{receptionForm.licensePlate | uppercase}}</span>
+                        <span><strong>Referencias:</strong> {{receptionForm.referenceDoc1}} {{receptionForm.referenceDoc2}}</span>
+                        <span><strong>Evidencias:</strong> {{photos.length}} </span>
+                        <hr>
+                      </div>
+                      <div class="col-md-12">
+                          <span><strong>Productos:</strong></span>
+                          <table class="table table-bordered mt-3">
+                            <tbody>
+                              <tr *ngFor="let item of products">
+                                <th class="text-left">{{getNamePropuct(item.productId)}}</th>
+                                <td class="text-center">{{item.quantity}}</td>
+                              </tr>
+                              <tr>
+                                <th class="text-left">Total</th>
+                                <td class="text-center">{{sumQuantity(products)}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+              <hr>
+              <div class="col-md-12 d-flex justify-content-around">
+                  <button class="btn btn-sm text-white btn-dark" data-bs-dismiss="modal"> Cancelar </button>
+                  <button class="btn btn-sm text-white bg-success2" (click)="uploadEvidence()"> Confirmar </button>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

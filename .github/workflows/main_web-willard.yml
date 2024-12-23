@@ -6,7 +6,7 @@ name: Build and deploy Node.js app to Azure Web App - web-willard
 on:
   push:
     branches:
-      - main
+      - new-template
   workflow_dispatch:
 
 jobs:

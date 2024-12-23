@@ -1,4 +1,3 @@
-/* topbar.component.css */
 .topbar {
   position: relative;
   top: 0;
@@ -7,22 +6,21 @@
   height: 60px;
   background-color: #fff;
   border: none;
-  box-shadow: none;
+  box-shadow: 0px 2px 20px 0px #c3bdbd;
   z-index: 1000;
 }
 
 .topbar-content {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   height: 100%;
   padding: 0 7px;
-  border-bottom: 1px solid #dad5d5;
-  height: 73.888889px;
   margin: 0px 10px;
 }
 
-.topbar-actions {
+.topbar-actions-start,
+.topbar-actions-end {
   display: flex;
   align-items: center;
 }
@@ -52,23 +50,41 @@
   border: none;
   cursor: pointer;
   padding: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .avatar {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  border: 1px solid #434953; /* agregar borde rojo */
+  border: 1px solid #434953;
   margin-right: 10px;
-  vertical-align: middle;
 }
 
-.profile-btn> span{
+.profile-btn > span {
   padding-right: 10px;
 }
 
 .profile-btn:hover {
   background-color: #f0f0f0;
+}
+
+.ismovil-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.ismovil-container .name {
+  font-size: 0.8rem; /* Nombre más pequeño */
+  font-weight: bold;
+}
+
+.ismovil-container .role {
+  font-size: 0.65rem; /* Rol más pequeño */
+  color: gray;
 }
 
 .dropdown-menu {
@@ -102,6 +118,27 @@
   color: #337ab7;
 }
 
-.animate-bell{
-  animation: tada 1.5s ease infinite;
+/* Ícono de menú hamburguesa */
+.menu-toggle {
+  display: none; /* Oculto en escritorio */
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Ajustes para móviles */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .ismovil {
+    display: none;
+  }
+
+  .topbar {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
 }

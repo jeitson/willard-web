@@ -1,4 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/services/api/api.service';
 declare var $: any;
 
@@ -34,6 +36,11 @@ export class CatalogueComponent implements OnInit {
     color:''
   };
 
+   // Inicializar labelsValidation para rastrear qué campos son inválidos
+   labelsValidation: any = {
+    name: false,
+    observations: false,
+  };
   item:any = {
     catalogCode: this.key,
     parentId: this.parent,
@@ -46,11 +53,23 @@ export class CatalogueComponent implements OnInit {
     Extra4: '',
     Extra5: '',
   }
+  totalItems = 0;
+  paginatedList: any = [];
   idparent:string = '';
   activeselect:boolean = true;
   modal: any;
   modalConfirm: any;
-  constructor(private api: ApiService){}
+  searchTerm$ = new Subject<any>();
+
+  searchTerm: string = ''; // Para almacenar el texto de búsqueda
+  currentPage: number = 1; // Página actual
+  itemsPerPage: number = 5; // Cantidad de elementos por página
+  totalPages: number = 0; // Total de páginas
+
+  
+  constructor(private api: ApiService, private cdr: ChangeDetectorRef, private router: Router){
+
+  }
 
   ngOnInit(): void {
     this.modal = new bootstrap.Modal(document.getElementById('modallist'), {backdrop: 'static', keyboard: false})
@@ -61,18 +80,24 @@ export class CatalogueComponent implements OnInit {
     }
   }
 
-  listKey(){
+  listKey() {
     this.api.get(`catalogs/key/${this.key}`).subscribe({
       next: (response: any) => {
         this.list = response.data;
-        this.listBase = this.list;
+        this.listBase = this.list; // Guardamos la lista original para filtrar
         this.pagination.totalItems = response.data.length;
+        this.totalPages = Math.ceil(this.list.length / this.itemsPerPage); // Calcula el total de páginas
+        this.updatePaginatedList(); // Actualiza la lista paginada
+        this.search();
+     
+
       },
       error: (error: any) => {
-        console.error('Error al crear usuario:', error);
+        console.error('Error al obtener datos:', error);
       },
     });
   }
+
 
   listParent(){
     this.api.get(`catalogs/key/${this.parent}`).subscribe({
@@ -100,6 +125,11 @@ export class CatalogueComponent implements OnInit {
     }
     this.viewoptions = true;
     this.action.name = 'Crear';
+    this.modal = new bootstrap.Modal(document.getElementById('modallist'), {backdrop: 'static', keyboard: false});
+    this.listKey();
+    if(this.parent !== 'null'){
+      this.listParent();
+    }
     this.modal.show();
   }
 
@@ -113,7 +143,9 @@ export class CatalogueComponent implements OnInit {
     }
     this.viewoptions = false;
     this.action.name = 'Actualizar';
+    this.modal = new bootstrap.Modal(document.getElementById('modallist'), {backdrop: 'static', keyboard: false});
     this.modal.show();
+    this.cdr.detectChanges();
   }
 
   removeItem(id:string){
@@ -122,7 +154,7 @@ export class CatalogueComponent implements OnInit {
     this.action.value = 'delete';
     this.action.color = '#dc3545';
     this.action.icon = 'fa-solid fa-trash';
-    $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
+    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false});
     this.modalConfirm.show();
   }
 
@@ -132,7 +164,7 @@ export class CatalogueComponent implements OnInit {
     this.action.value = 'changestatus';
     this.action.color = '#ffc107';
     this.action.icon = 'fa-solid fa-sync';
-    $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
+    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false});
     this.modalConfirm.show();
   }
 
@@ -150,16 +182,18 @@ export class CatalogueComponent implements OnInit {
   }
 
   save(){
+    console.log(this.item);
     const data = {
       ...this.item
     };
+    console.log(data);
     this.api.post(`catalogs`, data).subscribe({
       next: (response: any) => {
         this.listKey();
         this.modal.hide();
       },
       error: (error: any) => {
-        console.error('Error al crear usuario:', error);
+        console.error('Error al crear catalogo:', error);
       },
     });
   }
@@ -171,7 +205,6 @@ export class CatalogueComponent implements OnInit {
     this.api.put(`catalogs/${this.item.id}`, data).subscribe({
       next: (response: any) => {
         this.listKey();
-        //$("#modallist").modal("hide");
         this.modal.hide();
       },
       error: (error: any) => {
@@ -207,4 +240,68 @@ export class CatalogueComponent implements OnInit {
       },
     });
   }
+
+    // Función para validar que no hay campos vacíos
+    validateFields(): boolean {
+      // Reiniciar las validaciones
+      Object.keys(this.labelsValidation).forEach(key => this.labelsValidation[key] = false);
+
+      let allFieldsValid = true;
+
+      // Validar los campos generales, excluyendo motiveSpecialId y transporterId
+      for (const [key, value] of Object.entries(this.item)) {
+        if ((key === 'name' && !value) ||
+            (key === 'description'  && !value)) {
+          this.labelsValidation[key] = true; // Marcar como inválido
+          allFieldsValid = false;
+        }
+      }
+
+
+      return allFieldsValid;
+    }
+ // Función para actualizar la lista paginada
+updatePaginatedList() {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  this.paginatedList = this.list.slice(startIndex, endIndex);
+}
+
+// Función que se llama cuando se selecciona una página en el selector
+onPageChange(event: Event) {
+  const selectElement = event.target as HTMLSelectElement;
+  const selectedPage = Number(selectElement.value);
+  this.goToPage(selectedPage);
+}
+
+// Función para cambiar de página
+goToPage(page: number) {
+  if (page >= 1 && page <= this.totalPages) {
+    this.currentPage = page;
+    this.updatePaginatedList();
+  }
+}
+
+// Método getter para crear el array de páginas
+get pagesArray() {
+  return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+}
+
+
+    search(): void {
+      this.searchTerm$.subscribe(({ value }: { value: string }) => {
+        this.list = this.listBase.filter(item => {
+          const itemValues = Object.values(item);
+          return itemValues.some(item =>
+            String(item).toLowerCase().includes(value.toLowerCase()),
+          );
+        });
+      });
+    }
+
+
+
+  // prueba 
+
+  
 }

@@ -1,112 +1,90 @@
-<div class="h-content">
-  <div class="container scroll">
-    <div class="d-flex justify-content-between">
-      <div>
-        <h5>Detalle de Solicitud</h5>
-      </div>
-      <div>
-        <div class="d-flex flex-rows justify-content-between gap-10">
-          <span><strong>Codigo:</strong> PHA-{{ listData?.id }}</span>
-          <span><strong>Fecha:</strong> {{ listData?.requestDate }}</span>
-          <h5 class="text-white">
-            <span class="badge bg-success2">{{ listData?.status ? 'Confirmada' : 'Pendiente' }}</span>
-          </h5>
-        </div>
-        <div class="d-flex flex-rows gap-10">
-          <span><strong>Recuperador Asignado:</strong> {{ listData?.transporter?.name || 'No asignado' }}</span>
-          <span><strong>Planeador Asignado:</strong> {{ listData?.consultant?.name || 'No asignado' }}</span>
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h5><i class="fas fa-info-circle"></i> Detalle de Solicitud</h5>
+    <div class="d-flex align-items-center">
+      <span class="badge bg-secondary me-2">{{ listData.id || 'No registra' }}</span>
+      <span class="badge bg-light text-dark me-2">{{ listData.requestDate || 'No registra' }}</span>
+      <span class="badge bg-success">{{ listData.requestStatusId?.name || 'No tiene' }}</span>
+      <span style="cursor: pointer; margin-left: 10px;" (click)="back()" class="badge bg-dark "> <i class="fa-solid fa-arrow-left"></i>VOLVER</span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="row g-3">
+    <!-- Información de Solicitud -->
+    <div class="col-md-6">
+      <div class="card card-h cardground1">
+        <div class="card-body">
+          <h6 class="card-title"><i class="fas fa-file-alt"></i> Información de Solicitud</h6>
+          <p><strong><i class="fas fa-tasks"></i> Estado de Asignación:</strong> Recuperador 
+            <span class="text-muted">{{ 'No asignado' }}</span>
+          </p>
+          <p><strong><i class="fas fa-calendar-alt"></i> Planificador:</strong> 
+            <span class="text-muted">{{ 'No asignado' }}</span>
+          </p>
+          <hr>
+          <p><strong><i class="fas fa-cogs"></i> Tipo Solicitud:</strong> {{ listData.isSpecial ? 'Especial' : 'Normal' }}</p>
+          <p><strong><i class="fas fa-calendar-check"></i> Fecha Estimada:</strong> {{ listData.estimatedPickUpDate || 'No registra' }}</p>
+          <p><strong><i class="fas fa-clock"></i> Hora Estimada:</strong> {{ listData.estimatedPickUpTime || 'No registra' }}</p>
+          <p><strong><i class="fas fa-sort-numeric-up"></i> Cantidad Estimada:</strong> {{ listData.estimatedQuantity || 'No registra' }}</p>
+          <p><strong><i class="fas fa-weight-hanging"></i> Kilos Estimados:</strong> {{ listData.estimatedKG || 'No registra' }}</p>
         </div>
       </div>
     </div>
-    <div class="divider"></div>
-    <div class="w-100">
-      <h5>Datos de solicitud</h5>
-      <p>{{ listData?.description }}</p>
-      <div class="d-flex flex-rows gap-10 justify-content-lg-start">
-        <div class="card bg-success2">
-          <div class="card-body">
-            <div class="d-flex flex-column text-center">
-              <span>Tipo Solicitud</span>
-              <span>{{ listData?.isSpecial ? 'Especial' : 'No Especial' }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-body">
-            <div class="d-flex flex-column text-center">
-              <span>Fecha Estimado</span>
-              <span>{{ listData?.estimatedPickUpDate }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-body">
-            <div class="d-flex flex-column text-center">
-              <span>Hora Estimado</span>
-              <span>{{ listData?.estimatedPickUpTime }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-body">
-            <div class="d-flex flex-column text-center">
-              <span>Cantidad Estimada</span>
-              <span>{{ listData?.estimatedQuantity }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-body">
-            <div class="d-flex flex-column text-center">
-              <span>Kilos Estimados</span>
-              <span>{{ listData?.estimatedKG | number}}</span>
-            </div>
-          </div>
+
+    <!-- Datos del Cliente -->
+    <div class="col-md-6">
+      <div class="card card-h cardground2">
+        <div class="card-body">
+          <h5 class="card-title"><i class="fas fa-user"></i> Datos del Cliente</h5>
+          <p><strong><i class="fas fa-id-card"></i> NIT:</strong> {{ listData.client?.documentNumber || 'No registra' }}</p>
+          <p><strong><i class="fas fa-building"></i> Razón Social:</strong> {{ listData.client?.name || 'No registra' }}</p>
         </div>
       </div>
     </div>
-    <div class="w-100 mt-3">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <h5>Datos Cliente</h5>
-              <div class="divider"></div>
-              <span><strong>Nit:</strong> {{ listData?.client?.taxId || 'No disponible' }}</span><br>
-              <span><strong>Razon Social:</strong> {{ listData?.client?.businessName || 'No disponible' }}</span><br>
-            </div>
-            <div class="col-md-12">
-              <h5>Observación y Recomendaciones</h5>
-              <div class="divider"></div>
-              <span><strong>Observación:</strong></span><br>
-              <span>{{ listData?.observations }}</span><br>
-              <span><strong>Recomendaciones:</strong></span><br>
-              <span>{{ listData?.recommendations }}</span><br>
-            </div>
-          </div>
+
+    <!-- Datos de Recogida -->
+    <div class="col-md-6">
+      <div class="card card-h cardground1">
+        <div class="card-body">
+          <h5 class="card-title"><i class="fas fa-map-marker-alt"></i> Datos de Recogida</h5>
+          <p><strong><i class="fas fa-map-pin"></i> Nombre Lugar:</strong> {{ listData.pickUpLocation?.name || 'No registra' }}</p>
+          <p><strong><i class="fas fa-location-arrow"></i> Dirección:</strong> {{ listData.pickUpLocation?.address || 'No registra' }}</p>
+          <p><strong><i class="fas fa-map"></i> Latitud:</strong> {{ listData.pickUpLocation?.latitude || 'No registra' }}, 
+            <strong><i class="fas fa-map"></i> Longitud:</strong> {{ listData.pickUpLocation?.longitude || 'No registra' }}</p>
+          <hr>
+          <p><strong><i class="fas fa-phone"></i> Contacto del Transportista:</strong></p>
+          <p>{{ listData.pickUpLocation?.contactName || 'No registra' }}</p>
+          <p>Tel: {{ listData.pickUpLocation?.contactPhone || 'No registra' }}</p>
+          <p>Email: {{ listData.pickUpLocation?.contactEmail || 'No registra' }}</p>
         </div>
-        <div class="col-md-6">
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <h5>Datos Recogida</h5>
-              <div class="divider"></div>
-              <span><strong>Dirección:</strong> {{ listData?.pickUpLocation || 'No disponible' }}</span><br>
-              <span><strong>Ciudad:</strong> {{ listData?.city || 'No disponible' }}</span><br>
-              <span><strong>Pais:</strong> {{ listData?.country || 'No disponible' }}</span><br>
-              <span><strong>Contacto:</strong> {{ listData?.transporter?.contactName || 'No disponible' }}</span><br>
-              <span><strong>Telefono:</strong> {{ listData?.transporter?.referencePH || 'No disponible' }}</span><br>
-              <span><strong>Email:</strong> {{ listData?.transporter?.contactEmail || 'No disponible' }}</span><br>
-              <span><strong>Aprobado:</strong> {{ listData?.transporter?.modifiedBy || 'No disponible' }}</span><br>
-            </div>
-            <div class="col-md-12">
-              <h5>Datos Transportadora</h5>
-              <div class="divider"></div>
-              <span><strong>Nit:</strong> {{ listData?.transporter?.taxId }}</span><br>
-              <span><strong>Contacto:</strong> {{ listData?.transporter?.contactName }}</span><br>
-              <span><strong>Telefono:</strong> {{ listData?.transporter?.referencePH }}</span><br>
-              <span><strong>Email:</strong> {{ listData?.transporter?.contactEmail }}</span><br>
-            </div>
-          </div>
+      </div>
+    </div>
+
+    <!-- Datos Transportadora -->
+    <div class="col-md-6">
+      <div class="card card-h cardground2">
+        <div class="card-body">
+          <h5 class="card-title"><i class="fas fa-truck"></i> Datos Transportadora</h5>
+          <p><strong><i class="fas fa-id-card"></i> NIT:</strong> {{ 'No disponible' }}</p>
+          <p><strong><i class="fas fa-user"></i> Contacto:</strong> {{ 'No disponible' }}</p>
+          <p><strong><i class="fas fa-phone"></i> Teléfono:</strong> {{ 'No disponible' }}</p>
+          <p><strong><i class="fas fa-envelope"></i> Email:</strong> {{ 'No disponible' }}</p>
+          <hr>
+          <p><strong><i class="fas fa-cogs"></i> Referencia WLL:</strong> {{ listData.client?.referenceWLL || 'No registra' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Observaciones y Recomendaciones -->
+    <div class="col-12 mb-3">
+      <div class="card cardground1">
+        <div class="card-body">
+          <h5 class="card-title"><i class="fas fa-comments"></i> Observaciones y Recomendaciones</h5>
+          <p><strong><i class="fas fa-eye"></i> Observación:</strong> {{ listData.observations || 'No tiene' }}</p>
+          <hr>
+          <p><strong><i class="fas fa-lightbulb"></i> Recomendaciones:</strong> {{ listData.recommendations || 'No tiene' }}</p>
         </div>
       </div>
     </div>

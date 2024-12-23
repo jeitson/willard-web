@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
+import { Subject } from 'rxjs';
 import { CustomersService } from 'src/app/core/services/process/customers.service';
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
-declare var $: any;
+import { ToastService } from 'src/app/core/services/toast.service';
+declare var bootstrap: any;
 @Component({
   selector: 'wlrd-customers',
   templateUrl: './customers.component.html',
@@ -11,6 +13,8 @@ export class CustomersComponent {
   switchSection: string = 'List';
   actionModal: string = '';
   showForm = false;
+  modal: any;
+  modalConfirm: any;
   action: any = {
     icon:'',
     name:'',
@@ -30,24 +34,44 @@ export class CustomersComponent {
     referencePH: '',
   };
 
-
+  currentPage= 1;
   listData: any = [];
+  listBase: any = [];
   paisData: any = [];
   typeDocuments: any = [];
   viewoptions = true;
+  pagination: any = {};
+  searchTerm$ = new Subject<any>();
+  paginatedList: any = [];
+  searchTerm: string = ''; // Para almacenar el texto de búsqueda
+  itemsPerPage: number = 5; // Cantidad de elementos por página
+  totalPages: number = 0; // Total de páginas
+  totalItems = 0;
   constructor(
     private _Service: CustomersService,
-    private _settings: SettingsService
+    private _settings: SettingsService,
+    private _toast: ToastService
   ) {}
 
   ngOnInit(): void {
+    this.modal = new bootstrap.Modal(document.getElementById('clientModal'), {backdrop: 'static', keyboard: false})
+    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false})
     this.selectData();
+
   }
 
   selectData(): void {
     this._Service.getClients().subscribe({
       next: (response: any) => {
         this.listData = response.data.items;
+        this.listBase = this.listData; // Guardamos la lista original para filtrar
+        this.totalItems = response.data.meta.totalItems; // Total de solicitudes
+        this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Total de páginas
+        // this.pagination.totalItems = response.data.length;
+        this.search();
+        this.updatePaginatedList(); // Actualiza la lista paginada
+
+
         
         // Llamadas individuales a los otros servicios
         this._settings.getCatalogChildrenByKey('TIPO_DOCUMENTO').subscribe({
@@ -79,7 +103,7 @@ export class CustomersComponent {
     this.resetUser();
     this.action.name = 'Crear';
     this.viewoptions = true;
-    $('#clientModal').modal({backdrop: 'static', keyboard: false});
+    this.modal.show();
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
@@ -87,7 +111,7 @@ export class CustomersComponent {
         id: item.id,
         name: item.name,
         description: item.description,
-        businessName: item.businessName,
+        businessName: item.name,
         documentTypeId: item.documentTypeId,
         countryId: item.countryId,
         documentNumber: item.documentNumber,
@@ -116,7 +140,7 @@ export class CustomersComponent {
   }
 
   close() {
-    $('#clientModal').modal('hide');
+    this.modal.hide();
   }
 
 
@@ -133,13 +157,37 @@ export class CustomersComponent {
   }
 
   createClient(): void {
-    this._Service.createClient(this.getClientPayload()).subscribe({
-      next: (response: any) => this.handleSuccess(response),
-      error: (error: any) =>
-        console.error('Error al crear el registro:', error),
-    });
+    if (this.areFieldsValid()) {
+      this._Service.createClient(this.getClientPayload()).subscribe({
+        next: (response: any) => this.handleSuccess(response),
+        error: (error: any) =>
+          console.error('Error al crear el registro:', error),
+      });
+    }
   }
+  
+  private areFieldsValid(): boolean {
+    const fields = [
+      { value: this.client.name, message: 'El campo Nombre es obligatorio.' },
+      { value: this.client.description, message: 'El campo Descripción es obligatorio.' },
+      { value: this.client.documentTypeId, message: 'El campo Tipo de Documento es obligatorio.' },
+      { value: this.client.countryId, message: 'El campo País es obligatorio.' },
+      { value: this.client.documentNumber, message: 'El campo Número de Documento es obligatorio.' },
+      { value: this.client.referenceWLL, message: 'El campo Referencia WLL es obligatorio.' },
+      { value: this.client.referencePH, message: 'El campo Referencia PH es obligatorio.' },
+    ];
+  
+    for (const field of fields) {
+      if (!field.value) {
+        this._toast.info('Importante',field.message);
+        return false;
+      }
+    }
 
+  
+    return true;
+  }
+  
   getClientPayload() {
     const {
       name,
@@ -155,7 +203,7 @@ export class CustomersComponent {
     return {
       name,
       description,
-      businessName,
+      businessName: name,
       documentTypeId,
       countryId,
       documentNumber,
@@ -176,7 +224,7 @@ export class CustomersComponent {
     this.action.value = 'delete';
     this.action.color = '#dc3545';
     this.action.icon = 'fa-solid fa-trash';
-    $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
+    this.modalConfirm.show();
   }
 
   editState(id:string){
@@ -185,7 +233,7 @@ export class CustomersComponent {
     this.action.value = 'changestatus';
     this.action.color = '#ffc107';
     this.action.icon = 'fa-solid fa-sync';
-    $("#modalconfirm").modal({backdrop: 'static', keyboard: false});
+    this.modalConfirm.show();
   }
 
   actionConfirm(){
@@ -205,7 +253,7 @@ export class CustomersComponent {
     this._Service.changeClientStatus(this.itemId).subscribe({
       next: ()=>{
         this.selectData();
-        $("#modalconfirm").modal("hide");
+        this.modalConfirm.hide();
       }, error: ()=>{
 
       }
@@ -216,10 +264,47 @@ export class CustomersComponent {
     this._Service.deleteClient(this.itemId).subscribe({
       next: ()=>{
         this.selectData();
-        $("#modalconfirm").modal("hide");
+        this.modalConfirm.hide();
       }, error: ()=>{
 
       }
+    });
+  }
+
+   // paginación
+   updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listData.slice(startIndex, endIndex);
+    this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Calcula el total de páginas
+  }
+  
+  onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
+  
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList(); // Actualiza la lista para la nueva página
+    }
+  }
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
+  
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.listData = this.listBase.filter((item: any) => {
+        const itemValues = Object.values(item);
+        return itemValues.some(item =>
+          String(item).toLowerCase().includes(value.toLowerCase()),
+        );
+      });
     });
   }
 

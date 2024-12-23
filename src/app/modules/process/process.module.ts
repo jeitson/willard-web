@@ -7,6 +7,10 @@ import { RequestplannerComponent } from './requestplanner/requestplanner.compone
 import { DetailrequestComponent } from './requestplanner/detailrequest/detailrequest.component';
 import { RequestagencyComponent } from './requestagency/requestagency.component';
 import { RequestlogisticsComponent } from './requestlogistics/requestlogistics.component';
+import { ReceptionComponent } from './reception/reception.component';
+import { ShippingComponent } from './shipping/shipping.component';
+import { ConciliationComponent } from './conciliation/conciliation.component';
+import { BulkrequestComponent } from './bulkrequest/bulkrequest.component';
 
 
 @NgModule({
@@ -14,7 +18,11 @@ import { RequestlogisticsComponent } from './requestlogistics/requestlogistics.c
     RequestplannerComponent,
     RequestagencyComponent,
     DetailrequestComponent,
-    RequestlogisticsComponent
+    RequestlogisticsComponent,
+    ReceptionComponent,
+    ShippingComponent,
+    ConciliationComponent,
+    BulkrequestComponent
   ],
   imports: [
     CommonModule,
