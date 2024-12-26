@@ -6,6 +6,7 @@ import { PickuplocationService } from 'src/app/core/services/settings/pickuploca
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 import { Subject } from 'rxjs';
+import { Certificate } from 'src/app/core/utils/pdf/pdf_certificate';
 declare var bootstrap: any;
 @Component({
   selector: 'wlrd-requestagency',
@@ -83,6 +84,7 @@ export class RequestagencyComponent {
     this.maxDate = futureDate.toISOString().split('T')[0];
   }
   ngOnInit(): void {
+    Certificate('');
     this.getRequest(this.currentPage);
     this.getData();
     this.modal = new bootstrap.Modal(
