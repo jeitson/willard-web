@@ -356,6 +356,7 @@ export class ReceptionComponent implements OnInit {
       next: (response: any) => {
         this.editpanel = false;
         this.action = 'listar';
+        this.getReceptions(this.currentPage);
         this.modalloading.hide();
       },
       error: (error: any) => {

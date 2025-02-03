@@ -114,9 +114,13 @@
                             <label for="" class="pricolor">Fecha Entrega</label>
                             <input type="date" class="form-control" name="datedelivery" [(ngModel)]="formRequest.deliveryDateToCollectionSite" autocomplete="off" required>
                           </div>
-                          <div class="col-md-4">
+                          <!-- <div class="col-md-3">
                             <label for="" class="pricolor">Id Ruta</label>
                             <input type="text" class="form-control" name="idroute" [(ngModel)]="formRequest.routeId" autocomplete="off" required>
+                          </div> -->
+                          <div class="col-md-4">
+                            <label for="" class="pricolor"># de Guia</label>
+                            <input type="text" class="form-control" name="idroute" [(ngModel)]="formRequest.guideNumber" autocomplete="off" required>
                           </div>
                         </div>
                         <div class="row mb-3">
