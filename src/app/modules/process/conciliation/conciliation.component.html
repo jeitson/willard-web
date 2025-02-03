@@ -96,7 +96,7 @@
               </div>
           </div>
           <div class="modal-body">
-            <div class="row">
+            <div class="row" *ngIf="viewdata">
               <div class="col-md-6">
                 <div class="card">
                   <div class="card-body">
@@ -104,13 +104,15 @@
                       <i class="fa-solid fa-truck"></i>
                       <span>Transportadora</span>
                       <span>{{audit.transporter?.name}}</span>
-                      <p>{{audit.auditGuiaDetails?.transporter?.quantityCollection}}</p>
+                      <p>{{audit.auditGuideDetails?.transporter?.quantityCollection}}</p>
                       <span><strong>Productos:</strong></span>
                       <table class="table table-bordered mt-3">
                         <tbody>
-                          <tr *ngFor="let item of audit.auditGuiaDetails?.transporter?.detail">
+                          <tr *ngFor="let item of audit.auditGuideDetails?.transporter?.detail; let i = index;">
                             <th class="text-left">{{item.product?.name}}</th>
-                            <td class="text-center">{{item.quantityCollection}}</td>
+                            <td class="text-center">
+                              <input type="number" name="inpt_{{i}}" [(ngModel)]="item.quantityCollection">
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -125,11 +127,11 @@
                       <i class="fa-solid fa-car-battery"></i>
                       <span>Recuperadora</span>
                       <span>{{audit.recuperator?.name}}</span>
-                      <p>{{audit.auditGuiaDetails?.recuperator?.quantityCollection}}</p>
+                      <p>{{audit.auditGuideDetails?.recuperator?.quantityCollection}}</p>
                       <span><strong>Productos:</strong></span>
                       <table class="table table-bordered mt-3">
                         <tbody>
-                          <tr *ngFor="let item of audit.auditGuiaDetails?.recuperator?.detail">
+                          <tr *ngFor="let item of audit.auditGuideDetails?.recuperator?.detail">
                             <th class="text-left">{{item.product?.name}}</th>
                             <td class="text-center">{{item.quantityCollection}}</td>
                           </tr>
@@ -139,29 +141,12 @@
                   </div>
                 </div>
               </div>
-              <!-- <div class="col-md-4">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="text-center d-flex flex-column">
-                      <i class="fa-solid fa-handshake"></i>
-                      <span>Conciliación</span>
-                      <p>1200</p>
-                      <div class="row">
-                        <div class="col-md-12 text-left" *ngFor="let item of [1,2,3]">
-                          <label>Producto {{item}}</label>
-                          <input type="number" class="form-control" placeholder="cantidad">
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div> -->
               <div class="col-md-12 mt-4">
                 <table class="table table-bordered table-sm">
                   <thead class="bg-white">
                       <tr>
                           <th class="text-left"> Sitio Recogida</th>
-                          <!-- <th class="text-center"> Es Agencia </th> -->
+                          <th class="text-center"> Es Agencia </th>
                           <th class="text-left"> Tipo </th>
                           <th class="text-left"> Fecha </th>
                           <th class="text-center"> Cantidad </th>
@@ -169,25 +154,45 @@
                       </tr>
                   </thead>
                   <tbody style="background-color: white;">
-                      <tr *ngFor="let item of audit.auditsGuiasRoutes " style="font-size: smaller;">
-                        <td class="text-left"> {{item.transporterTravel.siteName}} </td>
-                        <td class="text-center"> No </td>
-                        <td class="text-left"> {{item.transporterTravel.type}}</td>
-                        <td class="text-left"> {{'10/10/2024' | date:'EEEE dd MMM yyyy'}} </td>
-                        <td class="text-center"> 500 </td>
+                      <tr *ngFor="let item of audit.routes " style="font-size: smaller;">
+                        <td class="text-left"> {{item.name}} </td>
+                        <td class="text-center"> {{item.isAgency}} </td>
+                        <td class="text-left"> {{item.type}}</td>
+                        <td class="text-left"> {{item.date | date:'medium'}} </td>
+                        <td class="text-center"> {{item.quantity}} </td>
                         <td class="text-center">
-                          <i class="fa-solid f-larger pointer fa-file-lines" (click)="viewDetail(item)"></i>
-                          <i class="fa-solid f-larger pointer fa-image" (click)="openModalConciliation(item)"></i>
+                          <!-- <i class="fa-solid f-larger pointer fa-file-lines" (click)="viewDetail(item)"></i> -->
+                          <i class="fa-solid f-larger pointer fa-image" (click)="viewFiles(item.images)"></i>
                         </td>
                       </tr>
                   </tbody>
               </table>
               </div>
             </div>
+            <div class="row" *ngIf="!viewdata">
+              <div class="col-md-12">
+                <div id="carouselExample" class="carousel slide">
+                  <div class="carousel-inner">
+                    <div class="carousel-item active" *ngFor="let item of this.images">
+                      <img src="{{item}}" class="d-block w-100" alt="item">
+                    </div>
+                  </div>
+                  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="modal-footer">
             <button class="btn btn-sm bg-dark text-white" (click)="modal.hide()">Cancelar</button>
-            <button class="btn btn-sm bg-success2" (click)="setAnswer()">Corregir</button>
+            <button class="btn btn-sm bg-success2" *ngIf="viewdata" (click)="setAnswer()">Corregir</button>
+            <button class="btn btn-sm bg-warning" *ngIf="!viewdata" (click)="this.viewdata=true; this.images=[];">Regresar</button>
           </div>
       </div>
   </div>
@@ -201,28 +206,52 @@
                    <i class="fa-solid fa-handshake noselect f-xx-large" [style.color]="'#68b631'"></i>
               </div>
               <div class="col-md-12 mt-4">
-                  <div class="row">
-                      <div class="col-md-12 text-center">
-                          <h6><strong>Seleccione quien tiene las cantidades correctas</strong></h6>
-                      </div>
-                      <div class="col-md-12 text-center">
-                        <div class="form-check form-opt">
-                          <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                          <label class="form-check-label" for="flexRadioDefault1">
-                            Recuperadora
-                          </label>
-                        </div>
-                        <div class="form-check form-opt">
-                          <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-                          <label class="form-check-label" for="flexRadioDefault2">
-                            Transportadora
-                          </label>
-                        </div>
-                      </div>
-                      <div class="col-md-12 text-center">
-                        <p><small>Esta acción no se podra deshacer</small></p>
-                      </div>
+                <div class="row">
+                  <div class="col-md-12 text-center">
+                    <h6><strong>Seleccione quien tiene las cantidades correctas</strong></h6>
                   </div>
+                  <div class="col-md-12 text-center">
+                    <div class="form-check form-opt">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="flexRadioDefault"
+                        id="flexRadioDefault1"
+                        [(ngModel)]="selectedOption"
+                        [value]="'R'"
+                      />
+                      <label class="form-check-label" for="flexRadioDefault1">
+                        Recuperadora
+                      </label>
+                    </div>
+                    <div class="form-check form-opt">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="flexRadioDefault"
+                        id="flexRadioDefault2"
+                        [(ngModel)]="selectedOption"
+                        [value]="'T'"
+                      />
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        Transportadora
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-md-12 mt-3">
+                    <div class="form-group">
+                      <label class="" for="flexRadioDefault3">Comentario</label>
+                      <textarea
+                        class="form-control"
+                        rows="5"
+                        type="textarea"
+                        name="textarea1"
+                        id="flexRadioDefault3"
+                        [(ngModel)]="comment"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="col-md-12 d-flex justify-content-around">
                   <button class="btn btn-sm text-white btn-dark" (click)="modalConfirm.hide(); modal.show()"> Cancelar </button>

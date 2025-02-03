@@ -30,6 +30,10 @@ export class ConciliationComponent implements OnInit {
     }
   ];
   audit: any = {};
+  images: any[] = [];
+  viewdata = true;
+  selectedOption: string = ''; // Para capturar la opción seleccionada (R o T)
+  comment: string = '';
   constructor(private api: ApiService){
   }
 
@@ -40,7 +44,7 @@ export class ConciliationComponent implements OnInit {
   }
 
   getReceptions(item: any){
-    this.api.get(`audit_guia?page=${item}`).subscribe({
+    this.api.get(`audit_guide?page=${item}`).subscribe({
       next: (response: any) => {
         this.listReceptions = response.data.items;
         this.listBase = this.listReceptions; // Guardamos la lista original para filtrar
@@ -56,6 +60,33 @@ export class ConciliationComponent implements OnInit {
   viewDetail(item: any[]){
     this.modal.show();
     this.audit = item;
+
+    const shipments = this.audit.shipments;
+    const auditsGuidesRoutes = this.audit.auditsGuidesRoutes;
+    const arr = [...shipments, ...auditsGuidesRoutes].map(this.homogenizeStructure);
+    this.audit.routes = arr;
+  }
+
+  homogenizeStructure = (item: any): any => {
+    return {
+      name: item.guideNumber ? item.collectionSite.name : item.transporterTravel.siteName, // Homologa `title` y `nombre` a `name`
+      id: item.guideNumber ? item.id : item.auditGuideId, // Homologa `id` y `identificador` a `id`
+      isAgency: item.guideNumber ? 'SI' : 'NO',
+      type: item.guideNumber ? 'ENTREGA' : item.transporterTravel.type,
+      date: item.guideNumber ? item.createdAt : item.transporterTravel.movementDate,
+      quantity: item.guideNumber ? this.countProducts(item.shipmentDetails) : item.transporterTravel.totalQuantity,
+      images: item.guideNumber ? item.shipmentPhotos.map((e: any)=>{return e.url}) : item.transporterTravel.supportUrls,
+      // Agregar más propiedades según sea necesario
+    };
+  };
+
+  viewFiles(images: any){
+    this.viewdata = false;
+    this.images = images;
+  }
+
+  countProducts(products: any): any {
+    return products.reduce((acc: any, item: any) => acc += parseInt(item.quantity), 0)
   }
 
   openModalConciliation(item: any[]){
@@ -86,7 +117,22 @@ export class ConciliationComponent implements OnInit {
   }
 
   actionConfirm(){
-
+    const data =  {
+      auditGuideDetails: [],
+      giveReason: this.selectedOption || 'R', // Asigna la opción seleccionada
+      comment: this.comment || '' // Asigna el comentario
+    };
+    this.api.post(`audit_guide/confirm/${this.audit.id}`).subscribe({
+      next: (response: any) => {
+        this.listReceptions = response.data.items;
+        this.listBase = this.listReceptions; // Guardamos la lista original para filtrar
+        this.totalItems = this.listReceptions.length; // Total de solicitudes
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de página
+      },
+      error: (error: any) => {
+        console.error('Error al crear usuario:', error);
+      },
+    });
   }
 
   // paginación

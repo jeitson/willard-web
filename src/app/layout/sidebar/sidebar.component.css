@@ -322,3 +322,8 @@ a {
   opacity: 0.8; /* Hace el texto más sutil */
 }
 
+
+.loading-menu{
+  background: none;
+  height: calc(100vh - 245px);
+}
