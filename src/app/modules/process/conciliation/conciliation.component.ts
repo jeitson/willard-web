@@ -92,7 +92,7 @@ export class ConciliationComponent implements OnInit {
   syncGuide(item: any){
     this.api.post(`audit_guide/synchronize/${item.id}`).subscribe({
       next: (response: any) => {
-        this.getReceptions(this.currentPage);        
+        this.getReceptions(this.currentPage);
       },
       error: (error: any) => {
         console.error('Error al crear usuario:', error);
@@ -125,16 +125,18 @@ export class ConciliationComponent implements OnInit {
 
   actionConfirm(){
     const data =  {
-      auditGuideDetails: [],
+      auditGuideDetails: [
+        ...this.audit.auditGuideDetails?.transporter?.detail,
+        ...this.audit.auditGuideDetails?.recuperator?.detail
+      ].map(({ id, quantityCollection }) => ({ id, quantityCollection })),
       giveReason: this.selectedOption || 'R', // Asigna la opción seleccionada
       comment: this.comment || '' // Asigna el comentario
     };
-    this.api.post(`audit_guide/confirm/${this.audit.id}`).subscribe({
+    this.api.post(`audit_guide/confirm/${this.audit.id}`, data).subscribe({
       next: (response: any) => {
-        this.listReceptions = response.data.items;
-        this.listBase = this.listReceptions; // Guardamos la lista original para filtrar
-        this.totalItems = this.listReceptions.length; // Total de solicitudes
-        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de página
+        this.getReceptions(this.currentPage);
+        this.modal.hide();
+        this.modalConfirm.hide();
       },
       error: (error: any) => {
         console.error('Error al crear usuario:', error);

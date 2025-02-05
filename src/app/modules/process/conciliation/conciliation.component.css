@@ -6,7 +6,11 @@
   text-align: left;
 }
 
+.f-larger{
+  font-size: large;
+  margin-top: 7px;
 
+}
 
 
 #modalConfirm {
