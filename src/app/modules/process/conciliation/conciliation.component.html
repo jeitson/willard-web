@@ -46,9 +46,7 @@
                       </td>
                       <td class="text-center">
                         <i class="fa-solid f-larger pointer fa-handshake"  (click)="viewDetail(item)"></i>
-                        <i class="fa-solid f-larger pointer fa-sync" *ngIf="item.requestStatus?.name==='SIN GUIA'" (click)="openModalConciliation(item)"></i>
-                        <i class="fa-solid f-larger pointer fa-eye" (click)="viewDetail(item)"></i>
-                        <i class="fa-solid f-larger pointer fa-sync" (click)="syncGuide(item)"></i>
+                        <i class="fa-solid f-larger pointer fa-sync"  *ngIf="item.requestStatus?.name==='SIN GUIA'" (click)="syncGuide(item)"></i>
                       </td>
                   </tr>
               </tbody>
