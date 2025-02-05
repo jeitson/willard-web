@@ -47,6 +47,8 @@
                       <td class="text-center">
                         <i class="fa-solid f-larger pointer fa-handshake"  (click)="viewDetail(item)"></i>
                         <i class="fa-solid f-larger pointer fa-sync" *ngIf="item.requestStatus?.name==='SIN GUIA'" (click)="openModalConciliation(item)"></i>
+                        <i class="fa-solid f-larger pointer fa-eye" (click)="viewDetail(item)"></i>
+                        <i class="fa-solid f-larger pointer fa-sync" (click)="syncGuide(item)"></i>
                       </td>
                   </tr>
               </tbody>
@@ -255,7 +257,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-12 d-flex justify-content-around">
+              <div class="col-md-12 d-flex justify-content-around mt-4">
                   <button class="btn btn-sm text-white btn-dark" (click)="modalConfirm.hide(); modal.show()"> Cancelar </button>
                   <button class="btn btn-sm bg-success2 text-white" (click)="actionConfirm()"> Confirmar </button>
               </div>

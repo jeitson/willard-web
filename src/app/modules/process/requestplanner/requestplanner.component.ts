@@ -9,10 +9,9 @@ declare var bootstrap: any;
 @Component({
   selector: 'wlrd-requestplanner',
   templateUrl: './requestplanner.component.html',
-  styleUrls: ['./requestplanner.component.scss']
+  styleUrls: ['./requestplanner.component.scss'],
 })
 export class RequestplannerComponent implements OnInit {
-
   collectionRequestId = '';
   formRequest: any = {
     routeStatusId: 0,
@@ -28,25 +27,26 @@ export class RequestplannerComponent implements OnInit {
     truckTypeId: 0,
     deliveryDateToCollectionSite: '',
     transporter: {
-      collectionRequestId:'',
+      collectionRequestId: '',
       name: '',
       description: '',
       email: '',
-      document: ''
-    }
-  }
+      document: '',
+    },
+    guideNumber: '',
+  };
   listroutes: any[] = [];
   requestId: string = '';
   action: any = {
-    icon:'',
-    name:'',
-    value:'',
-    color:''
+    icon: '',
+    name: '',
+    value: '',
+    color: '',
   };
   lists: any = {
     listTruckType: [],
     listTransporters: [],
-  }
+  };
   collectionRequestData: any = '';
   modal: any;
 
@@ -60,12 +60,18 @@ export class RequestplannerComponent implements OnInit {
   totalPages = 0;
   paginatedList: any = [];
   listCopy: any[] = [];
-  constructor(private _router: Router, private api: ApiService, private _toast: ToastService, private auth: AuthService) {
-
-  }
+  constructor(
+    private _router: Router,
+    private api: ApiService,
+    private _toast: ToastService,
+    private auth: AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.modal = new bootstrap.Modal(document.getElementById('modalplaner'), {backdrop: 'static', keyboard: false})
+    this.modal = new bootstrap.Modal(document.getElementById('modalplaner'), {
+      backdrop: 'static',
+      keyboard: false,
+    });
     this.getRequests(this.currentPage);
     this.getList('TIPO_CAMION', 'listTruckType');
     this.getTransporters();
@@ -78,10 +84,10 @@ export class RequestplannerComponent implements OnInit {
     });
   }
 
-  getRequests(page: any){
+  getRequests(page: any) {
     this.api.get(`collection-request?page=${page}`).subscribe({
       next: (response: any) => {
-        this.listroutes = response.data.items;//.filter((x: any)=> x.requestStatusId === 1);
+        this.listroutes = response.data.items; //.filter((x: any)=> x.requestStatusId === 1);
         this.listCopy = this.listroutes; // Hacemos una copia de la lista original
         this.totalItems = this.listroutes.length; // Total de solicitudes
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
@@ -93,7 +99,7 @@ export class RequestplannerComponent implements OnInit {
     });
   }
 
-  getList(key: string, listName: string){
+  getList(key: string, listName: string) {
     this.api.get(`catalogs/key/${key}`).subscribe({
       next: (response: any) => {
         this.lists[listName] = response.data;
@@ -104,7 +110,7 @@ export class RequestplannerComponent implements OnInit {
     });
   }
 
-  getTransporters(){
+  getTransporters() {
     this.api.get(`transporters`).subscribe({
       next: (response: any) => {
         this.lists['listTransporters'] = response.data.items;
@@ -119,14 +125,14 @@ export class RequestplannerComponent implements OnInit {
     this._router.navigateByUrl(`main/requestplanner/${item.id}`);
   }
 
-  editRequest(item: any){
+  editRequest(item: any) {
     this.clearData();
     this.collectionRequestId = item.id;
     this.collectionRequestData = JSON.stringify(item);
     this.modal.show();
   }
 
-  confirmRequest(){
+  confirmRequest() {
     this.action.name = 'Confirmar';
     this.action.value = 'confirm';
     this.action.color = '#698e47';
@@ -134,43 +140,50 @@ export class RequestplannerComponent implements OnInit {
     //$("#modalconfirm").modal({backdrop: 'static', keyboard: false, opacity:false});
   }
 
-  actionConfirm(action: string){
+  actionConfirm(action: string) {
     switch (action) {
       case 'confirm':
         this.save();
-      break;
+        break;
       case 'reject':
         this.reject();
-      break;
+        break;
       default:
         break;
     }
   }
 
-  save(){
+  save() {
     const data = {
-      ...this.formRequest
+      ...this.formRequest,
     };
-    this.api.post(`collection-request/${this.collectionRequestId}/routes`, data).subscribe({
-      next: (response: any) => {
-        this.getRequests(this.currentPage);
-        this._toast.success('Completado','Ruta registrada exitosamente')
-        this.modal.hide();
-      },
-    });
+    this.api
+      .post(`collection-request/${this.collectionRequestId}/routes`, data)
+      .subscribe({
+        next: (response: any) => {
+          this.getRequests(this.currentPage);
+          this._toast.success('Completado', 'Ruta registrada exitosamente');
+          this.modal.hide();
+        },
+      });
   }
 
-  reject(){
-    this.api.post(`collection-request/${this.collectionRequestId}/reject`, {}).subscribe({
-      next: (response: any) => {
-        this.getRequests(this.currentPage);
-        this._toast.success('Completado','solicitud rechazada correctamente');
-        this.modal.hide();
-      },
-    });
+  reject() {
+    this.api
+      .post(`collection-request/${this.collectionRequestId}/reject`, {})
+      .subscribe({
+        next: (response: any) => {
+          this.getRequests(this.currentPage);
+          this._toast.success(
+            'Completado',
+            'solicitud rechazada correctamente'
+          );
+          this.modal.hide();
+        },
+      });
   }
 
-  clearData(){
+  clearData() {
     this.formRequest = {
       routeStatusId: 0,
       name: '',
@@ -185,14 +198,15 @@ export class RequestplannerComponent implements OnInit {
       truckTypeId: 0,
       deliveryDateToCollectionSite: '',
       transporter: {
-        collectionRequestId:'',
+        collectionRequestId: '',
         name: '',
         description: '',
         email: '',
-        cellphone:'',
-        document: ''
-      }
-    }
+        cellphone: '',
+        document: '',
+      },
+      guideNumber: '',
+    };
   }
 
   // paginación
@@ -224,10 +238,10 @@ export class RequestplannerComponent implements OnInit {
 
   search(): void {
     this.searchTerm$.subscribe(({ value }: { value: string }) => {
-      this.listroutes = this.listCopy.filter(item => {
+      this.listroutes = this.listCopy.filter((item) => {
         const itemValues = Object.values(item);
-        return itemValues.some(item =>
-          String(item).toLowerCase().includes(value.toLowerCase()),
+        return itemValues.some((item) =>
+          String(item).toLowerCase().includes(value.toLowerCase())
         );
       });
     });

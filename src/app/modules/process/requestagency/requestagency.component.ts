@@ -84,7 +84,7 @@ export class RequestagencyComponent {
     this.maxDate = futureDate.toISOString().split('T')[0];
   }
   ngOnInit(): void {
-    Certificate('');
+    // Certificate('');
     this.getRequest(this.currentPage);
     this.getData();
     this.modal = new bootstrap.Modal(
@@ -109,7 +109,8 @@ export class RequestagencyComponent {
 
   getRequest(page: any) {
     this._requests.listSolicitudes(page).subscribe((response: any) => {
-      this.listsrequest = response.data.items;
+      this.listsrequest = response.data.items.sort((a: any, b: any) => b.id - a.id);
+;
       this.listCopy = this.listsrequest; // Hacemos una copia de la lista original
       this.totalItems = this.listsrequest.length; // Total de solicitudes
       this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
@@ -194,6 +195,7 @@ export class RequestagencyComponent {
   }
 
   pickuplocation(item:any){
+    console.log(item);
     this._pickUp.getPickUpLocationsClient(item).subscribe({
       next: (response: any) => {
         this.listTipos = response.data.items;

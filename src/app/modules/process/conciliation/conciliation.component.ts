@@ -46,7 +46,7 @@ export class ConciliationComponent implements OnInit {
   getReceptions(item: any){
     this.api.get(`audit_guide?page=${item}`).subscribe({
       next: (response: any) => {
-        this.listReceptions = response.data.items;
+        this.listReceptions = response.data.items.sort((a: any, b: any) => b.id - a.id);;
         this.listBase = this.listReceptions; // Guardamos la lista original para filtrar
         this.totalItems = this.listReceptions.length; // Total de solicitudes
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de página
@@ -89,8 +89,15 @@ export class ConciliationComponent implements OnInit {
     return products.reduce((acc: any, item: any) => acc += parseInt(item.quantity), 0)
   }
 
-  openModalConciliation(item: any[]){
-
+  syncGuide(item: any){
+    this.api.post(`audit_guide/synchronize/${item.id}`).subscribe({
+      next: (response: any) => {
+        this.getReceptions(this.currentPage);        
+      },
+      error: (error: any) => {
+        console.error('Error al crear usuario:', error);
+      },
+    });
   }
 
   setAnswer(){
