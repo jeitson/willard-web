@@ -45,8 +45,8 @@
                           <h5 style="color: white;"><span class="badge t-small" [class]="setColorStatus(item.requestStatusId)">{{item.requestStatus?.name}}</span></h5>
                       </td>
                       <td class="text-center">
-                        <i class="fa-solid f-larger pointer fa-eye" (click)="viewDetail(item)"></i>
-                        <i class="fa-solid f-larger pointer fa-sync" (click)="openModalConciliation(item)"></i>
+                        <i class="fa-solid f-larger pointer fa-handshake"  (click)="viewDetail(item)"></i>
+                        <i class="fa-solid f-larger pointer fa-sync" *ngIf="item.requestStatus?.name==='SIN GUIA'" (click)="openModalConciliation(item)"></i>
                       </td>
                   </tr>
               </tbody>
@@ -111,7 +111,7 @@
                           <tr *ngFor="let item of audit.auditGuideDetails?.transporter?.detail; let i = index;">
                             <th class="text-left">{{item.product?.name}}</th>
                             <td class="text-center">
-                              <input type="number" name="inpt_{{i}}" [(ngModel)]="item.quantityCollection">
+                              <input type="number" class="form-control" name="inpt_{{i}}" [(ngModel)]="item.quantityCollection">
                             </td>
                           </tr>
                         </tbody>
@@ -131,9 +131,11 @@
                       <span><strong>Productos:</strong></span>
                       <table class="table table-bordered mt-3">
                         <tbody>
-                          <tr *ngFor="let item of audit.auditGuideDetails?.recuperator?.detail">
+                          <tr *ngFor="let item of audit.auditGuideDetails?.recuperator?.detail; let j = index;">
                             <th class="text-left">{{item.product?.name}}</th>
-                            <td class="text-center">{{item.quantityCollection}}</td>
+                            <td class="text-center">
+                              <input type="number" class="form-control" name="inpt_{{j}}" [(ngModel)]="item.quantityCollection">
+                            </td>
                           </tr>
                         </tbody>
                       </table>
