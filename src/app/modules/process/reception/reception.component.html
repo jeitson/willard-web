@@ -55,8 +55,8 @@
                             <h5 *ngIf="item.status == false" style="color: white;"><span class="badge bg-danger t-small">Inactivo</span></h5>
                         </td>
                         <td class="text-center">
-                          <!-- <i class="fa-solid f-larger pointer fa-pencil" (click)="editReception(item)"></i> -->
-                          <!-- <i class="fa-solid f-larger pointer fa-eye" [routerLink]="[item.id]"></i> -->
+                          <i class="fa-solid f-larger pointer fa-pencil" (click)="editReception(item)"></i>
+                          <i class="fa-solid f-larger pointer fa-eye" [routerLink]="[item.id]"></i>
                         </td>
                     </tr>
                 </tbody>
@@ -286,6 +286,39 @@
               <div class="col-md-12 d-flex justify-content-around">
                   <button class="btn btn-sm text-white btn-dark" data-bs-dismiss="modal"> Cancelar </button>
                   <button class="btn btn-sm text-white bg-success2" (click)="uploadEvidence()"> Confirmar </button>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalconfirmGuide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+      <div class="modal-content">
+          <div class="modal-body">
+              <div class="col-md-12 text-center pb5">
+                  <i class="fa-solid fa-sync noselect f-xx-large"></i>
+              </div>
+              <div class="col-md-12 mt-4">
+                  <div class="row">
+                      <div class="col-md-12 text-center">
+                          <h6><strong>¿Está seguro que desea editar este cargue?</strong></h6>
+                          <p><small>Esta acción no se podrá deshacer</small></p>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Aquí agregamos el input para el número de guía -->
+              <div class="col-md-12 mt-3">
+                  <div class="form-group">
+                      <label for="guiaNumero"><strong>Número de guía</strong></label>
+                      <input type="text" [(ngModel)]="guide" class="form-control" id="guiaNumero" placeholder="Ingrese el número de guía">
+                  </div>
+              </div>
+
+              <div class="col-md-12 d-flex justify-content-around mt-4">
+                  <button class="btn btn-sm text-white btn-dark" data-bs-dismiss="modal">Cancelar</button>
+                  <button class="btn btn-sm text-white btn-success" (click)="updateGuide()">Confirmar</button>
               </div>
           </div>
       </div>
