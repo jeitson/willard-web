@@ -6,10 +6,9 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-conciliation',
   templateUrl: './conciliation.component.html',
-  styleUrls: ['./conciliation.component.css']
+  styleUrls: ['./conciliation.component.css'],
 })
 export class ConciliationComponent implements OnInit {
-
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
   currentPage: number = 1; // Página actual
   itemsPerPage: number = 5; // Cantidad de elementos por página
@@ -26,10 +25,10 @@ export class ConciliationComponent implements OnInit {
       createdAt: new Date(),
       zone: 'Norte',
       recuperadora: 'Los olivos',
-      transporter:'Transportes Gato',
-      cantTotal:130,
-      glosa: 240.000
-    }
+      transporter: 'Transportes Gato',
+      cantTotal: 130,
+      glosa: 240.0,
+    },
   ];
   audit: any = {};
   images: any[] = [];
@@ -41,38 +40,46 @@ export class ConciliationComponent implements OnInit {
     'Transito',
     'Por Conciliar',
     'Confirmado',
-    'Todos'
+    'Todos',
   ];
-  status : string  = 'Todos';
+  status: string = 'Todos';
   datefilter = '';
-  constructor(private api: ApiService){}
+  constructor(private api: ApiService) {}
 
-  ngOnInit(){
-    this.modal = new bootstrap.Modal(document.getElementById('modaldetail'), {backdrop: 'static', keyboard: false})
-    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalConfirm'), {backdrop: 'static', keyboard: false})
+  ngOnInit() {
+    this.modal = new bootstrap.Modal(document.getElementById('modaldetail'), {
+      backdrop: 'static',
+      keyboard: false,
+    });
+    this.modalConfirm = new bootstrap.Modal(
+      document.getElementById('modalConfirm'),
+      { backdrop: 'static', keyboard: false }
+    );
     this.getConciliations(this.currentPage);
     this.datefilter = this.getCurrentDate();
   }
 
   search(): void {
     this.searchTerm$.subscribe(({ value }: { value: string }) => {
-      this.listReceptions = this.listBase.filter(item => {
+      this.listReceptions = this.listBase.filter((item) => {
         const itemValues = Object.values(item);
-        return itemValues.some(item =>
-          String(item).toLowerCase().includes(value.toLowerCase()),
+        return itemValues.some((item) =>
+          String(item).toLowerCase().includes(value.toLowerCase())
         );
       });
     });
   }
 
   filterstatus(): void {
-    if (this.status.toLowerCase() === "todos") {
+    if (this.status.toLowerCase() === 'todos') {
       // Si la opción es "Todos", devuelve la lista completa sin filtrar
       this.listReceptions = this.listBase;
     } else {
       this.listReceptions = this.listBase.filter((item: any) => {
         // Verifica si el estado coincide con el valor buscado
-        return item.requestStatus.name.toLowerCase() === this.status.toLowerCase();
+        return (
+          item.requestStatus.name.toLowerCase() === this.status.toLowerCase()
+        );
       });
     }
   }
@@ -85,14 +92,17 @@ export class ConciliationComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
-  getConciliations(item: any){
+  getConciliations(item: any) {
     this.api.get(`audit_guide?page=${item}`).subscribe({
       next: (response: any) => {
-        this.listReceptions = response.data.items.sort((a: any, b: any) => b.id - a.id);;
+        this.listReceptions = response.data.items.sort(
+          (a: any, b: any) => b.id - a.id
+        );
         this.listBase = this.listReceptions; // Guardamos la lista original para filtrar
         this.totalItems = this.listReceptions.length; // Total de solicitudes
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de página
         this.search();
+        
       },
       error: (error: any) => {
         console.error('Error al crear usuario:', error);
@@ -100,39 +110,54 @@ export class ConciliationComponent implements OnInit {
     });
   }
 
-  viewDetail(item: any[]){
+  viewDetail(item: any[]) {
     this.modal.show();
     this.audit = item;
 
     const shipments = this.audit.shipments;
     const auditsGuidesRoutes = this.audit.auditsGuidesRoutes;
-    const arr = [...shipments, ...auditsGuidesRoutes].map(this.homogenizeStructure);
+    const arr = [...shipments, ...auditsGuidesRoutes].map(
+      this.homogenizeStructure
+    );
     this.audit.routes = arr;
   }
 
   homogenizeStructure = (item: any): any => {
     return {
-      name: item.guideNumber ? item.collectionSite.name : item.transporterTravel.siteName, // Homologa `title` y `nombre` a `name`
+      name: item.guideNumber
+        ? item.collectionSite.name
+        : item.transporterTravel.siteName, // Homologa `title` y `nombre` a `name`
       id: item.guideNumber ? item.id : item.auditGuideId, // Homologa `id` y `identificador` a `id`
       isAgency: item.guideNumber ? 'SI' : 'NO',
       type: item.guideNumber ? 'ENTREGA' : item.transporterTravel.type,
-      date: item.guideNumber ? item.createdAt : item.transporterTravel.movementDate,
-      quantity: item.guideNumber ? this.countProducts(item.shipmentDetails) : item.transporterTravel.totalQuantity,
-      images: item.guideNumber ? item.shipmentPhotos.map((e: any)=>{return e.url}) : item.transporterTravel.supportUrls,
+      date: item.guideNumber
+        ? item.createdAt
+        : item.transporterTravel.movementDate,
+      quantity: item.guideNumber
+        ? this.countProducts(item.shipmentDetails)
+        : item.transporterTravel.totalQuantity,
+      images: item.guideNumber
+        ? item.shipmentPhotos.map((e: any) => {
+            return e.url;
+          })
+        : item.transporterTravel.supportUrls,
       // Agregar más propiedades según sea necesario
     };
   };
 
-  viewFiles(images: any){
+  viewFiles(images: any) {
     this.viewdata = false;
     this.images = images;
   }
 
   countProducts(products: any): any {
-    return products.reduce((acc: any, item: any) => acc += parseInt(item.quantity), 0)
+    return products.reduce(
+      (acc: any, item: any) => (acc += parseInt(item.quantity)),
+      0
+    );
   }
 
-  syncGuide(item: any){
+  syncGuide(item: any) {
     this.api.post(`audit_guide/synchronize/${item.id}`).subscribe({
       next: (response: any) => {
         this.getConciliations(this.currentPage);
@@ -143,22 +168,22 @@ export class ConciliationComponent implements OnInit {
     });
   }
 
-  setAnswer(){
+  setAnswer() {
     this.modal.hide();
     this.modalConfirm.show();
   }
 
-  setColorStatus(status: any){
+  setColorStatus(status: any) {
     let color = '';
     switch (status) {
       case '101': //sin guia
-        color = 'bg-danger'
+        color = 'bg-danger';
         break;
       case '102': //pendiente
         color = 'bg-warning';
         break;
       case '103': //confirmado
-        color = 'bg-success'
+        color = 'bg-success';
         break;
       default:
         break;
@@ -166,14 +191,14 @@ export class ConciliationComponent implements OnInit {
     return color;
   }
 
-  actionConfirm(){
-    const data =  {
+  actionConfirm() {
+    const data = {
       auditGuideDetails: [
         ...this.audit.auditGuideDetails?.transporter?.detail,
-        ...this.audit.auditGuideDetails?.recuperator?.detail
+        ...this.audit.auditGuideDetails?.recuperator?.detail,
       ].map(({ id, quantityCollection }) => ({ id, quantityCollection })),
       giveReason: this.selectedOption || 'R', // Asigna la opción seleccionada
-      comment: this.comment || '' // Asigna el comentario
+      comment: this.comment || '', // Asigna el comentario
     };
     this.api.post(`audit_guide/confirm/${this.audit.id}`, data).subscribe({
       next: (response: any) => {
@@ -188,28 +213,30 @@ export class ConciliationComponent implements OnInit {
   }
 
   // paginación
-  onPageChange(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const selectedPage = Number(selectElement.value);
-    this.goToPage(selectedPage);
+  // paginación
+  updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listReceptions.slice(startIndex, endIndex);
   }
 
   goToPage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
       this.updatePaginatedList();
+      this.getConciliations(page);
     }
   }
+
+  onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
+
   get pagesArray() {
     return Array(this.totalPages)
       .fill(0)
       .map((x, i) => i + 1);
-  }
-
-  updatePaginatedList() {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    this.paginatedList = this.listReceptions.slice(startIndex, endIndex);
-    this.totalPages = Math.ceil(this.listReceptions.length / this.itemsPerPage); // Calcula el total de páginas
   }
 }
