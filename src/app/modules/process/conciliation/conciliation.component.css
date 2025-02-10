@@ -12,6 +12,10 @@
 
 }
 
+.select-status{
+  height: 33.777778px;
+}
+
 
 #modalConfirm {
   z-index: 2001 !important; /* Por encima del modal de formulario */

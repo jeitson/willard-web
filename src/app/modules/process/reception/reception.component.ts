@@ -45,6 +45,7 @@ export class ReceptionComponent implements OnInit {
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
   modal: any;
   modalloading: any;
+  modalconfirmGuide: any;
   activeSection: string | null = null;
   editpanel = false;
   action = '';
@@ -52,6 +53,7 @@ export class ReceptionComponent implements OnInit {
   photo: string | null = null;
   videoStream: MediaStream | null = null;
   imageselect:any = {};
+  reception: any = {};
   messageLoading = 'Subiendo Archivos, por favor espera...';
 
 
@@ -64,6 +66,7 @@ export class ReceptionComponent implements OnInit {
   role: string = '';
   headacopi: any = '';
   modalConfirm: any;
+  guide: string = '';
   constructor(private api: ApiService, private _toast: ToastService){}
 
   ngOnInit(){
@@ -71,6 +74,8 @@ export class ReceptionComponent implements OnInit {
     this.headacopi = JSON.parse(sessionStorage.getItem('profileData') || '[]')?.collectionSites[0].collectionSite.name
     this.modal = new bootstrap.Modal(document.getElementById('modalevidence'), {backdrop: 'static', keyboard: false});
     this.modalloading = new bootstrap.Modal(document.getElementById('modalLoading'), {backdrop: 'static', keyboard: false});
+    this.modalconfirmGuide = new bootstrap.Modal(document.getElementById('modalconfirmGuide'), {backdrop: 'static', keyboard: false});
+
     this.getReceptions(this.currentPage);
     this.getTransporters();
     this.getProductType();
@@ -150,8 +155,27 @@ export class ReceptionComponent implements OnInit {
   }
 
   editReception(item: any){
-    this.editpanel = true;
-    this.action = 'actualizar'
+    this.reception = item;
+    this.modalconfirmGuide.show();
+    this.guide = item.guideNumber;
+  }
+
+  updateGuide() {
+    if(this.guide === '' || this.guide === this.reception.guideNumber){
+      this._toast.warning('Error', 'El número de guía que quiere actualizar no puede estar vacío o ser igual al actual.')
+      return;
+    }
+    this.api.put(`receptions/${this.reception.id}`,{guideNumber: this.guide}).subscribe({
+      next: (response: any) => {
+        this.modalconfirmGuide.hide();
+        this._toast.success('Completado','Guía actualizada correctamente')
+        this.getReceptions(this.currentPage);
+      },
+      error: (error: any) => {
+        console.error('Error al actualizar el id de guia');
+      },
+    });
+
   }
 
   toggleSection(section: string) {
@@ -281,6 +305,11 @@ export class ReceptionComponent implements OnInit {
     this.editpanel = false;
     this.action = 'listar';
 
+  }
+
+  verifyProducts(id:any){
+    const productlist: any[] = this.listProducts.filter((x:any)=>x.productTypeId === id);
+    return productlist.length === 0 ? false : true;
   }
 
   base64ToBlob(base64: string, contentType: string = '', sliceSize: number = 512): Blob {

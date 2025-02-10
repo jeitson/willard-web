@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/services/api/api.service';
 
 declare var bootstrap: any;
@@ -16,6 +17,7 @@ export class ConciliationComponent implements OnInit {
   totalItems = 0;
   paginatedList: any = [];
   listBase: any[] = [];
+  searchTerm$ = new Subject<any>();
   modal: any;
   modalConfirm: any;
   listReceptions: any[] = [
@@ -34,22 +36,63 @@ export class ConciliationComponent implements OnInit {
   viewdata = true;
   selectedOption: string = ''; // Para capturar la opción seleccionada (R o T)
   comment: string = '';
-  constructor(private api: ApiService){
-  }
+  statusList: any = [
+    'Sin Guia',
+    'Transito',
+    'Por Conciliar',
+    'Confirmado',
+    'Todos'
+  ];
+  status : string  = 'Todos';
+  datefilter = '';
+  constructor(private api: ApiService){}
 
   ngOnInit(){
     this.modal = new bootstrap.Modal(document.getElementById('modaldetail'), {backdrop: 'static', keyboard: false})
     this.modalConfirm = new bootstrap.Modal(document.getElementById('modalConfirm'), {backdrop: 'static', keyboard: false})
-    this.getReceptions(this.currentPage);
+    this.getConciliations(this.currentPage);
+    this.datefilter = this.getCurrentDate();
   }
 
-  getReceptions(item: any){
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.listReceptions = this.listBase.filter(item => {
+        const itemValues = Object.values(item);
+        return itemValues.some(item =>
+          String(item).toLowerCase().includes(value.toLowerCase()),
+        );
+      });
+    });
+  }
+
+  filterstatus(): void {
+    if (this.status.toLowerCase() === "todos") {
+      // Si la opción es "Todos", devuelve la lista completa sin filtrar
+      this.listReceptions = this.listBase;
+    } else {
+      this.listReceptions = this.listBase.filter((item: any) => {
+        // Verifica si el estado coincide con el valor buscado
+        return item.requestStatus.name.toLowerCase() === this.status.toLowerCase();
+      });
+    }
+  }
+
+  getCurrentDate(): string {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Meses van de 0 a 11
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  getConciliations(item: any){
     this.api.get(`audit_guide?page=${item}`).subscribe({
       next: (response: any) => {
         this.listReceptions = response.data.items.sort((a: any, b: any) => b.id - a.id);;
         this.listBase = this.listReceptions; // Guardamos la lista original para filtrar
         this.totalItems = this.listReceptions.length; // Total de solicitudes
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de página
+        this.search();
       },
       error: (error: any) => {
         console.error('Error al crear usuario:', error);
@@ -92,7 +135,7 @@ export class ConciliationComponent implements OnInit {
   syncGuide(item: any){
     this.api.post(`audit_guide/synchronize/${item.id}`).subscribe({
       next: (response: any) => {
-        this.getReceptions(this.currentPage);
+        this.getConciliations(this.currentPage);
       },
       error: (error: any) => {
         console.error('Error al crear usuario:', error);
@@ -134,7 +177,7 @@ export class ConciliationComponent implements OnInit {
     };
     this.api.post(`audit_guide/confirm/${this.audit.id}`, data).subscribe({
       next: (response: any) => {
-        this.getReceptions(this.currentPage);
+        this.getConciliations(this.currentPage);
         this.modal.hide();
         this.modalConfirm.hide();
       },

@@ -5,7 +5,7 @@
       <p class="secundary mb-1">En este módulo podras realizar las conciliaciones de las recepciones</p>
     </div>
     <div class="d-flex flex-rows gap-10">
-      <button type="button" class="btn btn-sm btn-dark" (click)="getReceptions(1);">Recargar <i class="fa-solid fa-rotate-right"></i></button>
+      <button type="button" class="btn btn-sm btn-dark" (click)="getConciliations(1);">Recargar <i class="fa-solid fa-rotate-right"></i></button>
     </div>
   </div>
   <div class="page-divider mb-3">
@@ -15,9 +15,19 @@
     <div class="row">
       <div class="col-md-12">
         <div class="table-responsive">
-          <div class="mb-3 col-4">
-            <input type="text" class="form-control form-control-sm" placeholder="Buscar..."/>
+          <div class="row">
+            <div class="mb-3 col-4">
+              <input type="text" class="form-control form-control-sm" (keyup)="searchTerm$.next($event.target)" placeholder="Buscar..."/>
             </div>
+            <div class="mb-3 col-2">
+              <select [(ngModel)]="status" name="status" class="form-control-sm form-select select-status" (change)="filterstatus()">
+                <option *ngFor="let item of statusList" [value]="item">{{item}}</option>
+              </select>
+            </div>
+            <div class="mb-3 col-2">
+              <input type="date" class="form-control form-control-sm" name="datefilter" [(ngModel)]="datefilter"/>
+            </div>
+          </div>
           <table class="table table-sm">
               <thead class="bg-white">
                   <tr>
@@ -111,7 +121,8 @@
                           <tr *ngFor="let item of audit.auditGuideDetails?.transporter?.detail; let i = index;">
                             <th class="text-left">{{item.product?.name}}</th>
                             <td class="text-center">
-                              <input type="number" class="form-control" name="inpt_{{i}}" [(ngModel)]="item.quantityCollection">
+                              <input type="number" class="form-control" *ngIf="audit.requestStatus?.name==='PENDIENTE'" name="inpt_{{i}}" [(ngModel)]="item.quantityCollection">
+                              <span *ngIf="audit.requestStatus?.name!=='PENDIENTE'">{{item.quantityCollection}}</span>
                             </td>
                           </tr>
                         </tbody>
@@ -134,7 +145,8 @@
                           <tr *ngFor="let item of audit.auditGuideDetails?.recuperator?.detail; let j = index;">
                             <th class="text-left">{{item.product?.name}}</th>
                             <td class="text-center">
-                              <input type="number" class="form-control" name="inpt_{{j}}" [(ngModel)]="item.quantityCollection">
+                              <input type="number" class="form-control" *ngIf="audit.requestStatus?.name==='PENDIENTE'" name="inpt_{{j}}" [(ngModel)]="item.quantityCollection">
+                              <span *ngIf="audit.requestStatus?.name!=='PENDIENTE'">{{item.quantityCollection}}</span>
                             </td>
                           </tr>
                         </tbody>
@@ -193,7 +205,7 @@
           </div>
           <div class="modal-footer">
             <button class="btn btn-sm bg-dark text-white" (click)="modal.hide()">Cancelar</button>
-            <button class="btn btn-sm bg-success2" *ngIf="viewdata" (click)="setAnswer()">Corregir</button>
+            <button class="btn btn-sm bg-success2" *ngIf="viewdata && audit.requestStatus?.name==='PENDIENTE'" (click)="setAnswer()">Corregir</button>
             <button class="btn btn-sm bg-warning" *ngIf="!viewdata" (click)="this.viewdata=true; this.images=[];">Regresar</button>
           </div>
       </div>
