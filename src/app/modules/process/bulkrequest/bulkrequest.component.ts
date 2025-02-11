@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Subject } from 'rxjs';
 import { GeneralService } from 'src/app/core/services/general.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 import * as XLSX from 'xlsx';
@@ -16,6 +17,7 @@ export class BulkrequestComponent {
     referenciaWll: string;
     referenciaPh: string;
   }> = [];
+  guide: any;
   modalConfirm: any;
   modaldetalle: any;
   formattedData: any[] = []; // Variable para almacenar los datos fusionados
@@ -25,8 +27,11 @@ export class BulkrequestComponent {
   totalPages: number = 0; // Total de páginas
   pageSize: number = 10; // Tamaño de la página (puedes cambiarlo según tus necesidades)
   pagesArray: number[] = []; // Array para las opciones del select
+  listBase: any[] = [];
   ListProduct: any;
-
+  searchTerm$ = new Subject<any>();
+  searchTerm: string = ''; // Para almacenar el texto de búsqueda
+  idGuide: any;
   constructor(private _general: GeneralService, private _toast: ToastService) {}
   ngOnInit(): void {
     this.modalConfirm = new bootstrap.Modal(
@@ -41,56 +46,17 @@ export class BulkrequestComponent {
     this.get(this.currentPage);
   }
 
- // Método para obtener datos con paginación
-//  get(page: number) {
-//   this._general.getConsultantsTransp(page).subscribe((response: any) => {
-//     console.log(response);
-//     this.detailData = response.data.items; // Datos de la tabla
-//     this.totalPages = response.data.meta.totalPages; // Total de páginas
-//     this.currentPage = page; // Actualizar la página actual
-//   });
-// }
-
-// // Método para cambiar a la página anterior
-// previousPage() {
-//   if (this.currentPage > 0) {
-//     this.get(this.currentPage - 1);
-//   }
-// }
-
-// // Método para cambiar a la página siguiente
-// nextPage() {
-//   console.log(this.currentPage , this.totalPages)
-//   if (this.currentPage < this.totalPages ) {
-//     this.get(this.currentPage + 1);
-//   }
-// }
-
-// // Método para ir a una página específica
-// goToPage(page: number) {
-//   if (page >= 0 && page < this.totalPages) {
-//     this.get(page);
-//   }
-// }
-// getPageNumbers(): number[] {
-//   const pages: number[] = [];
-//   for (let i = 0; i < this.totalPages; i++) {
-//     pages.push(i);
-//   }
-//   return pages;
-// }
-
-
   // Método para obtener datos con paginación
   get(page: number) {
     this._general.getConsultantsTransp(page).subscribe((response: any) => {
       console.log(response);
 
-      
       this.detailData = response.data.items; // Datos de la tabla
+      this.listBase = this.detailData;
       this.totalPages = response.data.meta.totalPages; // Total de páginas
       this.currentPage = page; // Actualizar la página actual
       this.generatePagesArray(); // Generar el array de páginas para el select
+      this.search();
     });
   }
 
@@ -238,32 +204,55 @@ export class BulkrequestComponent {
     window.location.reload();
   }
 
-  editData() {
+  editData(item: any) {
+    // Asignar los valores de la guía y el ID
+    this.guide = item.guideId;
+    this.idGuide = item.id;
+  
+    // Mostrar el modal de confirmación
     this.modalConfirm.show();
   }
-
-  guide: any;
+  
   updateGuide() {
-    // Validar que this.guide no sea nulo o indefinido
-    if (!this.guide) {
-      this._toast.error('ERROR','Error: La guía no puede ser nula o indefinida.');
+    // Validar que this.guide y this.idGuide no sean nulos o indefinidos
+    if (!this.guide || !this.idGuide) {
+      this._toast.error('ERROR', 'Error: La guía o el ID no pueden ser nulos o indefinidos.');
       return;
     }
-
-    // Realizar la actualización
-    this._general.UpdateGuia(this.guide).subscribe(
-      (response: any) => {
+  
+    // Crear el objeto de datos para la actualización
+    const data = { idGuia: this.guide };
+  
+    // Realizar la actualización usando el servicio
+    this._general.UpdateGuia(this.idGuide, data).subscribe({
+      next: (response: any) => {
         // Manejar la respuesta exitosa
-        // console.log('Guía actualizada con éxito:', response);
-        this._toast.success('Solicitud Enviada','Guía actualizada con éxito');
-        // Restablecer el estado de actualización
+        this._toast.success('Solicitud Enviada', 'Guía actualizada con éxito');
+        this.clearState(); // Limpiar el estado después de la actualización
+        this.modalConfirm.hide();
+        this.get(this.currentPage);
       },
-      (error: any) => {
+      error: (error: any) => {
         // Manejar el error
-        this._toast.error('Error al actualizar la guía:', error);
-
-        // Restablecer el estado de actualización
-      }
-    );
+        this._toast.error('ERROR', `Error al actualizar la guía: ${error.message || 'Error desconocido'}`);
+        this.clearState(); // Limpiar el estado en caso de error
+      },
+    });
+  }
+  
+  // Método para limpiar el estado después de la actualización
+  clearState() {
+    this.guide = null;
+    this.idGuide = null;
+  }
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.detailData = this.listBase.filter((item) => {
+        const itemValues = Object.values(item);
+        return itemValues.some((item) =>
+          String(item).toLowerCase().includes(value.toLowerCase())
+        );
+      });
+    });
   }
 }

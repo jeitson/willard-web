@@ -28,8 +28,8 @@ export class GeneralService {
       return this._service.get(`registro?page=${params}`);
     }
 
-    UpdateGuia(params: any): Observable<any> {
-      return this._service.patch(`registro/guia/${params}`);
+    UpdateGuia(params: any, data:any): Observable<any> {
+      return this._service.patch(`registro/guia/${params}`, data);
     }
 
 }
