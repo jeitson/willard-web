@@ -154,7 +154,7 @@
               <div class="accordion-content" [ngStyle]="{ 'height': activeSection === typep.id ? 'auto' : '0', 'padding': activeSection === typep.id ? '15px' : '0' }">
                 <div class="row">
                   <div class="col-md-12">
-                    <div class="mb-2" *ngFor="let item of filterProductBytype(typep.id, listProducts)">
+                    <div class="mb-2" *ngFor="let item of typep.products">
                       <div class="form-group">
                         <label>{{item.name}}</label>
                         <input type="number" class="form-control" name="cuantity" placeholder="cantidad" [(ngModel)]="item.quantity">

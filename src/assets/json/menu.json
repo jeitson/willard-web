@@ -60,7 +60,7 @@
         "status": false
       },
       {
-        "name": "bulkrequest",
+        "name": "Gestión de Ruta",
         "type": "link",
         "id": "27",
         "route": "bulkrequest",

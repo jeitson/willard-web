@@ -39,8 +39,8 @@ export class RolesComponent implements OnInit {
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
   totalItems = 0;
   itemsPerPage: number = 10; // Cambiar a 10 para que se muestren 10 usuarios por página
-totalPages: number = 0;
-currentPage: number = 1;
+  totalPages: number = 0;
+  currentPage: number = 1;
 
   constructor(private _rolesService: RolesService, private _toast: ToastService, private general:GeneralService) {}
   ngOnInit(): void {
@@ -85,6 +85,7 @@ currentPage: number = 1;
   }
 
   openModalMenu(item: any){
+    this.role = item;
     if(item.menu.length > 0){
       this.modules = JSON.parse(JSON.stringify([]));
       this.modules = this.preloadModules(item.menu)
@@ -232,19 +233,19 @@ currentPage: number = 1;
 
 
    // paginación
-   updatePaginatedList() {
+  updatePaginatedList() {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     this.paginatedList = this.listData.slice(startIndex, endIndex);
     this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Calcula el total de páginas
   }
-  
+
   onPageChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const selectedPage = Number(selectElement.value);
     this.goToPage(selectedPage);
   }
-  
+
   goToPage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
@@ -256,7 +257,7 @@ currentPage: number = 1;
       .fill(0)
       .map((x, i) => i + 1);
   }
-  
+
   search(): void {
     this.searchTerm$.subscribe(({ value }: { value: string }) => {
       this.listData = this.listBase.filter(item => {

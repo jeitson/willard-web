@@ -6,6 +6,11 @@
     </div>
     <div class="d-flex flex-rows gap-10">
       <button type="button" class="btn btn-sm btn-dark" (click)="getConciliations(1);">Recargar <i class="fa-solid fa-rotate-right"></i></button>
+      <button type="button" class="btn btn-sm btn-success" (click)="downloadExcelStructure();">
+         <!-- Texto e ícono dinámico -->
+        <span *ngIf="!isDownloading">Descargar <i class="fa-solid fa-download"></i></span>
+        <span *ngIf="isDownloading">Generando... <i class="fa-solid fa-spinner fa-spin"></i></span>
+      </button>
     </div>
   </div>
   <div class="page-divider mb-3">
@@ -109,7 +114,7 @@
           </div>
           <div class="modal-body">
             <div class="row" *ngIf="viewdata">
-              <div class="col-md-6">
+              <div class="col">
                 <div class="card">
                   <div class="card-body">
                     <div class="text-center d-flex flex-column">
@@ -121,8 +126,8 @@
                       <table class="table table-bordered mt-3">
                         <tbody>
                           <tr *ngFor="let item of audit.auditGuideDetails?.transporter?.detail; let i = index;">
-                            <th class="text-left">{{item.product?.name}}</th>
-                            <td class="text-center">
+                            <th width="70%" class="text-left">{{item.product?.name}}</th>
+                            <td width="30%" class="text-center">
                               <input type="number" class="form-control" *ngIf="audit.requestStatus?.name==='PENDIENTE'" name="inpt_{{i}}" [(ngModel)]="item.quantityCollection">
                               <span *ngIf="audit.requestStatus?.name!=='PENDIENTE'">{{item.quantityCollection}}</span>
                             </td>
@@ -133,7 +138,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
+              <div class="col">
                 <div class="card">
                   <div class="card-body">
                     <div class="text-center d-flex flex-column">
@@ -145,10 +150,33 @@
                       <table class="table table-bordered mt-3">
                         <tbody>
                           <tr *ngFor="let item of audit.auditGuideDetails?.recuperator?.detail; let j = index;">
-                            <th class="text-left">{{item.product?.name}}</th>
-                            <td class="text-center">
+                            <th width="70%" class="text-left">{{item.product?.name}}</th>
+                            <td width="30%" class="text-center">
                               <input type="number" class="form-control" *ngIf="audit.requestStatus?.name==='PENDIENTE'" name="inpt_{{j}}" [(ngModel)]="item.quantityCollection">
                               <span *ngIf="audit.requestStatus?.name!=='PENDIENTE'">{{item.quantityCollection}}</span>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col" *ngIf="audit.requestStatus?.name==='CONFIRMADO'">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="text-center d-flex flex-column">
+                      <i class="fa-solid fa-car-battery"></i>
+                      <span>Conciliación</span>
+                      <span>Resultado de conciliación</span>
+                      <p>{{audit.auditGuideDetails?.conciliation?.quantityCollection}}</p>
+                      <span><strong>Productos:</strong></span>
+                      <table class="table table-bordered mt-3">
+                        <tbody>
+                          <tr *ngFor="let item of audit.auditGuideDetails?.conciliation?.detail; let k = index;">
+                            <th width="70%" class="text-left">{{item.product?.name}}</th>
+                            <td width="30%" class="text-center">
+                              <span>{{item.quantityCollection}}</span>
                             </td>
                           </tr>
                         </tbody>

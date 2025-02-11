@@ -210,7 +210,7 @@
                           <li *ngFor="let sub of module.subMenu" class="sub-menu-item mb-2">
                             <div class="form-check form-switch">
                               <input class="form-check-input" disabled type="checkbox" role="switch" id="{{sub.id}}"  [(ngModel)]="sub.status" (change)="toggleSubMenu(module)">
-                              <label class="form-check-label" for="{{sub.id}}">{{ sub.name }}</label>
+                              <label class="form-check-label" for="{{sub.id}}">{{ sub.name }} ({{sub.route}})</label>
                             </div>
                           </li>
                         </div>

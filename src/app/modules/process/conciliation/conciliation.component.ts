@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/services/api/api.service';
-
+import { ToastService } from 'src/app/core/services/toast.service';
+import * as XLSX from 'xlsx'
 declare var bootstrap: any;
 @Component({
   selector: 'app-conciliation',
@@ -19,17 +20,8 @@ export class ConciliationComponent implements OnInit {
   searchTerm$ = new Subject<any>();
   modal: any;
   modalConfirm: any;
-  listReceptions: any[] = [
-    {
-      guide: '9838823',
-      createdAt: new Date(),
-      zone: 'Norte',
-      recuperadora: 'Los olivos',
-      transporter: 'Transportes Gato',
-      cantTotal: 130,
-      glosa: 240.0,
-    },
-  ];
+  listReceptions: any[] = [];
+  isDownloading: boolean = false;
   audit: any = {};
   images: any[] = [];
   viewdata = true;
@@ -44,7 +36,7 @@ export class ConciliationComponent implements OnInit {
   ];
   status: string = 'Todos';
   datefilter = '';
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private _toast: ToastService) {}
 
   ngOnInit() {
     this.modal = new bootstrap.Modal(document.getElementById('modaldetail'), {
@@ -102,7 +94,7 @@ export class ConciliationComponent implements OnInit {
         this.totalItems = this.listReceptions.length; // Total de solicitudes
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de página
         this.search();
-        
+
       },
       error: (error: any) => {
         console.error('Error al crear usuario:', error);
@@ -173,6 +165,75 @@ export class ConciliationComponent implements OnInit {
     this.modalConfirm.show();
   }
 
+  async downloadExcelStructure(){
+    setTimeout(() => {
+      this.isDownloading = true;
+      // Definir las columnas que se exportarán y sus nombres homologados
+    const columns = [
+      { key: 'guideNumber', header: 'Guia' },
+      { key: 'date', header: 'Fecha' },
+      { key: 'zoneName', header: 'Zona' },
+      { key: 'recuperatorName', header: 'Recuperadora' },
+      { key: 'transporterName', header: 'Transportadora' },
+      { key: 'statusName', header: 'Estado' },
+    ];
+    const array = this.listBase.map((x: any)=> ({
+      guideNumber: x.guideNumber,
+      date: x.date,
+      zoneName: x.zone?.name,
+      recuperatorName: x.recuperator?.name,
+      transporterName: x.transporter?.name,
+      statusName: x.requestStatus?.name,
+    }))
+    // Llamar a la función de exportación
+     this.exportToExcel(array , columns, 'Conciliaciones_'+new Date().getTime());
+     this.isDownloading = false;
+
+    }, 1000);
+  }
+
+  // Función para exportar a Excel
+  async exportToExcel(data: any[], columns: { key: string; header: string }[], fileName: string) {
+    // Mapear los datos para incluir solo las columnas seleccionadas
+    const mappedData = data.map((item) => {
+      const newItem: any = {};
+      columns.forEach((col) => {
+        newItem[col.header] = item[col.key];
+      });
+      return newItem;
+    });
+
+    // Crear una hoja de trabajo de Excel
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(mappedData);
+
+    // Crear un libro de trabajo y agregar la hoja de trabajo
+    const workbook: XLSX.WorkBook = {
+      Sheets: { data: worksheet },
+      SheetNames: ['data'],
+    };
+
+    // Convertir el libro de trabajo a un archivo binario de Excel
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    // Descargar el archivo
+    this.saveAsExcelFile(excelBuffer, fileName);
+  }
+
+  // Función para guardar el archivo Excel
+  private saveAsExcelFile(buffer: any, fileName: string): void {
+    const data: Blob = new Blob([buffer], { type: 'application/octet-stream' });
+    const url: string = window.URL.createObjectURL(data);
+    const link: HTMLAnchorElement = document.createElement('a');
+    link.href = url;
+    link.download = `${fileName}.xlsx`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+    link.remove();
+  }
+
   setColorStatus(status: any) {
     let color = '';
     switch (status) {
@@ -185,6 +246,9 @@ export class ConciliationComponent implements OnInit {
       case '103': //confirmado
         color = 'bg-success';
         break;
+      case '104': //confirmado
+        color = 'bg-info';
+        break;
       default:
         break;
     }
@@ -196,10 +260,12 @@ export class ConciliationComponent implements OnInit {
       auditGuideDetails: [
         ...this.audit.auditGuideDetails?.transporter?.detail,
         ...this.audit.auditGuideDetails?.recuperator?.detail,
-      ].map(({ id, quantityCollection }) => ({ id, quantityCollection })),
+      ].filter((x:any)=> (x.hasOwnProperty('id') && x.id !== null) || (x.quantityCollection > 0))
+      .map(({ id, quantityCollection, productId, type }) => ({ id, quantityCollection, productId, type })),
       giveReason: this.selectedOption || 'R', // Asigna la opción seleccionada
       comment: this.comment || '', // Asigna el comentario
     };
+
     this.api.post(`audit_guide/confirm/${this.audit.id}`, data).subscribe({
       next: (response: any) => {
         this.getConciliations(this.currentPage);
@@ -212,7 +278,6 @@ export class ConciliationComponent implements OnInit {
     });
   }
 
-  // paginación
   // paginación
   updatePaginatedList() {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
