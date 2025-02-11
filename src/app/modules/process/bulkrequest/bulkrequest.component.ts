@@ -94,111 +94,182 @@ export class BulkrequestComponent {
       0
     );
   }
-  // Método para manejar el cambio de archivo
+
+
+  // Método para enviar el archivo al backend
+
   onFileChange(event: any): void {
     const file = event.target.files[0];
     if (file) {
       this.uploadedFile = file; // Guardar el archivo cargado
 
-      // Procesar el archivo
       const reader = new FileReader();
       reader.onload = (e: any) => {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
 
-        // Procesar ambas hojas
-        const principalData: any[] = []; // Datos de la primera hoja
-        const detalleData: any[] = []; // Datos de la segunda hoja
+        // Cabeceras esperadas
+        const expectedHeadersPrincipal = [
+          'idRuta',
+          'idGuia',
+          'tipo',
+          'secuencia',
+          'fechaMov',
+          'horaMov',
+          'planeador',
+          'zona',
+          'ciudad',
+          'depto',
+          'placa',
+          'conductor',
+          'nombreSitio',
+          'direccion',
+          'posGps',
+          'totCant',
+          'docReferencia',
+          'docReferencia2',
+          'urlSoportes',
+          'detalles',
+        ];
+
+        const expectedHeadersDetalle = ['idGuia', 'tipoBat', 'cantidad'];
+
+        let principalData: any[] = [];
+        let detalleData: any[] = [];
 
         workbook.SheetNames.forEach((sheetName: string) => {
           const sheet = workbook.Sheets[sheetName];
-          const jsonData = XLSX.utils.sheet_to_json(sheet);
-
-          if (sheetName.toLowerCase() === 'principal') {
-            // Procesar la primera hoja
-            principalData.push(
-              ...jsonData.map((item: any) => {
-                let fechaMov = item.fechaMov;
-                let horaMov = item.horaMov;
-
-                // Convertir fechaMov
-                if (typeof fechaMov === 'number' && !isNaN(fechaMov)) {
-                  fechaMov = new Date(1900, 0, fechaMov - 1)
-                    .toISOString()
-                    .split('T')[0];
-                } else {
-                  fechaMov = null;
-                }
-
-                // Convertir horaMov
-                if (typeof horaMov === 'number' && !isNaN(horaMov)) {
-                  horaMov = new Date(horaMov * 86400000)
-                    .toISOString()
-                    .substr(11, 8);
-                } else {
-                  horaMov = null;
-                }
-
-                return {
-                  ...item,
-                  fechaMov,
-                  horaMov,
-                };
-              })
+          const jsonData: any = XLSX.utils.sheet_to_json(sheet, { header: 1 }); // Obtener como array de arrays
+          console.log(jsonData);
+          if (jsonData.length > 0) {
+            const headers = jsonData[0].map((header: any) =>
+              header.toString().trim()
             );
-          } else if (sheetName.toLowerCase() === 'detalle') {
-            // Procesar la segunda hoja
-            detalleData.push(...jsonData);
+
+            if (sheetName === 'principal') {
+              if (!this.validateHeaders(headers, expectedHeadersPrincipal)) {
+                this._toast.error('Error en el cargue',
+                  `Error: Las cabeceras de la hoja '${sheetName}' no coinciden.`
+                );
+
+                return;
+              }
+              principalData = XLSX.utils.sheet_to_json(sheet);
+            } else if (sheetName === 'detalle') {
+              if (!this.validateHeaders(headers, expectedHeadersDetalle)) {
+                this._toast.error('Error en el cargue',
+                  `Error: Las cabeceras de la hoja '${sheetName}' no coinciden.`
+                );
+                return;
+              }
+              detalleData = XLSX.utils.sheet_to_json(sheet);
+            }
           }
         });
 
-        // Fusionar los datos
-        const mergedData = principalData.map((principalItem: any) => {
-          // Buscar coincidencias en la segunda hoja
-          const detalles = detalleData.filter(
-            (detalleItem: any) => detalleItem.idGuia === principalItem.idGuia
-          );
-
-          // Si hay coincidencias, agregar los detalles al objeto principal
-          if (detalles.length > 0) {
-            return {
-              ...principalItem,
-              detalles, // Agregar los detalles como un array
-            };
-          }
-
-          return principalItem; // Si no hay coincidencias, devolver el objeto principal sin cambios
+        // Validación de tipos de datos en 'principal'
+        const isValidPrincipal = this.validateDataTypes(principalData, {
+          idRuta: 'string',
+          idGuia: 'number',
+          tipo: 'string',
+          secuencia: 'number',
+          fechaMov: 'number',
+          horaMov: 'number',
+          planeador: 'number',
+          zona: 'string',
+          ciudad: 'string',
+          depto: 'string',
+          placa: 'string',
+          conductor: 'string',
+          nombreSitio: 'string',
+          direccion: 'string',
+          posGps: 'string',
+          totCant: 'number',
+          docReferencia: 'string',
+          docReferencia2: 'string',
+          urlSoportes: 'string',
+          detalles: 'string',
         });
 
-        // Asignar los datos fusionados a la variable del componente
-        this.formattedData = mergedData;
-        console.log(this.formattedData); // Verificar el resultado
+        // Validación de tipos de datos en 'detalle'
+        const isValidDetalle = this.validateDataTypes(detalleData, {
+          idGuia: 'number',
+          tipoBat: 'string',
+          cantidad: 'number',
+        });
+
+        if (!isValidPrincipal || !isValidDetalle) {
+          this._toast.error('Error:',' Algunos datos no cumplen con el tipo esperado.');
+          return;
+        }
+
+        // Transformar datos
+        const transformedData = principalData
+          .map((item) => {
+            const detalles = JSON.parse(item.detalles || '[]');
+            return detalles.map((detalle: any) => ({
+              idGuia: item.idGuia,
+              tipoBat: detalle.tipoBat,
+              cantidad: detalle.cantidades,
+              ...item,
+            }));
+          })
+          .flat();
+
+        console.log(transformedData);
+        this.formattedData = transformedData;
       };
       reader.readAsArrayBuffer(file);
     }
   }
 
-  // Método para enviar el archivo al backend
-  sendFileToBackend(): void {
-    if (this.uploadedFile) {
-      console.log('Enviando archivo al backend:', this.uploadedFile.name);
-
-      // Ejemplo de cómo enviar el archivo usando FormData y HttpClient
-      const formData = new FormData();
-      formData.append('file', this.uploadedFile);
-
-      this._general.uploadFile(this.uploadedFile).subscribe(
-        (response: any) => {
-          console.log('Respuesta del backend:', response);
-        },
-        (error) => {
-          console.error('Error al enviar el archivo:', error);
-        }
-      );
-    } else {
-      console.error('No hay archivo cargado para enviar.');
-    }
+  // Función para validar las cabeceras
+  validateHeaders(headers: string[], expectedHeaders: string[]): boolean {
+    return expectedHeaders.every((header) => headers.includes(header));
   }
+
+  // Función para validar los tipos de datos en las filas
+  validateDataTypes(
+    data: any[],
+    expectedTypes: { [key: string]: string }
+  ): boolean {
+    return data.every((row) =>
+      Object.keys(expectedTypes).every((key) => {
+        const value = row[key];
+        const expectedType = expectedTypes[key];
+        return (
+          (expectedType === 'number' && !isNaN(Number(value))) ||
+          (expectedType === 'string' && typeof value === 'string') ||
+          (expectedType === 'date' && !isNaN(Date.parse(value)))
+        );
+      })
+    );
+  }
+
+  sendFileToBackend(): void {
+    if (!this.uploadedFile) {
+      this._toast.error('Error:', 'No hay archivo cargado para enviar.');
+      return;
+    }
+  
+    this._toast.info('Enviando archivo...', this.uploadedFile.name);
+  
+    const formData = new FormData();
+    formData.append('file', this.uploadedFile);
+  
+    this._general.uploadFile(this.uploadedFile).subscribe({
+      next: (response: any) => {
+        this._toast.success('Archivo enviado con éxito.', `Respuesta: ${response}`);
+        this.get(this.currentPage);
+        this.cardJson.tab = 'L';
+      },
+      error: (error) => {
+        console.error('Error al enviar el archivo:', error);
+        this._toast.error('Error al enviar el archivo.', error?.message || 'Intente de nuevo.');
+      }
+    });
+  }
+  
   // Método para recargar la página
   reloadPage(): void {
     window.location.reload();
@@ -208,21 +279,24 @@ export class BulkrequestComponent {
     // Asignar los valores de la guía y el ID
     this.guide = item.guideId;
     this.idGuide = item.id;
-  
+
     // Mostrar el modal de confirmación
     this.modalConfirm.show();
   }
-  
+
   updateGuide() {
     // Validar que this.guide y this.idGuide no sean nulos o indefinidos
     if (!this.guide || !this.idGuide) {
-      this._toast.error('ERROR', 'Error: La guía o el ID no pueden ser nulos o indefinidos.');
+      this._toast.error(
+        'ERROR',
+        'Error: La guía o el ID no pueden ser nulos o indefinidos.'
+      );
       return;
     }
-  
+
     // Crear el objeto de datos para la actualización
     const data = { idGuia: this.guide };
-  
+
     // Realizar la actualización usando el servicio
     this._general.UpdateGuia(this.idGuide, data).subscribe({
       next: (response: any) => {
@@ -234,12 +308,15 @@ export class BulkrequestComponent {
       },
       error: (error: any) => {
         // Manejar el error
-        this._toast.error('ERROR', `Error al actualizar la guía: ${error.message || 'Error desconocido'}`);
+        this._toast.error(
+          'ERROR',
+          `Error al actualizar la guía: ${error.message || 'Error desconocido'}`
+        );
         this.clearState(); // Limpiar el estado en caso de error
       },
     });
   }
-  
+
   // Método para limpiar el estado después de la actualización
   clearState() {
     this.guide = null;
@@ -255,4 +332,15 @@ export class BulkrequestComponent {
       });
     });
   }
+  errorMessage: string = '';
+
+validateGuide() {
+  const regex = /^\d{15}$/;
+  if (!regex.test(this.guide)) {
+    this.errorMessage = 'El número de guía debe contener exactamente 10 dígitos.';
+  } else {
+    this.errorMessage = '';
+  }
+}
+
 }
