@@ -85,7 +85,9 @@ export class ReceptionComponent implements OnInit {
   getReceptions(item: any){
     this.api.get(`receptions?page=${item}`).subscribe({
       next: (response: any) => {
-        this.listReceptions = response.data.items;
+        this.listReceptions = response.data.items.sort(
+          (a: any, b: any) => b.id - a.id
+        );
         this.listBase = this.listReceptions; // Guardamos la lista original para filtrar
         this.totalItems = this.listReceptions.length; // Total de solicitudes
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
@@ -99,7 +101,7 @@ export class ReceptionComponent implements OnInit {
   }
 
   getProductType(){
-    this.api.get(`catalogs/key/TIPO_PRODUCTO`).subscribe({
+    this.api.get(`products/categories`).subscribe({
       next: (response: any) => {
         this.listTypeProducts = response.data;
       },
@@ -188,9 +190,25 @@ export class ReceptionComponent implements OnInit {
     }
   }
 
-  countQuantity(type: number){
-    return this.listProducts.filter(product => product.productTypeId === type)
-    .reduce((sum, product) => sum + product.quantity, 0);
+  countQuantity(categoryId: number){
+    // return this.listProducts.filter(product => product.productTypeId === type)
+    // .reduce((sum, product) => sum + product.quantity, 0);
+    // Busca la categoría en el listado de categorías
+  const category = this.listTypeProducts.find(typep => typep.id === categoryId);
+
+  // Si no encuentra la categoría, retorna 0
+  if (!category || !category.products) {
+    return 0;
+  }
+
+  // Suma las cantidades de los productos
+  const totalQuantity = category.products.reduce((sum: any, product: any) => {
+    // Asegúrate de que la cantidad sea un número válido
+    const quantity = Number(product.quantity) || 0;
+    return sum + quantity;
+  }, 0);
+
+  return totalQuantity;
   }
 
   sumQuantity(item: any){
@@ -307,11 +325,6 @@ export class ReceptionComponent implements OnInit {
 
   }
 
-  verifyProducts(id:any){
-    const productlist: any[] = this.listProducts.filter((x:any)=>x.productTypeId === id);
-    return productlist.length === 0 ? false : true;
-  }
-
   base64ToBlob(base64: string, contentType: string = '', sliceSize: number = 512): Blob {
     const byteCharacters = atob(base64); // decodificar base64
     const byteArrays: Uint8Array[] = [];
@@ -334,7 +347,7 @@ export class ReceptionComponent implements OnInit {
       this._toast.info('Importante', 'Debe adjuntar evidencias para la recepción')
       return;
     }
-    this.products = this.listProducts.reduce((acc, { id, quantity }) => {
+    this.products = this.listTypeProducts.flatMap((element) => element.products).reduce((acc, { id, quantity }) => {
       if (quantity > 0) {
         acc.push({ productId:id, quantity });
       }
