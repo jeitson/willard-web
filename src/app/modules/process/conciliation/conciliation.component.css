@@ -6,8 +6,19 @@
   text-align: left;
 }
 
+.f-larger{
+  font-size: large;
+  margin-top: 7px;
 
+}
 
+.select-status{
+  height: 33.777778px;
+}
+
+.table-responsive{
+  overflow-x: hidden;
+}
 
 #modalConfirm {
   z-index: 2001 !important; /* Por encima del modal de formulario */
@@ -33,4 +44,9 @@
   justify-content: flex-start;
   gap: 10px;
 
+}
+
+.t-small{
+  font-family: sans-serif;
+  font-weight: 100;
 }

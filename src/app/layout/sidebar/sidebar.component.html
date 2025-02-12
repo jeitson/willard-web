@@ -11,7 +11,7 @@
       <span class="name-user">{{nameUser}}</span>
       <span class="name small">{{name}}</span>
     </span>
-    
+
   </div>
     <ul class="menu scroll">
       <li *ngFor="let menu of items">
@@ -32,6 +32,16 @@
           </ul>
         </div>
       </li>
-    </ul>
 
+      <div class="col-md-12" *ngIf="items.length === 0">
+        <div class="loader-container w-100 loading-menu" >
+          <div class="loader">
+            <div class="circle circle1"></div>
+            <div class="circle circle2"></div>
+            <div class="circle circle3"></div>
+          </div>
+          <p class="loader-message">Cargando menu</p>
+        </div>
+      </div>
+    </ul>
 </aside>

@@ -29,9 +29,9 @@ export class LandingComponent implements AfterViewInit, OnInit {
   ngAfterViewInit(){
     this.auth.isAuthenticated$.subscribe(isAuthenticaded => {
       if (isAuthenticaded) {
-        this.loading = true;
         window.history.replaceState({}, document.title, window.location.pathname);
         this.router.navigate([url]);
+        this.loading = true;
       } else {
         this.loading = false;
       }
@@ -39,6 +39,15 @@ export class LandingComponent implements AfterViewInit, OnInit {
   }
 
   ngOnInit(): void {
+    this.auth.isAuthenticated$.subscribe(isAuthenticaded => {
+      if (isAuthenticaded) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        this.router.navigate([url]);
+        this.loading = true;
+      } else {
+        this.loading = false;
+      }
+    })
   }
 
   login(){

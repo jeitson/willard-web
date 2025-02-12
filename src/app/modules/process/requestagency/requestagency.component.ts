@@ -6,6 +6,7 @@ import { PickuplocationService } from 'src/app/core/services/settings/pickuploca
 import { SettingsService } from 'src/app/core/services/settings/settings.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 import { Subject } from 'rxjs';
+import { Certificate } from 'src/app/core/utils/pdf/pdf_certificate';
 declare var bootstrap: any;
 @Component({
   selector: 'wlrd-requestagency',
@@ -83,6 +84,7 @@ export class RequestagencyComponent {
     this.maxDate = futureDate.toISOString().split('T')[0];
   }
   ngOnInit(): void {
+    // Certificate('');
     this.getRequest(this.currentPage);
     this.getData();
     this.modal = new bootstrap.Modal(
@@ -107,7 +109,8 @@ export class RequestagencyComponent {
 
   getRequest(page: any) {
     this._requests.listSolicitudes(page).subscribe((response: any) => {
-      this.listsrequest = response.data.items;
+      this.listsrequest = response.data.items.sort((a: any, b: any) => b.id - a.id);
+;
       this.listCopy = this.listsrequest; // Hacemos una copia de la lista original
       this.totalItems = this.listsrequest.length; // Total de solicitudes
       this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
@@ -192,6 +195,7 @@ export class RequestagencyComponent {
   }
 
   pickuplocation(item:any){
+    console.log(item);
     this._pickUp.getPickUpLocationsClient(item).subscribe({
       next: (response: any) => {
         this.listTipos = response.data.items;

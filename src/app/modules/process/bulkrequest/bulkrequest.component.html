@@ -1,13 +1,15 @@
 <div class="container">
     <div class="page-header">
       <div class="d-flex flex-column">
-        <h3 class="primary title noselect">Cargue de archivo</h3>
-        <p class="secundary mb-1">En este modulo podrás subir el archivo masivo </p>
+        <h3 class="primary title noselect">Gestión Manual de Ruta</h3>
+        <p class="secundary mb-1">En este modulo podrás subir el archivo masivo para las conciliaciónes</p>
       </div>
       <div class="d-flex flex-rows gap-10">
-        <button type="button" class="btn btn-sm bg-add" (click)="cardJson.tab = 'C'">
-          Agregar <i class="fa-solid fa-add"></i>
+        <button type="button" class="btn btn-sm bg-add" (click)="cardJson.tab = cardJson.tab === 'L' ? 'C' : 'L'">
+          {{ cardJson.tab === 'L' ? 'Agregar' : 'Atrás' }} 
+          <i class="fa-solid" [ngClass]="cardJson.tab === 'L' ? 'fa-plus' : 'fa-arrow-left'"></i>
         </button>
+        
         <button type="button" class="btn btn-sm btn-dark" (click)="reloadPage()">
           Recargar <i class="fa-solid fa-rotate-right"></i>
         </button>
@@ -25,39 +27,71 @@
             <div class="table-responsive">
               <div class="mb-3 col-4">
                 <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  placeholder="Buscar..."
+                type="text"
+                class="form-control form-control-sm"
+                placeholder="Buscar..."
+                (keyup)="searchTerm$.next($event.target)"
                 />
               </div>
-              <table class="table table-sm">
-                <thead class="bg-white">
-                  <tr>
-                    <th class="text-left">Nombre</th>
-                    <th class="text-center">Fecha Creación</th>
-                    <th class="text-center">Fecha Actualización</th>
-                    <th class="text-center">Estado</th>
-                    <th class="text-center">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody style="background-color: white;">
-                  <tr style="font-size: smaller;">
-                    <td class="text-left">1</td>
-                    <td class="text-center">2</td>
-                    <td class="text-center">2</td>
-                    <td class="text-center">
-                      <h5 style="color: white;">
-                        <span class="badge bg-success2">Activo</span>
-                      </h5>
-                    </td>
-                    <td class="text-center">
-                      <i class="fa-solid f-larger pointer fa-pencil"></i>
-                      <i class="fa-solid f-larger pointer fa-sync"></i>
-                      <i class="fa-solid f-larger pointer fa-trash"></i>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <!-- Tabla de datos -->
+            <!-- Tabla de datos -->
+            <table class="table table-sm">
+              <thead class="bg-white">
+                <tr>
+                  <th class="text-center">Id Guia</th>
+                  <th class="text-center">Conductor</th>
+                  <th class="text-center">Nombre del sitio</th>
+                  <th class="text-center">Tipo</th>
+                  <th class="text-center">Ciudad</th>
+                  <th class="text-center">Dirección</th>
+                  <th class="text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody style="background-color: white;">
+                <tr style="font-size: smaller;" *ngFor="let item of detailData">
+                  <td class="text-center">{{ item.guideId }}</td>
+                  <td class="text-center">{{ item.driver }}</td>
+                  <td class="text-center">{{ item.siteName }}</td>
+                  <td class="text-center">{{ item.type }}</td>
+                  <td class="text-center">{{ item.city }}</td>
+                  <td class="text-center">{{ item.address }}</td>
+                  <td class="text-center">
+                    <i class="fa-solid f-larger pointer fa-pencil" (click)="editData(item)"></i>
+                    <i class="fa-solid f-larger pointer fa-eye" (click)="viewData(item)"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Paginación -->
+            <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-between">
+                <!-- Select para seleccionar la página -->
+                <div class="d-flex align-items-center">
+                  <li class="page-item d-flex align-items-center">
+                    <span class="me-2">Pag</span>
+                    <select class="form-select form-select-sm me-2" (change)="onPageChange($event)">
+                      <option *ngFor="let i of pagesArray" [value]="i" [selected]="currentPage === i">{{ i }}</option>
+                    </select>
+                    <span class="me-2">de</span>
+                    <span>{{ totalPages }}</span>
+                  </li>
+                </div>
+                <!-- Controles Anterior y Siguiente -->
+                <div class="d-flex">
+                  <li class="page-item" [class.disabled]="currentPage === 1">
+                    <a class="page-link" (click)="previousPage()">
+                      <i class="fa-solid fa-angle-left"></i>
+                    </a>
+                  </li>
+                  <li class="page-item" [class.disabled]="currentPage === totalPages">
+                    <a class="page-link" (click)="nextPage()">
+                      <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                  </li>
+                </div>
+              </ul>
+            </nav>
             </div>
           </div>
         </div>
@@ -65,37 +99,71 @@
           <!-- Vista para cargar archivo -->
           <div class="row" *ngIf="cardJson.tab === 'C'">
             <div class="col-md-12">
-              <div class="mb-3">
-                <label for="fileUpload" class="form-label">Sube un archivo Excel:</label>
-                <input
-                  type="file"
-                  id="fileUpload"
-                  class="form-control"
-                  (change)="onFileChange($event)"
-                  accept=".xlsx, .xls"
-                />
+              <div class="container">
+                <div class="row align-items-end">
+                  <!-- Sección del input de archivo -->
+                  <div class="col-md-8 mb-3">
+                    <label for="fileUpload" class="form-label">Sube un archivo Excel:</label>
+                    <input
+                      type="file"
+                      id="fileUpload"
+                      class="form-control"
+                      (change)="onFileChange($event)"
+                      accept=".xlsx, .xls"
+                    />
+                  </div>
+                  <!-- Sección del botón de guardado -->
+                  <div class="col-md-4 mb-3 text-md-end">
+                    <button type="button" class="btn btn-success" (click)="sendFileToBackend()">
+                      Guardar <i class="fa-solid fa-save"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div *ngIf="tableData && tableData.length > 0">
+              
+              
+              <div *ngIf="formattedData && formattedData.length > 0">
                 <h5>Datos cargados:</h5>
                 <div class="table-responsive">
                   <table class="table table-sm">
                     <thead class="bg-white">
                       <tr>
-                        <th class="text-left">Nombre</th>
-                        <th class="text-center">Referencia Wll</th>
-                        <th class="text-center">Referencia Ph</th>
+                        <th class="text-left">ID Ruta</th>
+                        <th class="text-center">ID Guía</th>
+                        <th class="text-center">Fecha Movimiento</th>
+                        <th class="text-center">Hora Movimiento</th>
+                        <th class="text-center">Ciudad</th>
+                        <th class="text-center">Dirección</th>
+                        <th class="text-center">Total Cantidad</th>
+                        <th class="text-center">Detalles</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let row of tableData" style="font-size: smaller;">
-                        <td class="text-left">{{ row.Nombre }}</td>
-                        <td class="text-center">{{ row.referenciaWll }}</td>
-                        <td class="text-center">{{ row.referenciaPh }}</td>
+                      <!-- Iterar sobre cada fila de formattedData -->
+                      <tr *ngFor="let row of formattedData" style="font-size: smaller;">
+                        <td class="text-left">{{ row.idRuta }}</td>
+                        <td class="text-center">{{ row.idGuia }}</td>
+                        <td class="text-center">{{ row.fechaMov }}</td>
+                        <td class="text-center">{{ row.horaMov }}</td>
+                        <td class="text-center">{{ row.ciudad }}</td>
+                        <td class="text-center">{{ row.direccion }}</td>
+                        <td class="text-center">{{ row.totCant }}</td>
+                        <td class="text-center">
+                          <!-- Verificar si hay detalles y mostrarlos -->
+                          <ul *ngIf="row.detalles && row.detalles.length > 0">
+                            <li *ngFor="let detalle of row.detalles">
+                              {{ detalle.tipoBat }} - Cant: {{ detalle.cantidad }}
+                            </li>
+                          </ul>
+                          <span *ngIf="!row.detalles || row.detalles.length === 0">Sin detalles</span>
+                        </td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
+              
+              
             </div>
           </div>
     
@@ -103,3 +171,82 @@
     </div>
   </div>
   
+
+  <div class="modal fade" id="modalconfirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="col-md-12 text-center pb5">
+                    <i class="fa-solid fa-sync noselect f-xx-large"></i>
+                </div>
+                <div class="col-md-12 mt-4">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <h6><strong>¿Está seguro que desea editar este cargue?</strong></h6>
+                            <p><small>Esta acción no se podrá deshacer</small></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aquí agregamos el input para el número de guía -->
+                <div class="col-md-12 mt-3">
+                    <div class="form-group">
+                        <label for="guiaNumero"><strong>Número de guía</strong></label>
+                        <input type="text" [(ngModel)]="guide" class="form-control" id="guiaNumero" placeholder="Ingrese el número de guía">
+                    </div>
+                </div>
+
+                <div class="col-md-12 d-flex justify-content-around mt-4">
+                    <button class="btn btn-sm text-white btn-dark" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-sm text-white btn-success" (click)="updateGuide()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modaldetalle" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+      <div class="modal-content">
+          <div class="modal-body">
+              <div class="col-md-12 text-center pb5">
+                  <i class="fa-solid fa-sync noselect f-xx-large"></i>
+              </div>
+              <div class="col-md-12 mt-4">
+                <div class="row">
+                    <div class="col-md-12 text-center d-flex flex-column mb-3">
+                      <span><strong># Guia:</strong> </span>
+                      <span><strong>Transportadora:</strong> </span>
+                      <span><strong>Conductor:</strong> </span>
+                      <span><strong>Placa:</strong>  </span>
+                      <span><strong>Referencias:</strong> </span>
+                      <span><strong>Evidencias:</strong>  </span>
+                      <hr>
+                    </div>
+                    <div class="col-md-12 " *ngIf="ListProduct?.details.length > 0">
+                        <span><strong>Productos:</strong></span>
+                        <table class="table table-bordered mt-3">
+                          <tbody>
+                            <tr *ngFor="let item of ListProduct?.details">
+                              <th class="text-left">{{item.batteryType}}</th>
+                              <td class="text-center">{{item.quantity}}</td>
+                            </tr>
+                            <tr>
+                              <th class="text-left">Total</th>
+                              <td class="text-center">{{sumQuantity(ListProduct.details)}}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+              <div class="col-md-12 d-flex justify-content-around mt-4">
+                  <button class="btn btn-sm text-white btn-dark" data-bs-dismiss="modal">Cancelar</button>
+                  <button class="btn btn-sm text-white btn-success" >Confirmar</button>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

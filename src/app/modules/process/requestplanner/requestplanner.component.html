@@ -49,8 +49,8 @@
                             <td class="text-left"> {{item.client?.name }} </td>
                             <td class="text-left"> {{ item.transporter?.name }} </td>
                             <td class="text-center">
-                                <h5 *ngIf="item.status == true" style="color: white;"><span class="badge bg-success2 t-small">Activo</span></h5>
-                                <h5 *ngIf="item.status == false" style="color: white;"><span class="badge bg-danger t-small">Inactivo</span></h5>
+                                <h5 style="color: white;"><span class="badge bg-success2 t-small">{{item.requestStatusId?.name}}</span></h5>
+                                <!-- <h5 *ngIf="item.status == false" style="color: white;"><span class="badge bg-danger t-small">Inactivo</span></h5> -->
                             </td>
                             <td class="text-center">
                               <i class="fa-solid f-larger pointer fa-pencil" (click)="editRequest(item)"></i>
@@ -114,9 +114,13 @@
                             <label for="" class="pricolor">Fecha Entrega</label>
                             <input type="date" class="form-control" name="datedelivery" [(ngModel)]="formRequest.deliveryDateToCollectionSite" autocomplete="off" required>
                           </div>
-                          <div class="col-md-4">
-                            <label for="" class="pricolor">Id Routa</label>
+                          <!-- <div class="col-md-3">
+                            <label for="" class="pricolor">Id Ruta</label>
                             <input type="text" class="form-control" name="idroute" [(ngModel)]="formRequest.routeId" autocomplete="off" required>
+                          </div> -->
+                          <div class="col-md-4">
+                            <label for="" class="pricolor"># de Guia</label>
+                            <input type="text" class="form-control" name="idroute" [(ngModel)]="formRequest.guideNumber" autocomplete="off" required>
                           </div>
                         </div>
                         <div class="row mb-3">
@@ -128,14 +132,14 @@
                             <label for="" class="pricolor">Hora Apertura</label>
                             <input type="time" class="form-control" name="datetimestart" [(ngModel)]="formRequest.tripStartTime" autocomplete="off" required>
                           </div>
-                          <div class="col-md-3">
+                          <!-- <div class="col-md-3">
                             <label for="" class="pricolor">Cierre de viaje</label>
                             <input type="date" class="form-control" name="dateend" [(ngModel)]="formRequest.tripEndDate" autocomplete="off" required>
                           </div>
                           <div class="col-md-3">
                             <label for="" class="pricolor">Hora Apertura</label>
                             <input type="time" class="form-control" name="datetimeend" [(ngModel)]="formRequest.tripEndTime" autocomplete="off" required>
-                          </div>
+                          </div> -->
                         </div>
                         <div class="row">
 

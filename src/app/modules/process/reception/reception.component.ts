@@ -45,6 +45,7 @@ export class ReceptionComponent implements OnInit {
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
   modal: any;
   modalloading: any;
+  modalconfirmGuide: any;
   activeSection: string | null = null;
   editpanel = false;
   action = '';
@@ -52,6 +53,7 @@ export class ReceptionComponent implements OnInit {
   photo: string | null = null;
   videoStream: MediaStream | null = null;
   imageselect:any = {};
+  reception: any = {};
   messageLoading = 'Subiendo Archivos, por favor espera...';
 
 
@@ -64,6 +66,7 @@ export class ReceptionComponent implements OnInit {
   role: string = '';
   headacopi: any = '';
   modalConfirm: any;
+  guide: string = '';
   constructor(private api: ApiService, private _toast: ToastService){}
 
   ngOnInit(){
@@ -71,6 +74,8 @@ export class ReceptionComponent implements OnInit {
     this.headacopi = JSON.parse(sessionStorage.getItem('profileData') || '[]')?.collectionSites[0].collectionSite.name
     this.modal = new bootstrap.Modal(document.getElementById('modalevidence'), {backdrop: 'static', keyboard: false});
     this.modalloading = new bootstrap.Modal(document.getElementById('modalLoading'), {backdrop: 'static', keyboard: false});
+    this.modalconfirmGuide = new bootstrap.Modal(document.getElementById('modalconfirmGuide'), {backdrop: 'static', keyboard: false});
+
     this.getReceptions(this.currentPage);
     this.getTransporters();
     this.getProductType();
@@ -80,7 +85,9 @@ export class ReceptionComponent implements OnInit {
   getReceptions(item: any){
     this.api.get(`receptions?page=${item}`).subscribe({
       next: (response: any) => {
-        this.listReceptions = response.data.items;
+        this.listReceptions = response.data.items.sort(
+          (a: any, b: any) => b.id - a.id
+        );
         this.listBase = this.listReceptions; // Guardamos la lista original para filtrar
         this.totalItems = this.listReceptions.length; // Total de solicitudes
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
@@ -94,7 +101,7 @@ export class ReceptionComponent implements OnInit {
   }
 
   getProductType(){
-    this.api.get(`catalogs/key/TIPO_PRODUCTO`).subscribe({
+    this.api.get(`products/categories`).subscribe({
       next: (response: any) => {
         this.listTypeProducts = response.data;
       },
@@ -150,8 +157,27 @@ export class ReceptionComponent implements OnInit {
   }
 
   editReception(item: any){
-    this.editpanel = true;
-    this.action = 'actualizar'
+    this.reception = item;
+    this.modalconfirmGuide.show();
+    this.guide = item.guideNumber;
+  }
+
+  updateGuide() {
+    if(this.guide === '' || this.guide === this.reception.guideNumber){
+      this._toast.warning('Error', 'El número de guía que quiere actualizar no puede estar vacío o ser igual al actual.')
+      return;
+    }
+    this.api.put(`receptions/${this.reception.id}`,{guideNumber: this.guide}).subscribe({
+      next: (response: any) => {
+        this.modalconfirmGuide.hide();
+        this._toast.success('Completado','Guía actualizada correctamente')
+        this.getReceptions(this.currentPage);
+      },
+      error: (error: any) => {
+        console.error('Error al actualizar el id de guia');
+      },
+    });
+
   }
 
   toggleSection(section: string) {
@@ -164,9 +190,25 @@ export class ReceptionComponent implements OnInit {
     }
   }
 
-  countQuantity(type: number){
-    return this.listProducts.filter(product => product.productTypeId === type)
-    .reduce((sum, product) => sum + product.quantity, 0);
+  countQuantity(categoryId: number){
+    // return this.listProducts.filter(product => product.productTypeId === type)
+    // .reduce((sum, product) => sum + product.quantity, 0);
+    // Busca la categoría en el listado de categorías
+  const category = this.listTypeProducts.find(typep => typep.id === categoryId);
+
+  // Si no encuentra la categoría, retorna 0
+  if (!category || !category.products) {
+    return 0;
+  }
+
+  // Suma las cantidades de los productos
+  const totalQuantity = category.products.reduce((sum: any, product: any) => {
+    // Asegúrate de que la cantidad sea un número válido
+    const quantity = Number(product.quantity) || 0;
+    return sum + quantity;
+  }, 0);
+
+  return totalQuantity;
   }
 
   sumQuantity(item: any){
@@ -305,7 +347,7 @@ export class ReceptionComponent implements OnInit {
       this._toast.info('Importante', 'Debe adjuntar evidencias para la recepción')
       return;
     }
-    this.products = this.listProducts.reduce((acc, { id, quantity }) => {
+    this.products = this.listTypeProducts.flatMap((element) => element.products).reduce((acc, { id, quantity }) => {
       if (quantity > 0) {
         acc.push({ productId:id, quantity });
       }
@@ -356,6 +398,7 @@ export class ReceptionComponent implements OnInit {
       next: (response: any) => {
         this.editpanel = false;
         this.action = 'listar';
+        this.getReceptions(this.currentPage);
         this.modalloading.hide();
       },
       error: (error: any) => {
