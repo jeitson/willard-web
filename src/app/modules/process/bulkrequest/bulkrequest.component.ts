@@ -1,70 +1,258 @@
 import { Component } from '@angular/core';
+import { Subject } from 'rxjs';
+import { GeneralService } from 'src/app/core/services/general.service';
+import { ToastService } from 'src/app/core/services/toast.service';
 import * as XLSX from 'xlsx';
+
+declare var bootstrap: any;
 @Component({
   selector: 'app-bulkrequest',
   templateUrl: './bulkrequest.component.html',
-  styleUrls: ['./bulkrequest.component.css']
+  styleUrls: ['./bulkrequest.component.css'],
 })
 export class BulkrequestComponent {
+  cardJson = { tab: 'L', Name: 'crear masive' };
+  tableData: Array<{
+    Nombre: string;
+    referenciaWll: string;
+    referenciaPh: string;
+  }> = [];
+  guide: any;
+  modalConfirm: any;
+  modaldetalle: any;
+  formattedData: any[] = []; // Variable para almacenar los datos fusionados
+  uploadedFile: File | null = null; // Variable para almacenar el archivo cargado
+  detailData: any[] = [];
+  currentPage: number = 1; // Página actual
+  totalPages: number = 0; // Total de páginas
+  pageSize: number = 10; // Tamaño de la página (puedes cambiarlo según tus necesidades)
+  pagesArray: number[] = []; // Array para las opciones del select
+  listBase: any[] = [];
+  ListProduct: any;
+  searchTerm$ = new Subject<any>();
+  searchTerm: string = ''; // Para almacenar el texto de búsqueda
+  idGuide: any;
+  constructor(private _general: GeneralService, private _toast: ToastService) {}
+  ngOnInit(): void {
+    this.modalConfirm = new bootstrap.Modal(
+      document.getElementById('modalconfirm'),
+      { backdrop: 'static', keyboard: false }
+    );
 
-  cardJson = {tab:'L', Name: 'crear masive'}
-  tableData: Array<{ Nombre: string; referenciaWll: string; referenciaPh: string }> = [];
-  tableDataa = [
-    {
-      Nombre: 'Archivo 1',
-      fechaCreacion: '2024-11-01',
-      fechaActualizacion: '2024-11-10',
-      estado: 'Activo',
-      referenciaWll: 'WLL123',
-      referenciaPh: 'PH456'
-    },
-    {
-      Nombre: 'Archivo 2',
-      fechaCreacion: '2024-10-25',
-      fechaActualizacion: '2024-10-30',
-      estado: 'Inactivo',
-      referenciaWll: 'WLL789',
-      referenciaPh: 'PH012'
-    },
-    {
-      Nombre: 'Archivo 3',
-      fechaCreacion: '2024-09-15',
-      fechaActualizacion: '2024-09-20',
-      estado: 'Activo',
-      referenciaWll: 'WLL345',
-      referenciaPh: 'PH678'
+    this.modaldetalle = new bootstrap.Modal(
+      document.getElementById('modaldetalle'),
+      { backdrop: 'static', keyboard: false }
+    );
+    this.get(this.currentPage);
+  }
+
+  // Método para obtener datos con paginación
+  get(page: number) {
+    this._general.getConsultantsTransp(page).subscribe((response: any) => {
+      console.log(response);
+
+      this.detailData = response.data.items; // Datos de la tabla
+      this.listBase = this.detailData;
+      this.totalPages = response.data.meta.totalPages; // Total de páginas
+      this.currentPage = page; // Actualizar la página actual
+      this.generatePagesArray(); // Generar el array de páginas para el select
+      this.search();
+    });
+  }
+
+  // Método para generar el array de páginas para el select
+  generatePagesArray() {
+    this.pagesArray = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  // Método para cambiar de página desde el select
+  onPageChange(event: any) {
+    const selectedPage = Number(event.target.value);
+    this.get(selectedPage);
+  }
+
+  // Método para ir a la página anterior
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.get(this.currentPage - 1);
     }
-  ];
-  
+  }
+
+  // Método para ir a la página siguiente
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.get(this.currentPage + 1);
+    }
+  }
+  viewData(item: any) {
+    this.ListProduct = item;
+    this.modaldetalle.show();
+  }
+  sumQuantity(item: any) {
+    return item.reduce(
+      (sum: any, product: any) => (sum += Number(product.quantity)),
+      0
+    );
+  }
   // Método para manejar el cambio de archivo
   onFileChange(event: any): void {
     const file = event.target.files[0];
     if (file) {
+      this.uploadedFile = file; // Guardar el archivo cargado
+
+      // Procesar el archivo
       const reader = new FileReader();
       reader.onload = (e: any) => {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
 
-        // Asumiendo que los datos están en la primera hoja
-        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        // Procesar ambas hojas
+        const principalData: any[] = []; // Datos de la primera hoja
+        const detalleData: any[] = []; // Datos de la segunda hoja
 
-        // Convertir a JSON
-        const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+        workbook.SheetNames.forEach((sheetName: string) => {
+          const sheet = workbook.Sheets[sheetName];
+          const jsonData = XLSX.utils.sheet_to_json(sheet);
 
-        // Mapear los datos a las columnas necesarias
-        this.tableData = jsonData.map((row: any) => ({
-          Nombre: row.Nombre || '',
-          referenciaWll: row.referenciaWll || '',
-          referenciaPh: row.referenciaPh || '',
-        }));
+          if (sheetName.toLowerCase() === 'principal') {
+            // Procesar la primera hoja
+            principalData.push(
+              ...jsonData.map((item: any) => {
+                let fechaMov = item.fechaMov;
+                let horaMov = item.horaMov;
+
+                // Convertir fechaMov
+                if (typeof fechaMov === 'number' && !isNaN(fechaMov)) {
+                  fechaMov = new Date(1900, 0, fechaMov - 1)
+                    .toISOString()
+                    .split('T')[0];
+                } else {
+                  fechaMov = null;
+                }
+
+                // Convertir horaMov
+                if (typeof horaMov === 'number' && !isNaN(horaMov)) {
+                  horaMov = new Date(horaMov * 86400000)
+                    .toISOString()
+                    .substr(11, 8);
+                } else {
+                  horaMov = null;
+                }
+
+                return {
+                  ...item,
+                  fechaMov,
+                  horaMov,
+                };
+              })
+            );
+          } else if (sheetName.toLowerCase() === 'detalle') {
+            // Procesar la segunda hoja
+            detalleData.push(...jsonData);
+          }
+        });
+
+        // Fusionar los datos
+        const mergedData = principalData.map((principalItem: any) => {
+          // Buscar coincidencias en la segunda hoja
+          const detalles = detalleData.filter(
+            (detalleItem: any) => detalleItem.idGuia === principalItem.idGuia
+          );
+
+          // Si hay coincidencias, agregar los detalles al objeto principal
+          if (detalles.length > 0) {
+            return {
+              ...principalItem,
+              detalles, // Agregar los detalles como un array
+            };
+          }
+
+          return principalItem; // Si no hay coincidencias, devolver el objeto principal sin cambios
+        });
+
+        // Asignar los datos fusionados a la variable del componente
+        this.formattedData = mergedData;
+        console.log(this.formattedData); // Verificar el resultado
       };
       reader.readAsArrayBuffer(file);
     }
   }
 
+  // Método para enviar el archivo al backend
+  sendFileToBackend(): void {
+    if (this.uploadedFile) {
+      console.log('Enviando archivo al backend:', this.uploadedFile.name);
+
+      // Ejemplo de cómo enviar el archivo usando FormData y HttpClient
+      const formData = new FormData();
+      formData.append('file', this.uploadedFile);
+
+      this._general.uploadFile(this.uploadedFile).subscribe(
+        (response: any) => {
+          console.log('Respuesta del backend:', response);
+        },
+        (error) => {
+          console.error('Error al enviar el archivo:', error);
+        }
+      );
+    } else {
+      console.error('No hay archivo cargado para enviar.');
+    }
+  }
   // Método para recargar la página
   reloadPage(): void {
     window.location.reload();
   }
 
+  editData(item: any) {
+    // Asignar los valores de la guía y el ID
+    this.guide = item.guideId;
+    this.idGuide = item.id;
+  
+    // Mostrar el modal de confirmación
+    this.modalConfirm.show();
+  }
+  
+  updateGuide() {
+    // Validar que this.guide y this.idGuide no sean nulos o indefinidos
+    if (!this.guide || !this.idGuide) {
+      this._toast.error('ERROR', 'Error: La guía o el ID no pueden ser nulos o indefinidos.');
+      return;
+    }
+  
+    // Crear el objeto de datos para la actualización
+    const data = { idGuia: this.guide };
+  
+    // Realizar la actualización usando el servicio
+    this._general.UpdateGuia(this.idGuide, data).subscribe({
+      next: (response: any) => {
+        // Manejar la respuesta exitosa
+        this._toast.success('Solicitud Enviada', 'Guía actualizada con éxito');
+        this.clearState(); // Limpiar el estado después de la actualización
+        this.modalConfirm.hide();
+        this.get(this.currentPage);
+      },
+      error: (error: any) => {
+        // Manejar el error
+        this._toast.error('ERROR', `Error al actualizar la guía: ${error.message || 'Error desconocido'}`);
+        this.clearState(); // Limpiar el estado en caso de error
+      },
+    });
+  }
+  
+  // Método para limpiar el estado después de la actualización
+  clearState() {
+    this.guide = null;
+    this.idGuide = null;
+  }
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.detailData = this.listBase.filter((item) => {
+        const itemValues = Object.values(item);
+        return itemValues.some((item) =>
+          String(item).toLowerCase().includes(value.toLowerCase())
+        );
+      });
+    });
+  }
 }
