@@ -333,14 +333,17 @@ export class BulkrequestComponent {
     });
   }
   errorMessage: string = '';
-
-validateGuide() {
-  const regex = /^\d{15}$/;
-  if (!regex.test(this.guide)) {
-    this.errorMessage = 'El número de guía debe contener exactamente 10 dígitos.';
-  } else {
-    this.errorMessage = '';
+  guideLength: number = 10; // Longitud permitida
+  validateGuide() {
+    const regex = new RegExp(`^\\d{${this.guideLength}}$`); // Solo números con la longitud exacta
+    const numValue = Number(this.guide); // Convertimos el input a número
+  
+    if (!regex.test(this.guide) || numValue <= 0 || numValue >= 15) {
+      this.errorMessage = `El número de guía debe contener exactamente ${this.guideLength} dígitos y ser válido.`;
+    } else {
+      this.errorMessage = '';
+    }
   }
-}
 
 }
+// 

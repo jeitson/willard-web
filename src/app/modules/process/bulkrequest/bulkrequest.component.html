@@ -189,15 +189,16 @@
                       class="form-control" 
                       id="guiaNumero" 
                       placeholder="Ingrese el número de guía"
-                      maxlength="15"
+                      [attr.maxlength]="guideLength"
                       (input)="validateGuide()"
                       #guideInput="ngModel"
                       required
                     >
-                    <small *ngIf="guideInput.invalid && guideInput.dirty" class="text-danger">
-                      El número de guía debe tener exactamente 10 dígitos.
+                    <small *ngIf="errorMessage" class="text-danger">
+                      {{ errorMessage }}
                     </small>
                   </div>
+                  
                 </div>
                 
 
@@ -249,7 +250,6 @@
 
               <div class="col-md-12 d-flex justify-content-around mt-4">
                   <button class="btn btn-sm text-white btn-dark" data-bs-dismiss="modal">Cancelar</button>
-                  <button class="btn btn-sm text-white btn-success" >Confirmar</button>
               </div>
           </div>
       </div>

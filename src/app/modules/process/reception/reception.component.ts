@@ -66,6 +66,7 @@ export class ReceptionComponent implements OnInit {
   role: string = '';
   headacopi: any = '';
   modalConfirm: any;
+  modalconfirmDetail: any;
   guide: string = '';
   constructor(private api: ApiService, private _toast: ToastService){}
 
@@ -75,6 +76,8 @@ export class ReceptionComponent implements OnInit {
     this.modal = new bootstrap.Modal(document.getElementById('modalevidence'), {backdrop: 'static', keyboard: false});
     this.modalloading = new bootstrap.Modal(document.getElementById('modalLoading'), {backdrop: 'static', keyboard: false});
     this.modalconfirmGuide = new bootstrap.Modal(document.getElementById('modalconfirmGuide'), {backdrop: 'static', keyboard: false});
+    this.modalconfirmDetail = new bootstrap.Modal(document.getElementById('modalconfirmDetail'), {backdrop: 'static', keyboard: false});
+
 
     this.getReceptions(this.currentPage);
     this.getTransporters();
@@ -109,6 +112,12 @@ export class ReceptionComponent implements OnInit {
         console.error('Error al crear usuario:', error);
       },
     });
+  }
+  receptionDetail: any;
+  viewDetail(item: any){
+    this.receptionDetail = item;
+    console.log(item);
+    this.modalconfirmDetail.show();
   }
 
   getProducts(){
