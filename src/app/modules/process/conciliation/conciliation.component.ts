@@ -34,6 +34,12 @@ export class ConciliationComponent implements OnInit {
     'Confirmado',
     'Todos',
   ];
+  typesReason: any = {
+    'R': "Recuperadora",
+    'T': 'Transportadora',
+    'B': 'Ambos',
+    'N': 'Ninguno'
+  }
   status: string = 'Todos';
   datefilter = '';
   constructor(private api: ApiService, private _toast: ToastService) {}
@@ -147,6 +153,10 @@ export class ConciliationComponent implements OnInit {
       (acc: any, item: any) => (acc += parseInt(item.quantity)),
       0
     );
+  }
+
+  typeReazon(type: string){
+    return this.typesReason[type] || 'N';
   }
 
   syncGuide(item: any) {

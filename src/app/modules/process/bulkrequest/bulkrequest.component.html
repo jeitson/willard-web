@@ -130,12 +130,12 @@
                       <tr>
                         <th class="text-left">ID Ruta</th>
                         <th class="text-center">ID Guía</th>
+                        <th class="text-center">Tipo de producto</th>
+                        <th class="text-center">Cantidad</th>
                         <th class="text-center">Fecha Movimiento</th>
                         <th class="text-center">Hora Movimiento</th>
                         <th class="text-center">Ciudad</th>
                         <th class="text-center">Dirección</th>
-                        <th class="text-center">Total Cantidad</th>
-                        <th class="text-center">Detalles</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -143,20 +143,13 @@
                       <tr *ngFor="let row of formattedData" style="font-size: smaller;">
                         <td class="text-left">{{ row.idRuta }}</td>
                         <td class="text-center">{{ row.idGuia }}</td>
+                        <td class="text-center">{{ row.tipoBat }}</td>
+                        <td class="text-center">{{ row.cantidad }}</td>
                         <td class="text-center">{{ row.fechaMov }}</td>
                         <td class="text-center">{{ row.horaMov }}</td>
                         <td class="text-center">{{ row.ciudad }}</td>
                         <td class="text-center">{{ row.direccion }}</td>
-                        <td class="text-center">{{ row.totCant }}</td>
-                        <td class="text-center">
-                          <!-- Verificar si hay detalles y mostrarlos -->
-                          <ul *ngIf="row.detalles && row.detalles.length > 0">
-                            <li *ngFor="let detalle of row.detalles">
-                              {{ detalle.tipoBat }} - Cant: {{ detalle.cantidad }}
-                            </li>
-                          </ul>
-                          <span *ngIf="!row.detalles || row.detalles.length === 0">Sin detalles</span>
-                        </td>
+
                       </tr>
                     </tbody>
                   </table>
@@ -187,14 +180,27 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Aquí agregamos el input para el número de guía -->
                 <div class="col-md-12 mt-3">
-                    <div class="form-group">
-                        <label for="guiaNumero"><strong>Número de guía</strong></label>
-                        <input type="text" [(ngModel)]="guide" class="form-control" id="guiaNumero" placeholder="Ingrese el número de guía">
-                    </div>
+                  <div class="form-group">
+                    <label for="guiaNumero"><strong>Número de guía</strong></label>
+                    <input 
+                      type="text" 
+                      [(ngModel)]="guide" 
+                      class="form-control" 
+                      id="guiaNumero" 
+                      placeholder="Ingrese el número de guía"
+                      [attr.maxlength]="guideLength"
+                      (input)="validateGuide()"
+                      #guideInput="ngModel"
+                      required
+                    >
+                    <small *ngIf="errorMessage" class="text-danger">
+                      {{ errorMessage }}
+                    </small>
+                  </div>
+                  
                 </div>
+                
 
                 <div class="col-md-12 d-flex justify-content-around mt-4">
                     <button class="btn btn-sm text-white btn-dark" data-bs-dismiss="modal">Cancelar</button>
@@ -244,7 +250,6 @@
 
               <div class="col-md-12 d-flex justify-content-around mt-4">
                   <button class="btn btn-sm text-white btn-dark" data-bs-dismiss="modal">Cancelar</button>
-                  <button class="btn btn-sm text-white btn-success" >Confirmar</button>
               </div>
           </div>
       </div>
