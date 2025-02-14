@@ -34,6 +34,10 @@ export class ErrorInterceptor implements HttpInterceptor {
 						sessionStorage.clear();
 						this._router.navigate(['login']);
 						break;
+          case 422:
+						// Manejo de error 502 (Bad Gateway)
+						this._toastr.error(`${ err.error.errors[0].errors[0] || err.message}`, 'Error 422');
+						break;
           case 500:
 						// Manejo de error 502 (Bad Gateway)
 						this._toastr.error(`${ err.error.message || err.message} in service: ${url}`, 'Error 500');
