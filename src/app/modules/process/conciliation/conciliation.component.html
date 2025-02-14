@@ -60,7 +60,7 @@
                           <h5 style="color: white;"><span class="badge t-small" [class]="setColorStatus(item.requestStatusId)">{{item.requestStatus?.name}}</span></h5>
                       </td>
                       <td class="text-center">
-                        <i class="fa-solid f-larger pointer fa-handshake"  (click)="viewDetail(item)"></i>
+                        <i class="fa-solid f-larger pointer" [ngClass]="{'fa-handshake': item.requestStatus?.name==='POR CONCILIAR', 'fa-eye':item.requestStatus?.name!=='POR CONCILIAR'}"  (click)="viewDetail(item)"></i>
                         <i class="fa-solid f-larger pointer fa-sync"  *ngIf="item.requestStatus?.name==='SIN GUIA'" (click)="syncGuide(item)"></i>
                       </td>
                   </tr>
@@ -114,6 +114,10 @@
           </div>
           <div class="modal-body">
             <div class="row" *ngIf="viewdata">
+              <div class="col-12">
+                <span>El concepto de conciliacion fue para: <strong>{{typeReazon(audit.reason)}}</strong></span>
+                <blockquote>{{audit.comment}}</blockquote>
+              </div>
               <div class="col">
                 <div class="card">
                   <div class="card-body">
@@ -128,8 +132,8 @@
                           <tr *ngFor="let item of audit.auditGuideDetails?.transporter?.detail; let i = index;">
                             <th width="70%" class="text-left">{{item.product?.name}}</th>
                             <td width="30%" class="text-center">
-                              <input type="number" class="form-control" *ngIf="audit.requestStatus?.name==='PENDIENTE'" name="inpt_{{i}}" [(ngModel)]="item.quantityCollection">
-                              <span *ngIf="audit.requestStatus?.name!=='PENDIENTE'">{{item.quantityCollection}}</span>
+                              <input type="number" class="form-control" *ngIf="audit.requestStatus?.name==='POR CONCILIAR'" name="inpt_{{i}}" [(ngModel)]="item.quantityCollection">
+                              <span *ngIf="audit.requestStatus?.name!=='POR CONCILIAR'">{{item.quantityCollection}}</span>
                             </td>
                           </tr>
                         </tbody>
@@ -152,8 +156,8 @@
                           <tr *ngFor="let item of audit.auditGuideDetails?.recuperator?.detail; let j = index;">
                             <th width="70%" class="text-left">{{item.product?.name}}</th>
                             <td width="30%" class="text-center">
-                              <input type="number" class="form-control" *ngIf="audit.requestStatus?.name==='PENDIENTE'" name="inpt_{{j}}" [(ngModel)]="item.quantityCollection">
-                              <span *ngIf="audit.requestStatus?.name!=='PENDIENTE'">{{item.quantityCollection}}</span>
+                              <input type="number" class="form-control" *ngIf="audit.requestStatus?.name==='POR CONCILIAR'" name="inpt_{{j}}" [(ngModel)]="item.quantityCollection">
+                              <span *ngIf="audit.requestStatus?.name!=='POR CONCILIAR'">{{item.quantityCollection}}</span>
                             </td>
                           </tr>
                         </tbody>
@@ -235,7 +239,7 @@
           </div>
           <div class="modal-footer">
             <button class="btn btn-sm bg-dark text-white" (click)="modal.hide()">Cancelar</button>
-            <button class="btn btn-sm bg-success2" *ngIf="viewdata && audit.requestStatus?.name==='PENDIENTE'" (click)="setAnswer()">Corregir</button>
+            <button class="btn btn-sm bg-success2" *ngIf="viewdata && audit.requestStatus?.name==='POR CONCILIAR'" (click)="setAnswer()">Corregir</button>
             <button class="btn btn-sm bg-warning" *ngIf="!viewdata" (click)="this.viewdata=true; this.images=[];">Regresar</button>
           </div>
       </div>
