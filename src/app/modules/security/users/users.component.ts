@@ -31,6 +31,7 @@ export class UsersComponent {
     email: '',
     password: '',
     referenceWLL: '',
+    transporterId: '',
     referencePH: '',
     roles: [],
     collectionSites: [],
@@ -48,6 +49,7 @@ export class UsersComponent {
   };
   modal: any;
   listBase: any[] = [];
+  listTransporters: any[] = [];
   paginatedList: any = [];
   searchTerm$ = new Subject<any>();
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
@@ -71,6 +73,7 @@ export class UsersComponent {
     this.loadUsers(this.currentPage);
     this.loadRoles();
     this.listCollectionCopy();
+    this.getTransporter();
     this.getZona();
   }
 
@@ -89,6 +92,17 @@ export class UsersComponent {
     this.http.get('catalogs/key/ZONA').subscribe({
       next: (response: any) => {
         this.listZones = response.data;
+      },
+      error: (error: any) => {
+        console.error('Error al obtener las zonas', error);
+      },
+    });
+  }
+
+  getTransporter() {
+    this.http.get('transporters').subscribe({
+      next: (response: any) => {
+        this.listTransporters = response.data.items;
       },
       error: (error: any) => {
         console.error('Error al obtener las zonas', error);
@@ -143,6 +157,7 @@ export class UsersComponent {
         referenceWLL: item.referenceWLL,
         referencePH: item.referencePH,
         roles: item.roles,
+        transporterId: item.transporterId,
         collectionSites: item.collectionSites.length > 0 ? item.collectionSites[0].collectionSiteId : '',
         zones: item.zones.length > 0 ? item.zones[0].id : '',
       };
@@ -195,6 +210,7 @@ export class UsersComponent {
       password: '',
       referenceWLL: '',
       referencePH: '',
+      transporterId: '',
       roles: [],
       collectionSites: [],
       zones:[],

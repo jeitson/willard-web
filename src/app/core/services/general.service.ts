@@ -18,18 +18,18 @@ export class GeneralService {
     uploadFile(file: File): Observable<any> {
       const formData = new FormData();
       formData.append('file', file); // 'file' es el nombre del campo que espera el backend
-  
+
       // Enviar el archivo a la ruta especificada
-      return this._service.post('registro', formData);
+      return this._service.post('transporter-travel', formData);
     }
 
     // Obtener el listado de asesores con opción de paginación
     getConsultantsTransp(params: any): Observable<any> {
-      return this._service.get(`registro?page=${params}`);
+      return this._service.get(`transporter-travel?page=${params}`);
     }
 
     UpdateGuia(params: any, data:any): Observable<any> {
-      return this._service.patch(`registro/guia/${params}`, data);
+      return this._service.patch(`transporter-travel/route/${params}`, data);
     }
 
 }

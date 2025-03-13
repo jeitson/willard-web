@@ -227,6 +227,8 @@ export class RolesComponent implements OnInit {
   };
 
   handleSuccess(response: any): void {
+    this.modulesBase = [];
+    this.modules = [];
     this.selectData();
     this.close();
   }
