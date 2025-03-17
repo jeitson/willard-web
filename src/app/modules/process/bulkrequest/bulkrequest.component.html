@@ -116,7 +116,7 @@
                   <h6> Id de Rutas Agregadas</h6>
                   <ng-container *ngIf="selectedItems.length > 0">
                     <div class="col-md-12 m-3 text-center ">
-                      <button class="btn btn-success btn-sm" >Generar Estructura <i class="fa-solid fa-download"></i></button>
+                      <button class="btn btn-success btn-sm" (click)="getPendingRequest()">Generar Estructura <i class="fa-solid fa-download"></i></button>
     
                     </div>
                     

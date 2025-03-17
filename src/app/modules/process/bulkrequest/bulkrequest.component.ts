@@ -33,7 +33,7 @@ export class BulkrequestComponent {
   searchTerm$ = new Subject<any>();
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
   idGuide: any;
-  listPending: any[] =[];
+  listPending: any[] = [];
   selectedItem: any;
   constructor(
     private _general: GeneralService,
@@ -68,21 +68,53 @@ export class BulkrequestComponent {
     });
   }
   selectedItems: any[] = [];
-  
+
   getSolicitudPending() {
     this._request.getSolicitudPending().subscribe((response: any) => {
       console.log(response);
       this.listPending = response.data;
     });
   }
+
+  getPendingRequest() {
+    const routeIds = this.selectedItems.map(item => item.routeId);
+    const uniqueRouteIds = [...new Set(routeIds)];
   
-  // Agregar al listado y eliminar del select
+    // Verificar si hay duplicados
+    if (routeIds.length !== uniqueRouteIds.length) {
+      this._toast.info('ERROR','Hay valores duplicados en los routeId.');
+      return;
+    }
+  
+    const requestBody = { routes: uniqueRouteIds };
+    
+    console.log(requestBody);
+    
+    this._request.getPendingRequests(requestBody).subscribe((item: any) => {
+      console.log(item);
+    });
+  }
+  
+  
+
   addToTable() {
     if (this.selectedItem) {
       // Buscar el objeto en listPending
-      const selectedObject = this.listPending.find(item => item.id === this.selectedItem);
-      
+      const selectedObject = this.listPending.find(
+        (item) => item.id === this.selectedItem
+      );
+  
       if (selectedObject) {
+        // Verificar si el routeId ya está en selectedItems
+        const exists = this.selectedItems.some(
+          (item) => item.routeId === selectedObject.routeId
+        );
+  
+        if (exists) {
+          this._toast.info('ERROR','YA EXISTE EL ROUTER SELECCIONADO.');
+          return;
+        }
+  
         // Agregarlo a la tabla
         this.selectedItems.push(selectedObject);
         // Removerlo de la lista del select
@@ -91,14 +123,15 @@ export class BulkrequestComponent {
     }
   }
   
+
   // Eliminar de la tabla y regresar al select
   removeFromTable(item: any) {
     // Regresar el objeto a la lista del select
     this.listPending.push(item);
     // Removerlo de la tabla
-    this.selectedItems = this.selectedItems.filter(i => i.id !== item.id);
+    this.selectedItems = this.selectedItems.filter((i) => i.id !== item.id);
   }
-  
+
   // Método para generar el array de páginas para el select
   generatePagesArray() {
     this.pagesArray = Array.from({ length: this.totalPages }, (_, i) => i + 1);
