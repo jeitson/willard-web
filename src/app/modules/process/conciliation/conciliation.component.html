@@ -1,7 +1,7 @@
 <div class="container">
   <div class="page-header">
     <div class="d-flex flex-column">
-      <h5 class="primary title noselect" (click)="processData()">Auditoria de conciliación</h5>
+      <h5 class="primary title noselect">Auditoria de conciliación</h5>
       <p class="secundary mb-1">En este módulo podras realizar las conciliaciones de las recepciones</p>
     </div>
     <div class="d-flex flex-rows gap-10">
@@ -18,7 +18,17 @@
   </div>
   <div class="page-body">
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-12 mb-3">
+        <ul class="nav nav-tabs">
+          <li class="nav-item" [ngClass]="{'activeli': viewcard==='P'}" >
+            <a class="nav-link" [ngClass]="{'active': viewcard==='P'}" href="javascript:void(0)" (click)="viewcard='P'">Pendiente Revisión</a>
+          </li>
+          <li class="nav-item" [ngClass]="{'activeli': viewcard==='C'}" >
+            <a class="nav-link" [ngClass]="{'active': viewcard==='C'}" href="javascript:void(0)" (click)="viewcard='C'">Completadas</a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-12" *ngIf="viewcard === 'P'">
         <div class="table-responsive">
           <div class="row">
             <div class="mb-3 col-4">
@@ -29,39 +39,35 @@
                 <option *ngFor="let item of statusList" [value]="item">{{item}}</option>
               </select>
             </div>
-            <div class="mb-3 col-2">
-              <input type="date" class="form-control form-control-sm" name="datefilter" [(ngModel)]="datefilter"/>
-            </div>
           </div>
           <table class="table table-sm">
               <thead class="bg-white">
                   <tr>
-                      <th class="text-left"> # Guía</th>
-                      <th class="text-left"> Fecha </th>
-                      <th class="text-left"> Zona </th>
-                      <th class="text-left"> Recuperadora </th>
+                      <th class="text-left"> Origen de Datos </th>
                       <th class="text-left"> Transportadora </th>
-                  <!--<th class="text-center"> Cant. Total </th>
-                      <th class="text-right"> Glosa </th>-->
+                      <th class="text-left"> # Ruta</th>
+                      <th class="text-left"> Zona </th>
+                      <th class="text-left"> Fecha </th>
+                      <th class="text-left"> Recuperadora </th>
+                      <th class="text-center"> Cant. Total </th>
                       <th class="text-center"> Estado </th>
                       <th class="text-center"> </th>
                   </tr>
               </thead>
               <tbody style="background-color: white;">
                   <tr *ngFor="let item of listReceptions " style="font-size: smaller;">
-                      <td class="text-left"> {{item.guideNumber}} </td>
-                      <td class="text-left"> {{item.date}} </td>
-                      <td class="text-left"> {{item.zone?.name || '-' }} </td>
-                      <td class="text-left"> {{item.recuperator?.name || '-'}} </td>
+                      <td class="text-left"> {{item.origin}} </td>
                       <td class="text-left"> {{item.transporter?.name || '-'}} </td>
-                      <!-- <td class="text-center"> {{item.cantTotal}} </td>
-                      <td class="text-right"> {{item.glosa}} </td> -->
+                      <td class="text-left">{{item.routeId}}</td>
+                      <td class="text-left"> {{item.zone || '-' }} </td>
+                      <td class="text-left"> {{item.date}} </td>
+                      <td class="text-left"> {{item.recuperator || '-'}} </td>
+                      <td class="text-center"> {{item.quantityTotal}} </td>
                       <td class="text-center">
-                          <h5 style="color: white;"><span class="badge t-small" [class]="setColorStatus(item.requestStatusId)">{{item.requestStatus?.name}}</span></h5>
+                          <h5 style="color: white;"><span class="badge t-small" [class]="setColorStatus(item.status)">{{item.status}}</span></h5>
                       </td>
                       <td class="text-center">
-                        <i class="fa-solid f-larger pointer" [ngClass]="{'fa-handshake': item.requestStatus?.name==='POR CONCILIAR', 'fa-eye':item.requestStatus?.name!=='POR CONCILIAR'}"  (click)="viewDetail(item)"></i>
-                        <i class="fa-solid f-larger pointer fa-sync"  *ngIf="item.requestStatus?.name==='SIN GUIA'" (click)="syncGuide(item)"></i>
+                        <i class="fa-solid fa-handshake f-larger pointer" *ngIf="item.status === 'POR CONCILIAR'" (click)="viewDetail(item)"></i>
                       </td>
                   </tr>
               </tbody>
@@ -95,154 +101,263 @@
               </div>
             </ul>
           </nav>
+        </div>
       </div>
+      <div class="col-md-12" *ngIf="viewcard === 'C'">
+        <div class="table-responsive">
+          <div class="row">
+            <div class="mb-3 col-4">
+              <input type="text" class="form-control form-control-sm" (keyup)="searchTerm$.next($event.target)" placeholder="Buscar..."/>
+            </div>
+          </div>
+          <table class="table table-sm">
+              <thead class="bg-white">
+                  <tr>
+                      <th class="text-left"> Transportadora </th>
+                      <th class="text-left"> # Ruta</th>
+                      <th class="text-left"> Zona </th>
+                      <th class="text-left"> Fecha </th>
+                      <th class="text-left"> Recuperadora </th>
+                      <th class="text-center"> Cant. Total </th>
+                      <th class="text-right"> GAP </th>
+                      <th class="text-center"> Estado </th>
+                      <th class="text-center"> </th>
+                  </tr>
+              </thead>
+              <tbody style="background-color: white;">
+                  <tr *ngFor="let item of listReceptions2" style="font-size: smaller;">
+                      <td class="text-left"> {{item.transporter?.name || '-'}} </td>
+                      <td class="text-left">{{item.routeId}}</td>
+                      <td class="text-left"> {{item.zone || '-' }} </td>
+                      <td class="text-left"> {{item.date}} </td>
+                      <td class="text-left"> {{item.recuperator || '-'}} </td>
+                      <td class="text-center"> {{item.quantityTotal}} </td>
+                      <td class="text-right"> {{item.gap}} </td>
+                      <td class="text-center">
+                          <h5 style="color: white;"><span class="badge t-small" [class]="setColorStatus(item.status)">{{item.status}}</span></h5>
+                      </td>
+                      <td class="text-center">
+                        <i class="fa-solid f-larger pointer" [ngClass]="{'fa-handshake': item.requestStatus?.name==='POR CONCILIAR', 'fa-eye':item.requestStatus?.name!=='POR CONCILIAR'}"  (click)="viewDetail(item)"></i>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+          <!-- Paginación -->
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-between">
+              <!-- Select para seleccionar la página -->
+              <div class="d-flex align-items-center">
+                <li class="page-item d-flex align-items-center">
+                  <span class="me-2">Pag</span>
+                  <select class="form-select form-select-sm me-2" (change)="onPageChange($event)">
+                    <option *ngFor="let i of pagesArray" [value]="i" [selected]="currentPage === i">{{ i }}</option>
+                  </select>
+                  <span class="me-2">de</span>
+                  <span>{{ totalPages }}</span>
+                </li>
+              </div>
+              <!-- Controles Anterior y Siguiente alineados a la derecha -->
+              <div class="d-flex">
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                  <a class="page-link" (click)="goToPage(currentPage - 1)">
+                    <i class="fa-solid fa-angle-left"></i>
+                  </a>
+                </li>
+                <li class="page-item" [class.disabled]="currentPage === totalPages">
+                  <a class="page-link" (click)="goToPage(currentPage + 1)">
+                    <i class="fa-solid fa-angle-right"></i>
+                  </a>
+                </li>
+              </div>
+            </ul>
+          </nav>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <div class="modal fade" id="modaldetail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-          <div class="modal-header">
-            <div class="col-md-12">
-                <h5 class="modal-title pricolor" id="modal-title-notification">Detalle de conciliación</h5>
-                <h5>Guia: #{{audit.guideNumber}}</h5>
-                <span>Fecha: {{audit.date}}</span> <br>
-                <span>Zona: {{audit.zone?.name}}</span>
-              </div>
-          </div>
+  <div [class]="sizeModal" class="modal-dialog">
+    <div class="modal-content">
+      <div *ngIf="sizeModal==='modal-xl'">
           <div class="modal-body">
-            <div class="row" *ngIf="viewdata">
-              <div class="col-12">
-                <span>El concepto de conciliacion fue para: <strong>{{typeReazon(audit.reason)}}</strong></span>
-                <blockquote>{{audit.comment}}</blockquote>
+            <div class="row">
+              <div class="col-md-12 d-flex justify-content-between">
+                <h5># RUTA: {{audit.routeId}}</h5>
+                <h5 style="color: white;"><span class="badge t-small" [class]="setColorStatus(audit.requestStatus)">{{audit.requestStatus}}</span></h5>
               </div>
-              <div class="col">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="text-center d-flex flex-column">
-                      <i class="fa-solid fa-truck"></i>
-                      <span>Transportadora</span>
-                      <span>{{audit.transporter?.name}}</span>
-                      <p>{{audit.auditGuideDetails?.transporter?.quantityCollection}}</p>
-                      <span><strong>Productos:</strong></span>
-                      <table class="table table-bordered mt-3">
-                        <tbody>
-                          <tr *ngFor="let item of audit.auditGuideDetails?.transporter?.detail; let i = index;">
-                            <th width="70%" class="text-left">{{item.product?.name}}</th>
-                            <td width="30%" class="text-center">
-                              <input type="number" class="form-control" *ngIf="audit.requestStatus?.name==='POR CONCILIAR'" name="inpt_{{i}}" [(ngModel)]="item.quantityCollection">
-                              <span *ngIf="audit.requestStatus?.name!=='POR CONCILIAR'">{{item.quantityCollection}}</span>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
+              <hr>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <span>RECUPERADORA: {{audit.reception?.colectionSite?.name}}</span>
+                <hr>
               </div>
-              <div class="col">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="text-center d-flex flex-column">
-                      <i class="fa-solid fa-car-battery"></i>
-                      <span>Recuperadora</span>
-                      <span>{{audit.recuperator?.name}}</span>
-                      <p>{{audit.auditGuideDetails?.recuperator?.quantityCollection}}</p>
-                      <span><strong>Productos:</strong></span>
-                      <table class="table table-bordered mt-3">
-                        <tbody>
-                          <tr *ngFor="let item of audit.auditGuideDetails?.recuperator?.detail; let j = index;">
-                            <th width="70%" class="text-left">{{item.product?.name}}</th>
-                            <td width="30%" class="text-center">
-                              <input type="number" class="form-control" *ngIf="audit.requestStatus?.name==='POR CONCILIAR'" name="inpt_{{j}}" [(ngModel)]="item.quantityCollection">
-                              <span *ngIf="audit.requestStatus?.name!=='POR CONCILIAR'">{{item.quantityCollection}}</span>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col" *ngIf="audit.requestStatus?.name==='CONFIRMADO'">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="text-center d-flex flex-column">
-                      <i class="fa-solid fa-handshake"></i>
-                      <span>Conciliación</span>
-                      <span>Resultado de conciliación</span>
-                      <p>{{audit.auditGuideDetails?.conciliation?.quantityCollection}}</p>
-                      <span><strong>Productos:</strong></span>
-                      <table class="table table-bordered mt-3">
-                        <tbody>
-                          <tr *ngFor="let item of audit.auditGuideDetails?.conciliation?.detail; let k = index;">
-                            <th width="70%" class="text-left">{{item.product?.name}}</th>
-                            <td width="30%" class="text-center">
-                              <span>{{item.quantityCollection}}</span>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-12 mt-4">
-                <table class="table table-bordered table-sm">
-                  <thead class="bg-white">
+              <div class="col-md-6">
+                <div class="table-responsive">
+                  <table class="table table-sm table-bordered">
+                    <thead>
                       <tr>
-                          <th class="text-left"> Sitio Recogida</th>
-                          <th class="text-center"> Es Agencia </th>
-                          <th class="text-left"> Tipo </th>
-                          <th class="text-left"> Fecha </th>
-                          <th class="text-center"> Cantidad </th>
-                          <th class="text-center"> </th>
+                        <th>Referencia Bupa</th>
+                        <th>Tipo Bupa</th>
+                        <th>Cantidad</th>
                       </tr>
-                  </thead>
-                  <tbody style="background-color: white;">
-                      <tr *ngFor="let item of audit.routes " style="font-size: smaller;">
-                        <td class="text-left"> {{item.name}} </td>
-                        <td class="text-center"> {{item.isAgency}} </td>
-                        <td class="text-left"> {{item.type}}</td>
-                        <td class="text-left"> {{item.date | date:'medium'}} </td>
-                        <td class="text-center"> {{item.quantity}} </td>
-                        <td class="text-center">
-                          <!-- <i class="fa-solid f-larger pointer fa-file-lines" (click)="viewDetail(item)"></i> -->
-                          <i class="fa-solid f-larger pointer fa-image" (click)="viewFiles(item.images)"></i>
-                        </td>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of audit.reception?.receptionDetails">
+                        <td>{{item.product?.name}}</td>
+                        <td>{{item.productTypeName}}</td>
+                        <td>{{item.quantity}}</td>
                       </tr>
-                  </tbody>
-              </table>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th colspan="2">Total</th>
+                        <th>{{audit.recuperatorTotal}}</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
               </div>
             </div>
-            <div class="row" *ngIf="!viewdata">
+            <div class="row">
               <div class="col-md-12">
-                <div id="carouselExample" class="carousel slide">
-                  <div class="carousel-inner">
-                    <div class="carousel-item active" *ngFor="let item of this.images">
-                      <img src="{{item}}" class="d-block w-100" alt="item">
+                <span>TRANSPORTADORA: {{audit.transporter?.name}}</span>
+                <hr>
+              </div>
+              <div class="col-md-12">
+                <div class="table-responsive">
+                  <table class="table table-sm table-bordered">
+                    <thead>
+                      <tr>
+                        <th># Guia</th>
+                        <th>Placa</th>
+                        <th>Es Agencia</th>
+                        <th>Cliente</th>
+                        <th>Ref Bupas</th>
+                        <th>Cantidad</th>
+                        <th class="text-center">Soporte</th>
+                        <th>Conciliación</th>
+                        <th *ngIf="audit.requestStatus!== 'CONFIRMADA'">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of audit.transporterTravel">
+                        <td>{{item.guideId}}</td>
+                        <td>{{item.licensePlate}}</td>
+                        <td>{{item.client?.isAgency?'SI':'NO'}}</td>
+                        <td>{{item.client?.name}}</td>
+                        <td>{{item.batteryType}}</td>
+                        <td>{{item.quantity}}</td>
+                        <td class="text-center"><i class="fa-solid fa-image" (click)="viewFiles(item.supportUrls)"></i></td>
+                        <td>
+                          <input *ngIf="audit.requestStatus!== 'CONFIRMADA'" type="number" id="input3{{item.id}}" name="input_3{{item.id}}" [(ngModel)]="item.quantityConciliated" class="form-control form-control-sm">
+                          <span *ngIf="audit.requestStatus === 'CONFIRMADA'">{{item.quantityConciliated}}</span>
+                        </td>
+                        <td *ngIf="audit.requestStatus!== 'CONFIRMADA'">
+                          <div class="d-flex justify-content-around align-items-center">
+                            <i *ngIf="!item.isNew" class="fa-solid fa-copy" (click)="openAddGuide('new',item)"></i>
+                            <i *ngIf="item.isNew" class="fa-solid fa-edit" (click)="openAddGuide('edit',item)"></i>
+                            <i *ngIf="item.isNew" class="fa-solid fa-trash" (click)="removeGuide(item)"></i>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th colspan="5">Total</th>
+                        <th>{{audit.transporterTotal}}</th>
+                        <!-- <th colspan="3"></th> -->
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <span>TOTALES: POR CONCILIAR</span>
+                <hr>
+              </div>
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="col-md-3">
+                    <div>
+                      <label>Total Recuperadora</label>
+                      <input [disabled]="audit.requestStatus === 'CONFIRMADA'" type="number" name="input_recuperadortotal" [(ngModel)]="audit.recuperatorTotal" class="form-control form-control-sm">
                     </div>
                   </div>
-                  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                  </button>
-                  <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                  </button>
+                  <div class="col-md-3">
+                    <label>Total Transportadora</label>
+                    <input [disabled]="audit.requestStatus === 'CONFIRMADA'" type="number" name="input_transportertotal" [(ngModel)]="audit.transporterTotal" class="form-control form-control-sm">
+                  </div>
+                  <div class="col-md-3">
+                    <label>Total a Conciliar</label>
+                    <input [disabled]="audit.requestStatus === 'CONFIRMADA'" type="number" name="input_conciliationtotal" [(ngModel)]="audit.conciliationTotal" class="form-control form-control-sm">
+                  </div>
+                  <div class="col-md-12 mt-3">
+                    <label><strong>Total por tipo de bupas</strong></label>
+                  </div>
+                  <div class="col-md-2" *ngFor="let item of audit.products; ">
+                    <label>{{item.name}}</label>
+                    <input [disabled]="audit.requestStatus === 'CONFIRMADA'" type="number" name="input_{{item.name}}" [(ngModel)]="item.quantity" class="form-control form-control-sm">
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           <div class="modal-footer">
             <button class="btn btn-sm bg-dark text-white" (click)="modal.hide()">Cancelar</button>
-            <button class="btn btn-sm bg-success2" *ngIf="viewdata && audit.requestStatus?.name==='POR CONCILIAR'" (click)="setAnswer()">Corregir</button>
-            <button class="btn btn-sm bg-warning" *ngIf="!viewdata" (click)="this.viewdata=true; this.images=[];">Regresar</button>
+            <button *ngIf="audit.requestStatus !== 'CONFIRMADA'" class="btn btn-sm bg-info" (click)="saveConfirmConciliation(true)">Guardar</button>
+            <button *ngIf="audit.requestStatus !== 'CONFIRMADA'" class="btn btn-sm bg-success2" (click)="saveConfirmConciliation(false)">Aprobar</button>
           </div>
       </div>
+      <div *ngIf="sizeModal==='modal-lg'">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12 d-flex justify-content-between">
+              <h5>Agregar Ajuste en Guía</h5>
+            </div>
+            <hr>
+          </div>
+          <div class="form">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label># Guia</label>
+                <input type="number" name="guide" [(ngModel)]="productForm.guideId" disabled class="form-control form-control-sm">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label>Placa</label>
+                <input type="text" name="plate" [(ngModel)]="productForm.plate" disabled class="form-control form-control-sm">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label>Origen Agencia</label>
+                <input type="text" name="agency" [(ngModel)]="productForm.isAgency" disabled class="form-control form-control-sm">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label>Cliente</label>
+                <input type="text" disabled name="clients" [(ngModel)]="productForm.clientName" class="form-control form-control-sm">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label>Ref Bupa</label>
+                <select name="refbupas" id="refbupas" name="productsselect" [(ngModel)]="productForm.productId" class="form-control form-control-sm form-select">
+                  <option value="{{item.id}}" *ngFor="let item of listProducts">{{item.name}}</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label>Cantidad</label>
+                <input type="number" name="count" [(ngModel)]="productForm.quantity" class="form-control form-control-sm">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-sm bg-dark text-white" (click)="cancelOpenGuide()">Cancelar</button>
+          <button class="btn btn-sm bg-info" (click)="addGuide()">Agregar</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -303,7 +418,7 @@
               </div>
               <div class="col-md-12 d-flex justify-content-around mt-4">
                   <button class="btn btn-sm text-white btn-dark" (click)="modalConfirm.hide(); modal.show()"> Cancelar </button>
-                  <button class="btn btn-sm bg-success2 text-white" (click)="actionConfirm()"> Confirmar </button>
+                  <button class="btn btn-sm bg-success2 text-white"> Confirmar </button>
               </div>
           </div>
       </div>
