@@ -7,6 +7,7 @@ import { SettingsService } from 'src/app/core/services/settings/settings.service
 import { ToastService } from 'src/app/core/services/toast.service';
 import { Subject } from 'rxjs';
 import { Certificate } from 'src/app/core/utils/pdf/pdf_certificate';
+import { ProductsService } from 'src/app/core/services/process/products.service';
 declare var bootstrap: any;
 @Component({
   selector: 'wlrd-requestagency',
@@ -22,7 +23,7 @@ export class RequestagencyComponent {
   request: any = {
     clientId: '',
     description: '',
-    productTypeId: '',
+    productId: '',
     estimatedPickUpDate: '',
     estimatedPickUpTime: '',
     estimatedQuantity: '',
@@ -55,6 +56,7 @@ export class RequestagencyComponent {
   roleId: any;
   isSpecialDisabled = false;
   typeProduct: any = [];
+  productList: any = [];
   minDate: string;
   maxDate: string;
   searchTerm$ = new Subject<any>();
@@ -72,7 +74,8 @@ export class RequestagencyComponent {
     private _Settings: SettingsService,
     private _requests: RequestsService,
     private _pickUp: PickuplocationService,
-    private _toast: ToastService
+    private _toast: ToastService,
+    private _product: ProductsService
   ) {
     const today = new Date();
     const futureDate = new Date();
@@ -139,7 +142,9 @@ export class RequestagencyComponent {
       },
     });
 
-    
+    this._product.getProducts().subscribe((response: any)=>{
+      this.productList = response.data.items;
+    })
 
     this._Settings.getCatalogChildrenByKey('TIPOS_SEDES_ACOPIO').subscribe({
       next: (response: any) => {
@@ -157,7 +162,6 @@ export class RequestagencyComponent {
         console.error('Error al obtener ciudades:', error);
       },
     });
-
     this._Settings.getCatalogChildrenByKey('CIUDAD').subscribe({
       next: (response: any) => {
         this.listCiudades = response.data;
@@ -195,7 +199,7 @@ export class RequestagencyComponent {
   }
 
   pickuplocation(item:any){
-    console.log(item);
+    console.log('lugar ',item);
     this._pickUp.getPickUpLocationsClient(item).subscribe({
       next: (response: any) => {
         this.listTipos = response.data.items;
@@ -221,7 +225,7 @@ export class RequestagencyComponent {
     this.request = {
       clientId: item.client.id, // Cambiado de item.clientId a item.client.businessName
       description: item.description,
-      productTypeId: item.productTypeId,
+      productId: item.productTypeId,
       estimatedPickUpDate: item.estimatedPickUpDate,
       estimatedPickUpTime: item.estimatedPickUpTime,
       estimatedQuantity: item.estimatedQuantity,
@@ -248,7 +252,7 @@ export class RequestagencyComponent {
     this.request = {
       clientId: '',
       description: '',
-      productTypeId: '',
+      productId: '',
       estimatedPickUpDate: '',
       estimatedPickUpTime: '',
       estimatedQuantity: '',
@@ -310,7 +314,7 @@ export class RequestagencyComponent {
   labelsValidation: any = {
     clientId: false,
     description: false,
-    productTypeId: false,
+    productId: false,
     estimatedPickUpDate: false,
     estimatedPickUpTime: false,
     estimatedQuantity: false,

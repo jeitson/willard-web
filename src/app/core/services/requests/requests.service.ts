@@ -51,4 +51,13 @@ export class RequestsService {
   cancelSolicitud(id: any): Observable<any> {
     return this._api.post(`collection-request/${id}/cancel`, {});
   }
+
+    // Método para obtener listado de solicitudes pendiente por cargar
+    getSolicitudPending(): Observable<any> {
+      return this._api.get(`collection-request/routes-pending`);
+    }
+    // Método para Obtener información complementaria de las solicitudes pendiente por cargar
+    getPendingRequests(content: any): Observable<any> {
+      return this._api.post(`collection-request/routes-pending`, content);
+    }
 }

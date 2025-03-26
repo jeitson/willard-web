@@ -202,14 +202,14 @@
                     for="productoId"
                     class="form-label"
                     [ngClass]="{
-                      'text-danger': labelsValidation.productTypeId
+                      'text-danger': labelsValidation.productId
                     }"
                     >Producto</label
                   >
                   <select
                     class="form-select"
                     id="productoId"
-                    [(ngModel)]="request.productTypeId"
+                    [(ngModel)]="request.productId"
                     name="productoId"
                     required
                     (blur)="validateFields()"
@@ -218,7 +218,7 @@
                       Seleccione un producto
                     </option>
                     <option
-                      *ngFor="let product of typeProduct"
+                      *ngFor="let product of productList"
                       [value]="product.id"
                     >
                       {{ product.name }}

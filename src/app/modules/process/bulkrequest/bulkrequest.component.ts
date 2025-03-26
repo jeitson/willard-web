@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
 import { GeneralService } from 'src/app/core/services/general.service';
+import { RequestsService } from 'src/app/core/services/requests/requests.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 import * as XLSX from 'xlsx';
 
@@ -32,7 +33,13 @@ export class BulkrequestComponent {
   searchTerm$ = new Subject<any>();
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
   idGuide: any;
-  constructor(private _general: GeneralService, private _toast: ToastService) {}
+  listPending: any[] = [];
+  selectedItem: any;
+  constructor(
+    private _general: GeneralService,
+    private _toast: ToastService,
+    private _request: RequestsService
+  ) {}
   ngOnInit(): void {
     this.modalConfirm = new bootstrap.Modal(
       document.getElementById('modalconfirm'),
@@ -57,7 +64,72 @@ export class BulkrequestComponent {
       this.currentPage = page; // Actualizar la página actual
       this.generatePagesArray(); // Generar el array de páginas para el select
       this.search();
+      this.getSolicitudPending();
     });
+  }
+  selectedItems: any[] = [];
+
+  getSolicitudPending() {
+    this._request.getSolicitudPending().subscribe((response: any) => {
+      console.log(response);
+      this.listPending = response.data;
+    });
+  }
+
+  getPendingRequest() {
+    const routeIds = this.selectedItems.map(item => item.routeId);
+    const uniqueRouteIds = [...new Set(routeIds)];
+  
+    // Verificar si hay duplicados
+    if (routeIds.length !== uniqueRouteIds.length) {
+      this._toast.info('ERROR','Hay valores duplicados en los routeId.');
+      return;
+    }
+  
+    const requestBody = { routes: uniqueRouteIds };
+    
+    console.log(requestBody);
+    
+    this._request.getPendingRequests(requestBody).subscribe((item: any) => {
+      console.log(item);
+    });
+  }
+  
+  
+
+  addToTable() {
+    if (this.selectedItem) {
+      // Buscar el objeto en listPending
+      const selectedObject = this.listPending.find(
+        (item) => item.id === this.selectedItem
+      );
+  
+      if (selectedObject) {
+        // Verificar si el routeId ya está en selectedItems
+        const exists = this.selectedItems.some(
+          (item) => item.routeId === selectedObject.routeId
+        );
+  
+        if (exists) {
+          this._toast.info('ERROR','YA EXISTE EL ROUTER SELECCIONADO.');
+          return;
+        }
+  
+        // Agregarlo a la tabla
+        this.selectedItems.push(selectedObject);
+        // Removerlo de la lista del select
+        this.selectedItem = null;
+      }
+    }
+  }
+  
+
+  // Eliminar de la tabla y regresar al select
+  removeFromTable(item: any) {
+    // Regresar el objeto a la lista del select
+    this.listPending.push(item);
+    // Removerlo de la tabla
+    this.selectedItems = this.selectedItems.filter((i) => i.id !== item.id);
   }
 
   // Método para generar el array de páginas para el select
@@ -94,7 +166,6 @@ export class BulkrequestComponent {
       0
     );
   }
-
 
   // Método para enviar el archivo al backend
 
@@ -148,7 +219,8 @@ export class BulkrequestComponent {
 
             if (sheetName === 'principal') {
               if (!this.validateHeaders(headers, expectedHeadersPrincipal)) {
-                this._toast.error('Error en el cargue',
+                this._toast.error(
+                  'Error en el cargue',
                   `Error: Las cabeceras de la hoja '${sheetName}' no coinciden.`
                 );
 
@@ -157,7 +229,8 @@ export class BulkrequestComponent {
               principalData = XLSX.utils.sheet_to_json(sheet);
             } else if (sheetName === 'detalle') {
               if (!this.validateHeaders(headers, expectedHeadersDetalle)) {
-                this._toast.error('Error en el cargue',
+                this._toast.error(
+                  'Error en el cargue',
                   `Error: Las cabeceras de la hoja '${sheetName}' no coinciden.`
                 );
                 return;
@@ -199,7 +272,10 @@ export class BulkrequestComponent {
         });
 
         if (!isValidPrincipal || !isValidDetalle) {
-          this._toast.error('Error:',' Algunos datos no cumplen con el tipo esperado.');
+          this._toast.error(
+            'Error:',
+            ' Algunos datos no cumplen con el tipo esperado.'
+          );
           return;
         }
 
@@ -251,25 +327,31 @@ export class BulkrequestComponent {
       this._toast.error('Error:', 'No hay archivo cargado para enviar.');
       return;
     }
-  
+
     this._toast.info('Enviando archivo...', this.uploadedFile.name);
-  
+
     const formData = new FormData();
     formData.append('file', this.uploadedFile);
-  
+
     this._general.uploadFile(this.uploadedFile).subscribe({
       next: (response: any) => {
-        this._toast.success('Archivo enviado con éxito.', `Respuesta: ${response}`);
+        this._toast.success(
+          'Archivo enviado con éxito.',
+          `Respuesta: ${response}`
+        );
         this.get(this.currentPage);
         this.cardJson.tab = 'L';
       },
       error: (error) => {
         console.error('Error al enviar el archivo:', error);
-        this._toast.error('Error al enviar el archivo.', error?.message || 'Intente de nuevo.');
-      }
+        this._toast.error(
+          'Error al enviar el archivo.',
+          error?.message || 'Intente de nuevo.'
+        );
+      },
     });
   }
-  
+
   // Método para recargar la página
   reloadPage(): void {
     window.location.reload();
@@ -337,13 +419,12 @@ export class BulkrequestComponent {
   validateGuide() {
     const regex = new RegExp(`^\\d{${this.guideLength}}$`); // Solo números con la longitud exacta
     const numValue = Number(this.guide); // Convertimos el input a número
-  
+
     if (!regex.test(this.guide) || numValue <= 0 || numValue >= 15) {
       this.errorMessage = `El número de guía debe contener exactamente ${this.guideLength} dígitos y ser válido.`;
     } else {
       this.errorMessage = '';
     }
   }
-
 }
-// 
+//
