@@ -19,7 +19,7 @@
           <div class="col-md-12">
             <div class="table-responsive">
               <div class="mb-3 col-4">
-                <input 
+                <input
                 type="text"
                 class="form-control form-control-sm"
                 placeholder="Buscar..."
@@ -29,18 +29,22 @@
               <table class="table table-sm">
                 <thead class="bg-white">
                   <tr>
+
+                    <th class="text-left"> Cliente</th>
                     <th class="text-left"> Nombre</th>
+                    <th class="text-left"> Ciudad</th>
                     <th class="text-center"> Fecha Creación </th>
                     <th class="text-center"> Fecha Actualización </th>
-  
                     <th class="text-center"> Estado </th>
                     <th class="text-center"> Acciones</th>
                   </tr>
                 </thead>
                 <tbody style="background-color: white;">
-                  <tr *ngFor="let item of listData; let i = index"
-                    style="font-size: smaller;">
+                  <tr *ngFor="let item of listData; let i = index" style="font-size: smaller;">
+                    <td class="text-left"> {{item.client?.name}} </td>
                     <td class="text-left"> {{item.name}} </td>
+                    <td class="text-left"> {{item.cityName}} </td>
+
                     <td class="text-center"> {{item.createdAt |
                       date:'EEEE dd MMM yyyy'}} </td>
                            <td class="text-center"> {{item.updatedAt |
@@ -98,9 +102,9 @@
           </div>
         </div>
       </div>
-  
+
     </div>
-  
+
     <div class="modal fade" id="modalconfirm" tabindex="-1" role="dialog"
       aria-labelledby="myModalLabel" backdrop="true" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
@@ -129,7 +133,7 @@
         </div>
       </div>
     </div>
-  
+
     <div class="modal fade" id="modalPickup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalPickupTitle" aria-hidden="true">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
@@ -156,7 +160,7 @@
                       </select>
                     </div>
                   </div>
-      
+
                   <!-- Second Row: SedeAcopioId and AsesorId -->
                   <div class="col-md-4">
                     <label for="sedeAcopioId" class="form-label text-black">Sede de Acopio</label>
@@ -174,7 +178,7 @@
                       </select>
                     </div>
                   </div>
-      
+
                   <!-- Third Row: CiudadId and ZonaId -->
                   <div class="col-md-4">
                     <label for="ciudadId" class="form-label text-black">Ciudad</label>
@@ -192,7 +196,7 @@
                       </select>
                     </div>
                   </div>
-      
+
                   <!-- Fourth Row: Nombre and Descripcion -->
                   <div class="col-md-4">
                     <label for="nombre" class="form-label text-black">Nombre</label>
@@ -206,7 +210,7 @@
                       <input type="text" class="form-control h-46" placeholder="Descripción" autocomplete="off" name="descripcion" id="descripcion" [(ngModel)]="lugar.description" />
                     </div>
                   </div>
-      
+
                   <!-- Fifth Row: Neighborhood and Address -->
                   <div class="col-md-4">
                     <label for="neighborhood" class="form-label text-black">Barrio</label>
@@ -220,7 +224,7 @@
                       <input type="text" class="form-control h-46" placeholder="Dirección" autocomplete="off" name="address" id="address" [(ngModel)]="lugar.address" />
                     </div>
                   </div>
-      
+
                   <!-- Sixth Row: Latitude and Longitude -->
                   <div class="col-md-4">
                     <label for="latitude" class="form-label text-black">Latitud</label>
@@ -234,7 +238,7 @@
                       <input type="text" class="form-control h-46" placeholder="Longitud" autocomplete="off" name="longitude" id="longitude" [(ngModel)]="lugar.longitude" />
                     </div>
                   </div>
-      
+
                   <!-- Seventh Row: Contact Name, Email, and Phone -->
                   <div class="col-md-4">
                     <label for="contactName" class="form-label text-black">Nombre de Contacto</label>
@@ -254,7 +258,7 @@
                       <input type="text" class="form-control h-46" placeholder="Teléfono de Contacto" autocomplete="off" name="contactPhone" id="contactPhone" [(ngModel)]="lugar.contactPhone" />
                     </div>
                   </div>
-      
+
                   <!-- Eighth Row: ReferenciaWLL and ReferenciaPH -->
                   <div class="col-md-4">
                     <label for="referenceWLL" class="form-label text-black">Referencia WLL</label>
@@ -281,7 +285,6 @@
           </div>
         </div>
       </div>
-      
+
   </div>
-  
-  
+

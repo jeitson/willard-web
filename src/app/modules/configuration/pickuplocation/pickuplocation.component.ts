@@ -89,7 +89,6 @@ export class PickuplocationComponent {
   }
 
   selectData(): void {
-    this.getPickUpLocations();
     this.getClients();
     this.getConsultants();
     this.getCatalogChildren('TIPO_LUGAR_RECOGIDA');
@@ -97,6 +96,7 @@ export class PickuplocationComponent {
     this.getCatalogChildren('CIUDAD');
     this.getCatalogChildren('ZONA');
     this.getsite();
+    this.getPickUpLocations();
   }
 
   getPickUpLocations(): void {
@@ -113,6 +113,10 @@ export class PickuplocationComponent {
         console.error('Error al obtener lugares de recogida:', error);
       },
     });
+  }
+
+  getNameCityById(id: string) {
+    return this.listClientes.find((x: any) => x.id === id)?.name
   }
 
   getClients(): void {
@@ -193,7 +197,7 @@ export class PickuplocationComponent {
     if (item != null) {
       this.action.name = 'Actualizar';
       this.viewoptions = false;
-  
+
   this.lugar = {
     id:item.id,
     placeTypeId:item.placeTypeId,
@@ -284,7 +288,7 @@ export class PickuplocationComponent {
       { value: this.lugar.referenceWLL, message: 'El campo Referencia WLL es obligatorio.' },
       { value: this.lugar.referencePH, message: 'El campo Referencia PH es obligatorio.' },
     ];
-  
+
     for (const field of fields) {
       if (!field.value) {
         this._toast.info('Importante',field.message);
@@ -292,17 +296,17 @@ export class PickuplocationComponent {
       }
     }
 
-  
+
     // Validar que el email sea válido
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(this.lugar.contactEmail)) {
       this._toast.info('Importante', 'El campo Email de Contacto no tiene un formato válido.');
       return false;
     }
-  
+
     return true;
   }
-    
+
   getLugarPayload() {
     const {
       placeTypeId,
@@ -401,7 +405,7 @@ export class PickuplocationComponent {
     });
   }
 
-  
+
     // paginación
     onPageChange(event: Event) {
       const selectElement = event.target as HTMLSelectElement;

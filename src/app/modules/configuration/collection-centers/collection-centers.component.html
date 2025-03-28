@@ -7,7 +7,7 @@
     </div>
     <div class="d-flex flex-rows gap-10">
       <button type="button" class="btn btn-sm bg-add"
-        (click)="createOrUpdateCenter(null)">Agregar <i 
+        (click)="createOrUpdateCenter(null)">Agregar <i
           class="fa-solid fa-add"></i></button>
       <button type="button" class="btn btn-sm btn-dark"
         (click)="selectData()">Recargar <i
@@ -23,7 +23,7 @@
         <div class="col-md-12">
           <div class="table-responsive">
             <div class="mb-3 col-4">
-              <input 
+              <input
               type="text"
               class="form-control form-control-sm"
               placeholder="Buscar..."
@@ -33,6 +33,7 @@
             <table class="table table-sm">
               <thead class="bg-white">
                 <tr>
+                  <th class="text-left">Tipo Sitio</th>
                   <th class="text-left"> Nombre</th>
                   <th class="text-center"> Fecha de Creación </th>
                   <th class="text-center"> Estado </th>
@@ -43,8 +44,8 @@
                 <tr *ngIf="listData.length === 0">
                   <td colspan="8" class="text-center">No hay registros disponibles.</td>
                 </tr>
-                <tr *ngFor="let item of listData; let i = index"
-                  style="font-size: smaller;">
+                <tr *ngFor="let item of listData; let i = index" style="font-size: smaller;">
+                  <td class="text-left">{{getNameSiteType(item.siteTypeId)}}</td>
                   <td class="text-left"> {{item.name}} </td>
                   <td class="text-center"> {{item.createdAt |
                     date:'EEEE dd MMM yyyy'}} </td>
@@ -142,7 +143,7 @@
           <div class="col-md-12 pb-3">
             <div class="row">
               <!-- Primera Fila: Tipo de Sitio y País -->
-         
+
               <div class="col-md-4">
                 <label for="countryId" class="form-label text-black">Tipo de Sitio</label>
                 <div class="input-group mb-3">

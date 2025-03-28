@@ -68,7 +68,7 @@ export class CollectionCentersComponent {
       document.getElementById('modalconfirm'),
       { backdrop: 'static', keyboard: false }
     );
-    
+
     this.lisKey();
   }
 
@@ -88,9 +88,14 @@ export class CollectionCentersComponent {
       },
     });
   }
+
+  getNameSiteType(type: string) {
+    return this.typeCenters.find((x: any) => x.id === type)?.name
+  }
+
   selectData(): void {
 
-  
+
     this._settings.getCatalogChildrenByKey('PAIS').subscribe({
       next: (response: any) => {
         this.countries = response.data;
@@ -99,7 +104,7 @@ export class CollectionCentersComponent {
         console.error('Error al obtener países:', error);
       },
     });
-  
+
     this._settings.getCatalogChildrenByKey('CIUDAD').subscribe({
       next: (response: any) => {
         this.cities = response.data;
@@ -108,7 +113,7 @@ export class CollectionCentersComponent {
         console.error('Error al obtener ciudades:', error);
       },
     });
-  
+
     this._settings.getCatalogChildrenByKey('TIPOS_SEDES_ACOPIO').subscribe({
       next: (response: any) => {
         this.typeCenters = response.data;
@@ -118,7 +123,7 @@ export class CollectionCentersComponent {
       },
     });
   }
-  
+
 
   createOrUpdateCenter(item: any | null): void {
     this.resetCenter();
@@ -172,7 +177,7 @@ export class CollectionCentersComponent {
     };
   }
 
- 
+
 
   updateCollection(): void {
     if (this.centers.id) {
@@ -196,7 +201,7 @@ export class CollectionCentersComponent {
       this._toast.warning('Importante','Por favor, completa todos los campos obligatorios.');
     }
   }
-  
+
   private areFieldsValid(): boolean {
     const fields = [
       { value: this.centers.siteTypeId, message: 'El campo Tipo de Sitio es obligatorio.' },
@@ -215,25 +220,25 @@ export class CollectionCentersComponent {
       { value: this.centers.referenceWLL, message: 'El campo Referencia WLL es obligatorio.' },
       { value: this.centers.referencePH, message: 'El campo Referencia PH es obligatorio.' },
     ];
-  
+
     for (const field of fields) {
       if (!field.value) {
         this._toast.info('Importante',field.message);
         return false;
       }
     }
-  
+
     // Validar el formato del correo electrónico
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(this.centers.contactEmail)) {
       this._toast.info('Importante', 'El campo Email de Contacto no tiene un formato válido.');
       return false;
     }
-  
+
     return true;
   }
-  
-  
+
+
   private getCenterPayload() {
     const {
       siteTypeId,
@@ -253,7 +258,7 @@ export class CollectionCentersComponent {
       referenceWLL,
       referencePH,
     } = this.centers;
-  
+
     return {
       siteTypeId,
       countryId,
@@ -273,7 +278,7 @@ export class CollectionCentersComponent {
       referencePH,
     };
   }
-  
+
    handleSuccess(response: any): void {
     this.lisKey();
     this.modal.hide();
@@ -330,8 +335,8 @@ export class CollectionCentersComponent {
     });
   }
 
-  
-  
+
+
    // paginación
    updatePaginatedList() {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
@@ -339,13 +344,13 @@ export class CollectionCentersComponent {
     this.paginatedList = this.listData.slice(startIndex, endIndex);
     this.totalPages = Math.ceil(this.listData.length / this.itemsPerPage); // Calcula el total de páginas
   }
-  
+
   onPageChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const selectedPage = Number(selectElement.value);
     this.goToPage(selectedPage);
   }
-  
+
   goToPage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
@@ -357,7 +362,7 @@ export class CollectionCentersComponent {
       .fill(0)
       .map((x, i) => i + 1);
   }
-  
+
   search(): void {
     this.searchTerm$.subscribe(({ value }: { value: string }) => {
       this.listData = this.listBase.filter(item => {
