@@ -19,7 +19,7 @@ export class ReceptionComponent implements OnInit {
     transporterId:'',
     licensePlate:'',
     driver:'',
-    guideNumber:'',
+    routeId:'',
     referenceDoc1:'',
     referenceDoc2:'',
   }
@@ -156,7 +156,7 @@ export class ReceptionComponent implements OnInit {
       transporterId:'',
       licensePlate:'',
       driver:'',
-      guideNumber:'',
+      routeId:'',
       referenceDoc1:'',
       referenceDoc2:'',
     }
@@ -168,15 +168,15 @@ export class ReceptionComponent implements OnInit {
   editReception(item: any){
     this.reception = item;
     this.modalconfirmGuide.show();
-    this.guide = item.guideNumber;
+    this.guide = item.routeId;
   }
 
   updateGuide() {
-    if(this.guide === '' || this.guide === this.reception.guideNumber){
+    if(this.guide === '' || this.guide === this.reception.routeId){
       this._toast.warning('Error', 'El número de guía que quiere actualizar no puede estar vacío o ser igual al actual.')
       return;
     }
-    this.api.put(`receptions/${this.reception.id}`,{guideNumber: this.guide}).subscribe({
+    this.api.put(`receptions/${this.reception.id}`,{routeId: this.guide}).subscribe({
       next: (response: any) => {
         this.modalconfirmGuide.hide();
         this._toast.success('Completado','Guía actualizada correctamente')

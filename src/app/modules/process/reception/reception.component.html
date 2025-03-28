@@ -33,7 +33,7 @@
             <table class="table table-sm">
                 <thead class="bg-white">
                     <tr>
-                        <th class="text-center"> # Guia</th>
+                        <th class="text-center"> # Ruta</th>
                         <th class="text-center"> Fecha </th>
                         <th class="text-center"> Placa </th>
                         <th class="text-left"> Conductor</th>
@@ -45,7 +45,7 @@
                 <tbody style="background-color: white;">
                   <!-- <tr *ngFor="let item of listsReceptions | paginate: { itemsPerPage: totalItemsRender, currentPage: p }; let i = index;"> -->
                     <tr *ngFor="let item of listReceptions; let i = index;">
-                        <td class="text-center"> {{item.guideNumber}} </td>
+                        <td class="text-center"> {{item.routeId}} </td>
                         <td class="text-center"> {{item.createdAt | date:'short'}} </td>
                         <td class="text-center"> {{item.licensePlate | uppercase}} </td>
                         <td class="text-left"> {{item.driver}}</td>
@@ -131,8 +131,8 @@
           <input type="text" class="form-control" name="datedelivery" [(ngModel)]="receptionForm.driver" autocomplete="off" required>
         </div>
         <div class="col-sm-6 col-md-6 mb-3">
-          <label for="" class="pricolor"># Guía</label>
-          <input type="text" class="form-control" name="guideNumber" [(ngModel)]="receptionForm.guideNumber" autocomplete="off" required>
+          <label for="" class="pricolor">Numero de Ruta</label>
+          <input type="text" class="form-control" name="routeId" [(ngModel)]="receptionForm.routeId" autocomplete="off" required>
         </div>
         <div class="col-sm-6 col-md-6 mb-3" *ngIf="role==='18'">
           <label for="" class="pricolor">Doc Referencia 1</label>
@@ -257,7 +257,7 @@
               <div class="col-md-12 mt-4">
                   <div class="row">
                       <div class="col-md-12 text-center d-flex flex-column mb-3">
-                        <span><strong># Guia:</strong> {{receptionForm.guideNumber}}</span>
+                        <span><strong># Guia:</strong> {{receptionForm.routeId}}</span>
                         <span><strong>Transportadora:</strong> {{getNameTransporter(receptionForm.transporterId)}}</span>
                         <span><strong>Conductor:</strong> {{receptionForm.driver}}</span>
                         <span><strong>Placa:</strong> {{receptionForm.licensePlate | uppercase}}</span>
@@ -335,7 +335,7 @@
               <div class="col-md-12 mt-4">
                   <div class="row">
                       <div class="col-md-12 text-center d-flex flex-column mb-3">
-                        <span><strong># Guia:</strong> {{receptionDetail?.guideNumber}}</span>
+                        <span><strong># Guia:</strong> {{receptionDetail?.routeId}}</span>
                         <span><strong>Transportadora:</strong> {{receptionDetail?.transporterId}}</span>
                         <span><strong>Conductor:</strong> {{receptionDetail?.driver}}</span>
                         <span><strong>Placa:</strong> {{receptionDetail?.licensePlate | uppercase}}</span>

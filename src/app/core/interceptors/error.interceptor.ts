@@ -10,10 +10,12 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { Auth0Interceptor } from './auth0.interceptor';
+import { Auth0Service } from '../services/auth0.service';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-	constructor(private _router: Router, private _toastr: ToastrService) {}
+	constructor(private _router: Router, private _toastr: ToastrService, private auth0: Auth0Service) {}
 
 	intercept(
 		request: HttpRequest<any>,
@@ -31,8 +33,7 @@ export class ErrorInterceptor implements HttpInterceptor {
 					case 401:
 						// Manejo de error 401 (Unauthorized)
 						this._toastr.info('info','Nos vemos :) Tu sesión ha expirado');
-						sessionStorage.clear();
-						this._router.navigate(['login']);
+            this.auth0.logout();
 						break;
           case 422:
 						// Manejo de error 502 (Bad Gateway)

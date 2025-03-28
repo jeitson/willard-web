@@ -63,10 +63,10 @@ export class CatalogueComponent implements OnInit {
 
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
   currentPage: number = 1; // Página actual
-  itemsPerPage: number = 5; // Cantidad de elementos por página
+  itemsPerPage: number = 10; // Cantidad de elementos por página
   totalPages: number = 0; // Total de páginas
 
-  
+
   constructor(private api: ApiService, private cdr: ChangeDetectorRef, private router: Router){
 
   }
@@ -89,7 +89,7 @@ export class CatalogueComponent implements OnInit {
         this.totalPages = Math.ceil(this.list.length / this.itemsPerPage); // Calcula el total de páginas
         this.updatePaginatedList(); // Actualiza la lista paginada
         this.search();
-     
+
 
       },
       error: (error: any) => {
@@ -300,7 +300,7 @@ get pagesArray() {
     }
 
 
-  // prueba 
+  // prueba
 
-  
+
 }
