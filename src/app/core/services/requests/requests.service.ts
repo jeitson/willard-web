@@ -58,6 +58,6 @@ export class RequestsService {
     }
     // Método para Obtener información complementaria de las solicitudes pendiente por cargar
     getPendingRequests(content: any): Observable<any> {
-      return this._api.post(`collection-request/routes-pending`, content);
+      return this._api.postWithReturnData(`collection-request/routes-pending`, content);
     }
 }

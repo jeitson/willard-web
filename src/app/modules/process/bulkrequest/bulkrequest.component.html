@@ -96,106 +96,83 @@
           </div>
         </div>
 
-          <!-- Vista para cargar archivo -->
-          <div class="row" *ngIf="cardJson.tab === 'C'">
+      <!-- Vista para cargar archivo -->
+<div class="row" *ngIf="cardJson.tab === 'C'">
+  <!-- Columna de selección -->
+  <div class="col-md-4">
+    <div class="card p-3">
+      <div class="d-flex align-items-center">
+        <select class="form-select me-2" [(ngModel)]="selectedItem">
+          <ng-container *ngFor="let item of listPending">
+            <option [value]="item.id">{{ item.routeId }}</option>
+          </ng-container>
+        </select>
+        <button class="btn btn-success btn-sm" (click)="addToTable()">Agregar</button>
+      </div>
 
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-md-12 d-flex align-items-center">
-                  <select class="form-select me-2" [(ngModel)]="selectedItem">
-                    <ng-container *ngFor="let item of listPending">
-                      <option [value]="item.id">{{ item.routeId }}</option>
-                    </ng-container>
-                  </select>
-                  <button class="btn btn-success" (click)="addToTable()">Agregar</button>
-                </div>
-                
-                <!-- Tabla para mostrar los elementos seleccionados -->
-               <div class="card mt-3">
-                <div class="card-body">
-                  <h6> Id de Rutas Agregadas</h6>
-                  <ng-container *ngIf="selectedItems.length > 0">
-                    <div class="col-md-12 m-3 text-center ">
-                      <button class="btn btn-success btn-sm" (click)="getPendingRequest()">Generar Estructura <i class="fa-solid fa-download"></i></button>
-    
-                    </div>
-                    
-                    <ul  class="list-group mb-2" *ngFor="let item of selectedItems">
-                      <li class="list-group-item p-2">
-                        <div class="d-flex justify-content-between align-items-center">
-                          <span>{{ item.routeId }} </span>
-                          <i class="fa-solid fa-trash"  (click)="removeFromTable(item)"></i>
-                        </div>
-                      
-                      </li>
-                    </ul>
-  
-                  </ng-container>
-                  
-                </div>
-               </div>
-                
-              </div>
-            </div>
+      <!-- Tabla de elementos seleccionados -->
+      <div class="mt-3" *ngIf="selectedItems.length > 0">
+        <h6 class="text-center">Id de Rutas Agregadas</h6>
+        <div class="text-center mb-2">
+          <button class="btn btn-success btn-sm" (click)="getPendingRequest()">Generar Estructura <i class="fa-solid fa-download"></i></button>
+        </div>
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between align-items-center p-2" *ngFor="let item of selectedItems">
+            {{ item.routeId }}
+            <i class="fa-solid fa-trash text-danger" (click)="removeFromTable(item)"></i>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 
-            <div class="col-md-8">
-              <div class="row align-items-end">
-                <!-- Sección del input de archivo -->
-                <div class="col-md-8 mb-3">
-                  <label for="fileUpload" class="form-label">Sube un archivo Excel:</label>
-                  <input
-                    type="file"
-                    id="fileUpload"
-                    class="form-control"
-                    (change)="onFileChange($event)"
-                    accept=".xlsx, .xls"
-                  />
-                </div>
-                <!-- Sección del botón de guardado -->
-                <div class="col-md-4 mb-3 text-md-end">
-                  <button type="button" class="btn btn-success" (click)="sendFileToBackend()">
-                    Guardar <i class="fa-solid fa-save"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="row">
-                <div *ngIf="formattedData && formattedData.length > 0">
-                  <h5>Datos cargados:</h5>
-                  <div class="table-responsive">
-                    <table class="table table-sm">
-                      <thead class="bg-white">
-                        <tr>
-                          <th class="text-left">ID Ruta</th>
-                          <th class="text-center">ID Guía</th>
-                          <th class="text-center">Tipo de producto</th>
-                          <th class="text-center">Cantidad</th>
-                          <th class="text-center">Fecha Movimiento</th>
-                          <th class="text-center">Hora Movimiento</th>
-                          <th class="text-center">Ciudad</th>
-                          <th class="text-center">Dirección</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <!-- Iterar sobre cada fila de formattedData -->
-                        <tr *ngFor="let row of formattedData" style="font-size: smaller;">
-                          <td class="text-left">{{ row.idRuta }}</td>
-                          <td class="text-center">{{ row.idGuia }}</td>
-                          <td class="text-center">{{ row.tipoBat }}</td>
-                          <td class="text-center">{{ row.cantidad }}</td>
-                          <td class="text-center">{{ row.fechaMov }}</td>
-                          <td class="text-center">{{ row.horaMov }}</td>
-                          <td class="text-center">{{ row.ciudad }}</td>
-                          <td class="text-center">{{ row.direccion }}</td>
-  
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-         
-          </div>
+  <!-- Columna de carga de archivo -->
+  <div class="col-md-8">
+    <div class="card p-3">
+      <div class="row">
+        <div class="col-md-8">
+          <label for="fileUpload" class="form-label fw-bold">Sube un archivo Excel:</label>
+          <input type="file" id="fileUpload" class="form-control form-control-sm" (change)="onFileChange($event)" accept=".xlsx, .xls" />
+        </div>
+        <div class="col-md-4 text-end mt-auto">
+          <button type="button" class="btn btn-success btn-sm" (click)="sendFileToBackend()">Guardar <i class="fa-solid fa-save"></i></button>
+        </div>
+      </div>
+
+      <!-- Tabla de datos cargados -->
+      <div class="table-responsive mt-3" *ngIf="formattedData && formattedData.length > 0">
+        <h6 class="text-center">Datos cargados</h6>
+        <table class="table table-sm table-bordered">
+          <thead class="bg-light">
+            <tr>
+              <th>ID Ruta</th>
+              <th class="text-center">ID Guía</th>
+              <th class="text-center">Tipo de producto</th>
+              <th class="text-center">Cantidad</th>
+              <th class="text-center">Fecha Movimiento</th>
+              <th class="text-center">Hora Movimiento</th>
+              <th class="text-center">Ciudad</th>
+              <th class="text-center">Dirección</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of formattedData">
+              <td>{{ row.idRuta }}</td>
+              <td class="text-center">{{ row.idGuia }}</td>
+              <td class="text-center">{{ row.tipoBat }}</td>
+              <td class="text-center">{{ row.cantidad }}</td>
+              <td class="text-center">{{ row.fechaMov }}</td>
+              <td class="text-center">{{ row.horaMov }}</td>
+              <td class="text-center">{{ row.ciudad }}</td>
+              <td class="text-center">{{ row.direccion }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
     
       </div>
     </div>

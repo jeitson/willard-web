@@ -4,7 +4,7 @@ import { GeneralService } from 'src/app/core/services/general.service';
 import { RequestsService } from 'src/app/core/services/requests/requests.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 import * as XLSX from 'xlsx';
-
+import { saveAs } from 'file-saver';
 declare var bootstrap: any;
 @Component({
   selector: 'app-bulkrequest',
@@ -55,7 +55,7 @@ export class BulkrequestComponent {
 
   // Método para obtener datos con paginación
   get(page: number) {
-    this._general.getConsultantsTransp(page).subscribe((response: any) => {
+    this._request.listSolicitudes(page).subscribe((response: any) => {
       console.log(response);
 
       this.detailData = response.data.items; // Datos de la tabla
@@ -77,25 +77,54 @@ export class BulkrequestComponent {
   }
 
   getPendingRequest() {
-    const routeIds = this.selectedItems.map(item => item.routeId);
+    const routeIds = this.selectedItems.map((item) => item.routeId);
     const uniqueRouteIds = [...new Set(routeIds)];
-  
+
     // Verificar si hay duplicados
     if (routeIds.length !== uniqueRouteIds.length) {
-      this._toast.info('ERROR','Hay valores duplicados en los routeId.');
+      this._toast.info('ERROR', 'Hay valores duplicados en los routeId.');
       return;
     }
-  
+
     const requestBody = { routes: uniqueRouteIds };
-    
+
     console.log(requestBody);
-    
+
     this._request.getPendingRequests(requestBody).subscribe((item: any) => {
       console.log(item);
+      this.exportToExcel(item);
     });
   }
-  
-  
+
+  exportToExcel(data: any[], fileName: string = 'Reporte.xlsx') {
+    console.log(data);
+    if (!data || data.length === 0) {
+        console.error('No hay datos para exportar.');
+        return;
+    }
+
+    // Obtener las claves del primer objeto como encabezados
+    const headers = Object.keys(data[0]);
+
+    // Convertir los datos a una hoja de cálculo
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, { header: headers });
+
+    // Ajustar el ancho de las columnas automáticamente
+    worksheet['!cols'] = headers.map((header) => ({ wch: header.length + 5 }));
+
+    // Crear el libro de trabajo
+    const workbook: XLSX.WorkBook = {
+        Sheets: { Datos: worksheet },
+        SheetNames: ['Datos'],
+    };
+
+    // Generar el archivo Excel en formato binario
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    // Crear un Blob y descargar el archivo
+    const blob: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(blob, fileName);
+}
 
   addToTable() {
     if (this.selectedItem) {
@@ -103,18 +132,18 @@ export class BulkrequestComponent {
       const selectedObject = this.listPending.find(
         (item) => item.id === this.selectedItem
       );
-  
+
       if (selectedObject) {
         // Verificar si el routeId ya está en selectedItems
         const exists = this.selectedItems.some(
           (item) => item.routeId === selectedObject.routeId
         );
-  
+
         if (exists) {
-          this._toast.info('ERROR','YA EXISTE EL ROUTER SELECCIONADO.');
+          this._toast.info('ERROR', 'YA EXISTE EL ROUTER SELECCIONADO.');
           return;
         }
-  
+
         // Agregarlo a la tabla
         this.selectedItems.push(selectedObject);
         // Removerlo de la lista del select
@@ -122,7 +151,6 @@ export class BulkrequestComponent {
       }
     }
   }
-  
 
   // Eliminar de la tabla y regresar al select
   removeFromTable(item: any) {
