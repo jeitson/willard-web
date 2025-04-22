@@ -209,6 +209,29 @@ export class RequestagencyComponent {
       },
     });
   }
+
+  getAnswerPickLocation(type: string){
+    let data: any  = {};
+    let res = '';
+    data = this.listTipos.find((x: any)=> x.id === this.request.pickUpLocationId);
+    if(data){
+      switch (type) {
+        case '1':
+          res = data.hasLoadSpring;
+          break;
+          case '2':
+            res = data.distanceLoad;
+          break;
+          case '3':
+            res = data.truckType.name;
+          break;
+        default:
+          break;
+      }
+
+    }
+    return res;
+  }
   createRequest() {
     this.clearData();
     this.actionSave = false;

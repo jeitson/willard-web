@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/services/api/api.service';
+import { SettingsService } from 'src/app/core/services/settings/settings.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 import * as XLSX from 'xlsx'
 declare var bootstrap: any;
@@ -26,7 +27,9 @@ export class ConciliationComponent implements OnInit {
   modal: any;
   modalConfirm: any;
   listReceptions: any[] = [];
+  listTypeProduct: any[] = [];
   listReceptions2: any[] = [];
+  selectedItems: any[] = [];
   isDownloading: boolean = false;
   audit: any = {};
   images: any[] = [];
@@ -44,6 +47,12 @@ export class ConciliationComponent implements OnInit {
     isAgency:'',
     guideId:''
   };
+  productForm2 = {
+    typeproduct: '',
+    name: '',
+    productId: '',
+    quantity: '',
+  }
   temporyProduct:any = {};
   statusList: any = [
     'Sin Guia',
@@ -59,7 +68,7 @@ export class ConciliationComponent implements OnInit {
   }
   status: string = 'Todos';
   datefilter = '';
-  constructor(private api: ApiService, private _toast: ToastService) {}
+  constructor(private api: ApiService, private _toast: ToastService, private _settings: SettingsService) {}
 
   ngOnInit() {
     this.modal = new bootstrap.Modal(document.getElementById('modaldetail'), {
@@ -74,6 +83,7 @@ export class ConciliationComponent implements OnInit {
     this.getConciliationsComplete(this.currentPage2)
     this.datefilter = this.getCurrentDate();
     this.getProducts();
+    this.getTypeProducts();
   }
 
   search(): void {
@@ -160,7 +170,18 @@ export class ConciliationComponent implements OnInit {
         this.listProducts = response.data.items;
       },
       error: (error: any) => {
-        console.error('Error al crear usuario:', error);
+        console.error('Error al listar productos:', error);
+      },
+    });
+  }
+
+  getTypeProducts(){
+    this._settings.getCatalogChildrenByKey('TIPO_PRODUCTO').subscribe({
+      next: (typeProductResponse: any) => {
+        this.listTypeProduct = typeProductResponse.data;
+      },
+      error: (error: any) => {
+        console.error('Error al obtener tipo de producto:', error);
       },
     });
   }
@@ -169,6 +190,19 @@ export class ConciliationComponent implements OnInit {
     this.api.get(`audit-route/detail?routeId=${item.routeId}&transporterId=${item.transporter?.id }`).subscribe({
       next: (response: any) => {
         this.audit = response.data;
+        let valid = 0;
+        if(this.audit.products.length === 0){
+          this.audit.reception.receptionDetails.forEach((e:any, i: number) => {
+            this.selectedItems.push({id: null, productId: e.product.id, name: e.product.name, quantity: e.quantity, typeproduct: e.product?.productTypeId?.id})
+          });
+        } else {
+
+        }
+        this.audit.products.forEach((element: any) => {
+            this.selectedItems.push(element)
+        });
+        if(valid === 0){
+        }
         this.sizeModal = 'modal-xl';
         this.modal.show();
       },
@@ -356,6 +390,25 @@ export class ConciliationComponent implements OnInit {
 
   }
 
+  addProducts(){
+    const productId = this.productForm2.productId;
+    const yaExiste = this.selectedItems.some((item: any) => item.product === productId);
+    if (yaExiste) {
+      this._toast.info('Información', 'El producto ya está agregado');
+      return;
+    }
+
+    const selectedProduct = this.listProducts.find((x: any) => x.id === productId);
+    const productName = selectedProduct?.name?.trim();
+
+    const x = { ...this.productForm2, name: productName };
+    this.selectedItems.push(x);
+  }
+
+  removeItemProduct(item: any){
+    this.selectedItems = this.selectedItems.filter((x: any)=> x.product !== item.product)
+  }
+
   saveConfirmConciliation(isSave: boolean){
     const data = {
       recuperatorTotal: this.audit.recuperatorTotal,
@@ -363,11 +416,7 @@ export class ConciliationComponent implements OnInit {
       conciliationTotal: this.audit.conciliationTotal,
       routeId: this.audit.routeId,
       transporterId: this.audit.transporter.id,
-      products: this.audit.products.map((x:any)=> ({
-        id: x.id,
-			  quantity: x.quantity,
-			  productId: x.productId
-      })),
+      products: this.selectedItems,
       transporter: this.audit.transporterTravel.map((x: any)=> ({
         isNew: x.isNew ? true : false,
         guideNumber: x.guideId,

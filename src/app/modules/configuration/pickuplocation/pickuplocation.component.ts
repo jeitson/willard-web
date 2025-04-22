@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
+import { ApiService } from 'src/app/core/services/api/api.service';
 import { AdviserService } from 'src/app/core/services/process/adviser.service';
 import { CentersService } from 'src/app/core/services/process/centers.service';
 import { CustomersService } from 'src/app/core/services/process/customers.service';
@@ -40,6 +41,9 @@ export class PickuplocationComponent {
     address: '',
     latitude: '',
     longitude: '',
+    truckTypeId: '',
+    hasLoadSpring: '',
+    distanceLoad: '',
     contactName: '',
     contactEmail: '',
     contactPhone: '',
@@ -49,6 +53,7 @@ export class PickuplocationComponent {
 
   listClientes: any = [];
   listAsesores: any = [];
+  listTypeTrucks: any = [];
   listTipos: any = [];
   listSedes: any = [];
   listCiudades: any = [];
@@ -70,6 +75,7 @@ export class PickuplocationComponent {
     private _Service: PickuplocationService,
     private _Customers: CustomersService,
     private _Adviser: AdviserService,
+    private _http: ApiService,
     private _Settings: SettingsService,
     private userService: UsersService,
     private _Center: CentersService,
@@ -95,6 +101,7 @@ export class PickuplocationComponent {
     this.getCatalogChildren('TIPOS_SEDES_ACOPIO');
     this.getCatalogChildren('CIUDAD');
     this.getCatalogChildren('ZONA');
+    this.getCatalogChildren('TIPO_CAMION_SUGERIDO');
     this.getsite();
     this.getPickUpLocations();
   }
@@ -139,10 +146,15 @@ export class PickuplocationComponent {
     //     console.error('Error al obtener asesores:', error);
     //   },
     // });
+    const data  = {
+        roles: [13],
+        collectionSites: [],
+        zones: []
 
-    this.userService.allUsers().subscribe({
+    }
+    this._http.postWithReturnData('users/search', data).subscribe({
       next: (asesoresResponse: any) => {
-        this.listAsesores = asesoresResponse.data.items;
+        this.listAsesores = asesoresResponse.items;
       },
       error: (error: any) => {
         console.error('Error al obtener asesores:', error);
@@ -157,9 +169,9 @@ export class PickuplocationComponent {
           case 'TIPO_LUGAR_RECOGIDA':
             this.listTipos = response.data;
             break;
-          // case 'TIPOS_SEDES_ACOPIO':
-          //   this.listSedes = response.data;
-          //   break;
+          case 'TIPO_CAMION_SUGERIDO':
+            this.listTypeTrucks = response.data;
+            break;
           case 'CIUDAD':
             this.listCiudades = response.data;
             break;
@@ -201,15 +213,18 @@ export class PickuplocationComponent {
   this.lugar = {
     id:item.id,
     placeTypeId:item.placeTypeId,
-    clientId: item.client.id, // No hay valor en `this.DATA`, se deja vacío
-    collectionSiteId: item.collectionSite.id, // No hay valor en `this.DATA`, se deja vacío
-    consultantId: '', // No hay valor en `this.DATA`, se deja vacío
+    clientId: item.client.id,
+    collectionSiteId: item.collectionSite.id,
+    consultantId: item.user?.id,
     cityId:item.cityId,
     zoneId:item.zoneId,
     name:item.name,
     description:item.description,
     neighborhood:item.neighborhood,
     address:item.address,
+    truckTypeId: item.truckTypeId,
+    hasLoadSpring: item.hasLoadSpring,
+    distanceLoad: item.distanceLoad,
     latitude:item.latitude,
     longitude:item.longitude,
     contactName:item.contactName,
@@ -237,6 +252,9 @@ export class PickuplocationComponent {
       address: '',
       latitude: '',
       longitude: '',
+      truckTypeId: '',
+      hasLoadSpring: '',
+      distanceLoad: '',
       contactName: '',
       contactEmail: '',
       contactPhone: '',
@@ -322,6 +340,9 @@ export class PickuplocationComponent {
       latitude,
       longitude,
       contactName,
+      truckTypeId,
+      hasLoadSpring,
+      distanceLoad,
       contactEmail,
       contactPhone,
       referenceWLL,
@@ -339,6 +360,9 @@ export class PickuplocationComponent {
       description,
       neighborhood,
       address,
+      truckTypeId,
+      hasLoadSpring,
+      distanceLoad,
       latitude,
       longitude,
       contactName,

@@ -72,7 +72,7 @@ export class ReceptionComponent implements OnInit {
 
   ngOnInit(){
     this.role = sessionStorage.getItem('RoleId') || '';
-    this.headacopi = JSON.parse(sessionStorage.getItem('profileData') || '[]')?.collectionSites[0].collectionSite.name
+    this.headacopi = JSON.parse(sessionStorage.getItem('profileData') || '[]')?.userCollectionSites[0].collectionSite?.name
     this.modal = new bootstrap.Modal(document.getElementById('modalevidence'), {backdrop: 'static', keyboard: false});
     this.modalloading = new bootstrap.Modal(document.getElementById('modalLoading'), {backdrop: 'static', keyboard: false});
     this.modalconfirmGuide = new bootstrap.Modal(document.getElementById('modalconfirmGuide'), {backdrop: 'static', keyboard: false});

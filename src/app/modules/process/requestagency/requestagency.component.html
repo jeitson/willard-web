@@ -25,14 +25,14 @@
         <div class="col-md-12">
           <div class="table-responsive">
             <div class="mb-3 col-4">
-              <input 
+              <input
               type="text"
               class="form-control form-control-sm"
               placeholder="Buscar..."
               (keyup)="searchTerm$.next($event.target)"
               />
             </div>
-            
+
             <table class="table table-sm">
               <thead class="bg-white">
                 <tr>
@@ -435,7 +435,7 @@
                     >Lugar de Recogida</label
                   >
                   <select
-                    class="form-select"  
+                    class="form-select"
                     id="pickUpLocationId"
                     [(ngModel)]="request.pickUpLocationId"
                     name="pickUpLocationId"
@@ -463,6 +463,11 @@
                     [ngClass]="{ 'text-danger': labelsValidation.observations }"
                     >Observaciones</label
                   >
+                  <ul class="mb-2" *ngIf="request.pickUpLocationId !== ''">
+                    <li>¿TIENEN MUELLE DE CARGUE? {{getAnswerPickLocation('1') === 'true'? 'SI' : 'NO'}}</li>
+                    <li>¿A CUANTO METROS DE DISTANCIA ES EL CARGUE? {{getAnswerPickLocation('2')}} MTS</li>
+                    <li>¿TIPO DE CAMIÓN SUGERIDO POR EL CLIENTE? {{getAnswerPickLocation('3')}}</li>
+                  </ul>
                   <textarea
                     class="form-control"
                     id="observations"
