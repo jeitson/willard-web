@@ -272,6 +272,36 @@
                       <input type="text" class="form-control h-46" placeholder="Referencia PH" autocomplete="off" name="referencePH" id="referencePH" [(ngModel)]="lugar.referencePH" />
                     </div>
                   </div>
+                  <div class="col-md-4">
+                    <label for="asesorId" class="form-label text-black">Tiene Muelle de carga</label>
+                    <div class="input-group mb-3">
+                      <select class="form-select h-46" name="muelle" id="muelle" [(ngModel)]="lugar.hasLoadSpring">
+                        <option value="">Seleccionar</option>
+                        <option value="true">SI</option>
+                        <option value="false">NO</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="asesorId" class="form-label text-black">Distancia al cargue</label>
+                    <div class="input-group mb-3">
+                      <select class="form-select h-46" name="asesorId" id="asesorId" [(ngModel)]="lugar.distanceLoad">
+                        <option value="">Seleccionar</option>
+                        <option value="<10">0 - 10 Mts</option>
+                        <option value="<20">10 - 20 Mts</option>
+                        <option value=">20">+20 Mts</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="asesorId" class="form-label text-black">Tipo de camion sugerido</label>
+                    <div class="input-group mb-3">
+                      <select class="form-select h-46" name="asesorId" id="asesorId" [(ngModel)]="lugar.truckTypeId">
+                        <option value="">Seleccionar</option>
+                        <option *ngFor="let typetruck of listTypeTrucks" [value]="typetruck.id">{{ typetruck.name }}</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
                 <div class="row mt-5">
                   <div class="col-md-12 d-flex flex-rows gap-10">

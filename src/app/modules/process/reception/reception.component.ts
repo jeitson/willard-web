@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/services/api/api.service';
+import { CentersService } from 'src/app/core/services/process/centers.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 
 declare var bootstrap: any;
@@ -18,6 +19,7 @@ export class ReceptionComponent implements OnInit {
   receptionForm = {
     transporterId:'',
     licensePlate:'',
+    collectionSiteId:'',
     driver:'',
     routeId:'',
     referenceDoc1:'',
@@ -29,7 +31,7 @@ export class ReceptionComponent implements OnInit {
   listProducts: any[] = [];
   listReceptions: any[] = [];
   listBase: any[] = [];
-
+  listCollections: any[] = [];
   products: any[] = [];
   product: any = {
     productId:'',
@@ -68,11 +70,19 @@ export class ReceptionComponent implements OnInit {
   modalConfirm: any;
   modalconfirmDetail: any;
   guide: string = '';
-  constructor(private api: ApiService, private _toast: ToastService){}
+  receptionDetail: any;
+  isAdmin = false;
+  constructor(private api: ApiService,private _Service:CentersService, private _toast: ToastService){}
 
   ngOnInit(){
     this.role = sessionStorage.getItem('RoleId') || '';
-    this.headacopi = JSON.parse(sessionStorage.getItem('profileData') || '[]')?.collectionSites[0].collectionSite.name
+    const data =  JSON.parse(sessionStorage.getItem('profileData') || '{}');
+    if(data.userCollectionSites.length > 0){
+      this.headacopi = data[0].collectionSite?.name;
+      this.receptionForm.collectionSiteId = data[0].collectionSite?.id;
+    } else {
+      this.isAdmin = true;
+    }
     this.modal = new bootstrap.Modal(document.getElementById('modalevidence'), {backdrop: 'static', keyboard: false});
     this.modalloading = new bootstrap.Modal(document.getElementById('modalLoading'), {backdrop: 'static', keyboard: false});
     this.modalconfirmGuide = new bootstrap.Modal(document.getElementById('modalconfirmGuide'), {backdrop: 'static', keyboard: false});
@@ -83,6 +93,7 @@ export class ReceptionComponent implements OnInit {
     this.getTransporters();
     this.getProductType();
     this.getProducts();
+    this.listCollectionSite();
   }
 
   getReceptions(item: any){
@@ -113,7 +124,18 @@ export class ReceptionComponent implements OnInit {
       },
     });
   }
-  receptionDetail: any;
+
+  listCollectionSite(){
+    this._Service.getCollectionSites().subscribe({
+      next: (response: any) => {
+        this.listCollections = response.data.items;
+      },
+      error: (error: any) => {
+        console.error('Error al obtener centros de recolección:', error);
+      },
+    });
+  }
+
   viewDetail(item: any){
     this.receptionDetail = item;
     console.log(item);
@@ -155,6 +177,7 @@ export class ReceptionComponent implements OnInit {
     this.receptionForm = {
       transporterId:'',
       licensePlate:'',
+      collectionSiteId:'',
       driver:'',
       routeId:'',
       referenceDoc1:'',

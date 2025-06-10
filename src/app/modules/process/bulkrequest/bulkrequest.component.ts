@@ -5,6 +5,7 @@ import { RequestsService } from 'src/app/core/services/requests/requests.service
 import { ToastService } from 'src/app/core/services/toast.service';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { ApiService } from 'src/app/core/services/api/api.service';
 declare var bootstrap: any;
 @Component({
   selector: 'app-bulkrequest',
@@ -38,7 +39,8 @@ export class BulkrequestComponent {
   constructor(
     private _general: GeneralService,
     private _toast: ToastService,
-    private _request: RequestsService
+    private _request: RequestsService,
+    private _http: ApiService,
   ) {}
   ngOnInit(): void {
     this.modalConfirm = new bootstrap.Modal(
@@ -55,7 +57,7 @@ export class BulkrequestComponent {
 
   // Método para obtener datos con paginación
   get(page: number) {
-    this._general.getConsultantsTransp(page).subscribe((response: any) => {
+    this._http.get('transporter-travel').subscribe((response: any) => {
       console.log(response);
 
       this.detailData = response.data.items; // Datos de la tabla

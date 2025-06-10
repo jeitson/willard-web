@@ -239,7 +239,7 @@
                         <th>Cantidad</th>
                         <th class="text-center">Soporte</th>
                         <th>Conciliación</th>
-                        <th *ngIf="audit.requestStatus!== 'CONFIRMADA'">Acciones</th>
+                        <th *ngIf="audit.requestStatus!== 'CONFIRMADO'">Acciones</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -252,10 +252,10 @@
                         <td>{{item.quantity}}</td>
                         <td class="text-center"><i class="fa-solid fa-image" (click)="viewFiles(item.supportUrls)"></i></td>
                         <td>
-                          <input *ngIf="audit.requestStatus!== 'CONFIRMADA'" type="number" id="input3{{item.id}}" name="input_3{{item.id}}" [(ngModel)]="item.quantityConciliated" class="form-control form-control-sm">
-                          <span *ngIf="audit.requestStatus === 'CONFIRMADA'">{{item.quantityConciliated}}</span>
+                          <input *ngIf="audit.requestStatus!== 'CONFIRMADO'" type="number" id="input3{{item.id}}" name="input_3{{item.id}}" [(ngModel)]="item.quantityConciliated" class="form-control form-control-sm">
+                          <span *ngIf="audit.requestStatus === 'CONFIRMADO'">{{item.quantityConciliated}}</span>
                         </td>
-                        <td *ngIf="audit.requestStatus!== 'CONFIRMADA'">
+                        <td *ngIf="audit.requestStatus!== 'CONFIRMADO'">
                           <div class="d-flex justify-content-around align-items-center">
                             <i *ngIf="!item.isNew" class="fa-solid fa-copy" (click)="openAddGuide('new',item)"></i>
                             <i *ngIf="item.isNew" class="fa-solid fa-edit" (click)="openAddGuide('edit',item)"></i>
@@ -277,31 +277,58 @@
             </div>
             <div class="row">
               <div class="col-md-12">
-                <span>TOTALES: POR CONCILIAR</span>
+                <span>TOTALES PARA CERTIFICACIÓN</span>
                 <hr>
               </div>
               <div class="col-md-12">
                 <div class="row">
                   <div class="col-md-3">
-                    <div>
                       <label>Total Recuperadora</label>
-                      <input [disabled]="audit.requestStatus === 'CONFIRMADA'" type="number" name="input_recuperadortotal" [(ngModel)]="audit.recuperatorTotal" class="form-control form-control-sm">
-                    </div>
+                      <input disabled type="number" name="input_recuperadortotal" [(ngModel)]="audit.recuperatorTotal" class="form-control form-control-sm">
                   </div>
                   <div class="col-md-3">
                     <label>Total Transportadora</label>
-                    <input [disabled]="audit.requestStatus === 'CONFIRMADA'" type="number" name="input_transportertotal" [(ngModel)]="audit.transporterTotal" class="form-control form-control-sm">
+                    <input disabled type="number" name="input_transportertotal" [(ngModel)]="audit.transporterTotal" class="form-control form-control-sm">
                   </div>
                   <div class="col-md-3">
                     <label>Total a Conciliar</label>
-                    <input [disabled]="audit.requestStatus === 'CONFIRMADA'" type="number" name="input_conciliationtotal" [(ngModel)]="audit.conciliationTotal" class="form-control form-control-sm">
+                    <input disabled type="number" name="input_conciliationtotal" [(ngModel)]="audit.conciliationTotal" class="form-control form-control-sm">
                   </div>
                   <div class="col-md-12 mt-3">
-                    <label><strong>Total por tipo de bupas</strong></label>
+                    <label><strong>Productos para conciliación</strong></label>
                   </div>
-                  <div class="col-md-2" *ngFor="let item of audit.products; ">
-                    <label>{{item.name}}</label>
-                    <input [disabled]="audit.requestStatus === 'CONFIRMADA'" type="number" name="input_{{item.name}}" [(ngModel)]="item.quantity" class="form-control form-control-sm">
+                  <div class="col-md-12" *ngIf="audit.requestStatus!== 'CONFIRMADO'">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <label>Tipos de productos</label>
+                        <select name="typeproduct" id="typeproduct"  class="form-control form-control-sm form-select" [(ngModel)]="productForm2.typeproduct">
+                          <option value="{{item.value}}" *ngFor="let item of listTypeProduct">{{item.name}}</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label>productos</label>
+                        <select name="product" id="typeproduct" [(ngModel)]="productForm2.productId" class="form-control form-control-sm form-select">
+                          <option value="">Seleccionar</option>
+                          <option value="{{item.id}}" *ngFor="let item of listProducts">{{item.name}}</option>
+                        </select>
+                      </div>
+                      <div class="col-md-2">
+                        <label>Cantidad</label>
+                        <input type="number" name="input_canitdad" [(ngModel)]="productForm2.quantity" class="form-control">
+                      </div>
+                      <div class="col-md-2">
+                       <button class="btn btn-sm btn-dark mt-18" (click)="addProducts()">agregar</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4 mt-3">
+                    <ul class="list-group">
+                      <li class="list-group-item d-flex justify-content-between align-items-center p-2" *ngFor="let item of selectedItems">
+                        {{ item.name }} <br>
+                        Cantidad: {{item.quantity}}
+                        <i class="fa-solid fa-trash text-danger" (click)="removeItemProduct(item)"></i>
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </div>
@@ -309,8 +336,8 @@
           </div>
           <div class="modal-footer">
             <button class="btn btn-sm bg-dark text-white" (click)="modal.hide()">Cancelar</button>
-            <button *ngIf="audit.requestStatus !== 'CONFIRMADA'" class="btn btn-sm bg-info" (click)="saveConfirmConciliation(true)">Guardar</button>
-            <button *ngIf="audit.requestStatus !== 'CONFIRMADA'" class="btn btn-sm bg-success2" (click)="saveConfirmConciliation(false)">Aprobar</button>
+            <button *ngIf="audit.requestStatus !== 'CONFIRMADO'" class="btn btn-sm bg-info" (click)="saveConfirmConciliation(true)">Guardar</button>
+            <button *ngIf="audit.requestStatus !== 'CONFIRMADO'" class="btn btn-sm bg-success2" (click)="saveConfirmConciliation(false)">Aprobar</button>
           </div>
       </div>
       <div *ngIf="sizeModal==='modal-lg'">
