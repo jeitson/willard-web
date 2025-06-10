@@ -239,7 +239,7 @@
                         <th>Cantidad</th>
                         <th class="text-center">Soporte</th>
                         <th>Conciliación</th>
-                        <th *ngIf="audit.requestStatus!== 'CONFIRMADA'">Acciones</th>
+                        <th *ngIf="audit.requestStatus!== 'CONFIRMADO'">Acciones</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -252,10 +252,10 @@
                         <td>{{item.quantity}}</td>
                         <td class="text-center"><i class="fa-solid fa-image" (click)="viewFiles(item.supportUrls)"></i></td>
                         <td>
-                          <input *ngIf="audit.requestStatus!== 'CONFIRMADA'" type="number" id="input3{{item.id}}" name="input_3{{item.id}}" [(ngModel)]="item.quantityConciliated" class="form-control form-control-sm">
-                          <span *ngIf="audit.requestStatus === 'CONFIRMADA'">{{item.quantityConciliated}}</span>
+                          <input *ngIf="audit.requestStatus!== 'CONFIRMADO'" type="number" id="input3{{item.id}}" name="input_3{{item.id}}" [(ngModel)]="item.quantityConciliated" class="form-control form-control-sm">
+                          <span *ngIf="audit.requestStatus === 'CONFIRMADO'">{{item.quantityConciliated}}</span>
                         </td>
-                        <td *ngIf="audit.requestStatus!== 'CONFIRMADA'">
+                        <td *ngIf="audit.requestStatus!== 'CONFIRMADO'">
                           <div class="d-flex justify-content-around align-items-center">
                             <i *ngIf="!item.isNew" class="fa-solid fa-copy" (click)="openAddGuide('new',item)"></i>
                             <i *ngIf="item.isNew" class="fa-solid fa-edit" (click)="openAddGuide('edit',item)"></i>
@@ -297,7 +297,7 @@
                   <div class="col-md-12 mt-3">
                     <label><strong>Productos para conciliación</strong></label>
                   </div>
-                  <div class="col-md-12">
+                  <div class="col-md-12" *ngIf="audit.requestStatus!== 'CONFIRMADO'">
                     <div class="row">
                       <div class="col-md-3">
                         <label>Tipos de productos</label>
@@ -336,8 +336,8 @@
           </div>
           <div class="modal-footer">
             <button class="btn btn-sm bg-dark text-white" (click)="modal.hide()">Cancelar</button>
-            <button *ngIf="audit.requestStatus !== 'CONFIRMADA'" class="btn btn-sm bg-info" (click)="saveConfirmConciliation(true)">Guardar</button>
-            <button *ngIf="audit.requestStatus !== 'CONFIRMADA'" class="btn btn-sm bg-success2" (click)="saveConfirmConciliation(false)">Aprobar</button>
+            <button *ngIf="audit.requestStatus !== 'CONFIRMADO'" class="btn btn-sm bg-info" (click)="saveConfirmConciliation(true)">Guardar</button>
+            <button *ngIf="audit.requestStatus !== 'CONFIRMADO'" class="btn btn-sm bg-success2" (click)="saveConfirmConciliation(false)">Aprobar</button>
           </div>
       </div>
       <div *ngIf="sizeModal==='modal-lg'">

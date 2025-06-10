@@ -110,8 +110,15 @@
   <div class="page-body">
     <div style="padding-bottom: 80px;">
       <div class="row">
-        <div class="col-md-12 mb-3">
+        <div class="col-md-12 mb-3" *ngIf="!isAdmin">
           <label class="form-control">{{role==='18'?'Agencia PH':'Recuperadora'}}: {{headacopi}}</label>
+        </div>
+        <div class="col-md-12 mb-3" *ngIf="isAdmin">
+          <label class="">Sedes de Acopio</label>
+          <select class="form-control form-select" name="collectionssite" [(ngModel)]="receptionForm.collectionSiteId" required>
+            <option value="" selected>Seleccionar</option>
+            <option *ngFor="let opt of listCollections" value="{{opt.id}}">{{opt.name}}</option>
+          </select>
         </div>
         <div class="col-sm-6 col-md-6 mb-3">
           <label class="pricolor">Transportadora</label>

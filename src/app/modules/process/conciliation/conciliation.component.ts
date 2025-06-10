@@ -190,6 +190,7 @@ export class ConciliationComponent implements OnInit {
     this.api.get(`audit-route/detail?routeId=${item.routeId}&transporterId=${item.transporter?.id }`).subscribe({
       next: (response: any) => {
         this.audit = response.data;
+        this.selectedItems = [];
         let valid = 0;
         if(this.audit.products.length === 0){
           this.audit.reception.receptionDetails.forEach((e:any, i: number) => {
@@ -434,6 +435,7 @@ export class ConciliationComponent implements OnInit {
             this._toast.success('Completado', 'Conciliación confirmada con exito')
         }
         this.getConciliations(this.currentPage);
+        this.getConciliationsComplete(this.currentPage2)
         this.modal.hide();
       },
       error: (error: any) => {

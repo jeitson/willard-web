@@ -48,6 +48,7 @@ export class RequestagencyComponent {
   listZonas: any = [];
   listsrequest: any[] = [];
   listCopy: any[] = [];
+  productListAdded: any[] = [];
 
   listmotive: any[] = [];
 
@@ -68,6 +69,7 @@ export class RequestagencyComponent {
   totalItems = 0;
   totalPages = 0;
   paginatedList: any = [];
+  estimatedKGError: boolean = false;
   constructor(
     private _Customers: CustomersService,
     private _Conveyor: ConvenyorService,
@@ -104,16 +106,9 @@ export class RequestagencyComponent {
     this.filteredList = this.paginatedList;
   }
 
-  // getRequest() {
-  //   this._requests.listSolicitudes().subscribe((response: any) => {
-  //     this.listsrequest = response.data.items;
-  //   });
-  // }
-
   getRequest(page: any) {
     this._requests.listSolicitudes(page).subscribe((response: any) => {
       this.listsrequest = response.data.items.sort((a: any, b: any) => b.id - a.id);
-;
       this.listCopy = this.listsrequest; // Hacemos una copia de la lista original
       this.totalItems = this.listsrequest.length; // Total de solicitudes
       this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
@@ -126,7 +121,6 @@ export class RequestagencyComponent {
     this._Conveyor.getTransportadores().subscribe({
       next: (response: any) => {
         this.listTransportador = response.data.items;
-        console.log(this.listTransportador);
       },
       error: (error: any) => {
         console.error('Error al obtener transportadores:', error);
@@ -199,7 +193,6 @@ export class RequestagencyComponent {
   }
 
   pickuplocation(item:any){
-    console.log('lugar ',item);
     this._pickUp.getPickUpLocationsClient(item).subscribe({
       next: (response: any) => {
         this.listTipos = response.data.items;
@@ -232,6 +225,7 @@ export class RequestagencyComponent {
     }
     return res;
   }
+
   createRequest() {
     this.clearData();
     this.actionSave = false;
@@ -240,7 +234,6 @@ export class RequestagencyComponent {
   }
 
   updateRequest(item: any) {
-    console.log(item);
     this.actionSave = true;
     this.modal.show();
     // Lógica para actualizar la solicitud
@@ -248,7 +241,7 @@ export class RequestagencyComponent {
     this.request = {
       clientId: item.client.id, // Cambiado de item.clientId a item.client.businessName
       description: item.description,
-      productId: item.productTypeId,
+      productId: '',
       estimatedPickUpDate: item.estimatedPickUpDate,
       estimatedPickUpTime: item.estimatedPickUpTime,
       estimatedQuantity: item.estimatedQuantity,
@@ -260,6 +253,7 @@ export class RequestagencyComponent {
       observations: item.observations,
       recommendations: item.recommendations,
     };
+    this.productListAdded = item.products.map(({id, name}: any) => ({id, name}))
   }
 
   selectItem(
@@ -294,8 +288,8 @@ export class RequestagencyComponent {
     // Validar que todos los campos requeridos no estén vacíos
     if (this.validateFields()) {
       const action = this.actionSave
-        ? this._requests.updateSolicitud(this.dataId.id, this.request)
-        : this._requests.createSolicitud(this.request);
+        ? this._requests.updateSolicitud(this.dataId.id, {...this.request, products: this.productListAdded.map(({id}) => id)})
+        : this._requests.createSolicitud({...this.request, products: this.productListAdded.map(({id}) => id)});
 
       action.subscribe({
         next: (response: any) => {
@@ -322,8 +316,6 @@ export class RequestagencyComponent {
       );
     }
   }
-
-  estimatedKGError: boolean = false; // Variable para almacenar el estado de error
 
   validateEstimatedKG(): void {
     const estimatedKG = this.request.estimatedKG;
@@ -374,11 +366,8 @@ export class RequestagencyComponent {
       }
     }
 
-    console.log(this.request); // Verificar el contenido completo del objeto
-
     // Validar si el peso estimado es mayor a 10,000
     if (this.request.estimatedKG > 10000) {
-      console.log(`Peso estimado excede 10,000: ${this.request.estimatedKG}`);
       this.labelsValidation.estimatedKG = true; // Marcar como inválido
       allFieldsValid = false;
     }
@@ -412,6 +401,7 @@ export class RequestagencyComponent {
       .fill(0)
       .map((x, i) => i + 1);
   }
+
   search(): void {
     this.searchTerm$.subscribe(({ value }: { value: string }) => {
         const lowerValue = value.toLowerCase();
@@ -426,7 +416,34 @@ export class RequestagencyComponent {
             ].some(field => field?.toLowerCase().includes(lowerValue))
         );
     });
+  }
+
+  productAdd(){
+    if(this.request.productId === ''){
+      return;
+    }
+    const product = this.productList.find((p:any) => p.id === this.request.productId)
+    const ptemp = this.productListAdded.map(({id}) => id);
+    if(!ptemp.includes(product.id)){
+      this.productListAdded.push({id:product.id, name: product.name});
+    } else {
+      this._toast.info('Importante','Ya existe este producto agregado');
+    }
+  }
+
+  productDelete(item: any){
+    this.productListAdded.filter((p:any)=> p.productId !== item.id);
+  }
+
 }
 
 
-}
+
+/*
+-- Quitar comentarios del codigo tanto en html y ts
+-- Revisar el editar solicitud no carga el detalle del cliente seleccionado ni el lugar de recogida
+-- Concatenar al momento del guardado o actualizar los items que salen en forma de lista antes de la
+observacion con la observacion de la solicitud
+--mirar si se le puede dar un mejor aspecto al formulario ya se siente raro el formulario si falla un campo todo se pone rojo en los
+labels pero aun nisiquiera se han llenado
+*/
