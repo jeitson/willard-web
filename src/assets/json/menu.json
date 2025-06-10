@@ -18,7 +18,7 @@
     "icon": "ai-settings-horizontal",
     "subMenu": [
       {
-        "name": "Solicitudes",
+        "name": "Planeación de ruta",
         "type": "link",
         "id": "21",
         "route": "requestplanner",
@@ -32,7 +32,7 @@
         "status": false
       },
       {
-        "name": "Solicitudes",
+        "name": "Logistica de Ruta",
         "type": "link",
         "id": "23",
         "route": "requestlogistics",
@@ -64,6 +64,20 @@
         "type": "link",
         "id": "27",
         "route": "bulkrequest",
+        "status": false
+      },
+      {
+        "name": "Factura",
+        "type": "link",
+        "id": "28",
+        "route": "facture",
+        "status": false
+      },
+      {
+        "name": "Reporte",
+        "type": "link",
+        "id": "29",
+        "route": "report",
         "status": false
       }
     ]

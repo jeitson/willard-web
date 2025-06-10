@@ -11,6 +11,8 @@ import { ReceptionComponent } from './reception/reception.component';
 import { ShippingComponent } from './shipping/shipping.component';
 import { ConciliationComponent } from './conciliation/conciliation.component';
 import { BulkrequestComponent } from './bulkrequest/bulkrequest.component';
+import { ReporteComponent } from './reporte/reporte.component';
+import { FacturaComponent } from './factura/factura.component';
 
 
 @NgModule({
@@ -22,7 +24,9 @@ import { BulkrequestComponent } from './bulkrequest/bulkrequest.component';
     ReceptionComponent,
     ShippingComponent,
     ConciliationComponent,
-    BulkrequestComponent
+    BulkrequestComponent,
+    ReporteComponent,
+    FacturaComponent
   ],
   imports: [
     CommonModule,

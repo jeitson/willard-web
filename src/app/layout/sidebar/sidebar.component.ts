@@ -71,11 +71,25 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.role = sessionStorage.getItem("RoleId") || '';
     this.nameUser = response.name;
 
+    // if (this.role) {
+    //   this.name = response.roles?.[0]?.role.name || '';
+    //   const modules = response.roles?.[0]?.role.menu || [];
+    //   console.log(modules);
+    //   this.preloadModules(modules);
+    // }
     if (this.role) {
       this.name = response.roles?.[0]?.role.name || '';
       const modules = response.roles?.[0]?.role.menu || [];
+      
+      // Agregar los nuevos children al módulo con id "2"
+      const targetModule = modules.find((m: any) => m.id === "2" && m.type === "sub" && Array.isArray(m.children));
+      if (targetModule) {
+      targetModule.children.push({ id: "28" }, { id: "29" });
+      }
+      
+      console.log(modules);
       this.preloadModules(modules);
-    }
+      }
   }
 
   private fetchAndStoreUserProfile(): void {

@@ -31,6 +31,7 @@ export class GeneralService {
     UpdateGuia(params: any, data:any): Observable<any> {
       return this._service.patch(`transporter-travel/route/${params}`, data);
     }
+    
 
 }
 

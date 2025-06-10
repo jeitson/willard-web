@@ -55,7 +55,7 @@ export class BulkrequestComponent {
 
   // Método para obtener datos con paginación
   get(page: number) {
-    this._request.listSolicitudes(page).subscribe((response: any) => {
+    this._general.getConsultantsTransp(page).subscribe((response: any) => {
       console.log(response);
 
       this.detailData = response.data.items; // Datos de la tabla
@@ -299,26 +299,33 @@ export class BulkrequestComponent {
           cantidad: 'number',
         });
 
-        if (!isValidPrincipal || !isValidDetalle) {
-          this._toast.error(
-            'Error:',
-            ' Algunos datos no cumplen con el tipo esperado.'
-          );
-          return;
-        }
+        // if (!isValidPrincipal || !isValidDetalle) {
+        //   this._toast.error(
+        //     'Error:',
+        //     ' Algunos datos no cumplen con el tipo esperado.'
+        //   );
+        //   return;
+        // }
 
         // Transformar datos
+        console.log(principalData);
         const transformedData = principalData
-          .map((item) => {
-            const detalles = JSON.parse(item.detalles || '[]');
-            return detalles.map((detalle: any) => ({
+        .map((item) => {
+          const detalles = JSON.parse(item.detalles || '[]');
+          return detalles.map((detalle: any) => {
+            const { fecha, hora } = this.convertirFechaHora(item.fechaMov, item.horaMov);
+            console.log(fecha, hora)
+            return {
               idGuia: item.idGuia,
               tipoBat: detalle.tipoBat,
               cantidad: detalle.cantidades,
+              fechaMov: fecha, // Fecha en formato YYYY-MM-DD
+              horaMov: hora, // Hora en formato HH:mm
               ...item,
-            }));
-          })
-          .flat();
+            };
+          });
+        })
+        .flat();
 
         console.log(transformedData);
         this.formattedData = transformedData;
@@ -326,7 +333,21 @@ export class BulkrequestComponent {
       reader.readAsArrayBuffer(file);
     }
   }
-
+  convertirFechaHora(fechaMov: number, horaMov: number) {
+    // Convertir la fecha de formato serial de Excel a formato "YYYY-MM-DD"
+    const fechaBase = new Date(1899, 11, 30); // 30 de diciembre de 1899
+    const fecha = new Date(fechaBase.getTime() + fechaMov * 86400000);
+    const fechaFormateada = fecha.toISOString().split('T')[0]; // YYYY-MM-DD
+  
+    // Convertir la hora de formato decimal de Excel a "HH:mm"
+    const totalMinutes = Math.round(horaMov * 1440); // 1440 minutos en un día
+    const horas = Math.floor(totalMinutes / 60);
+    const minutos = totalMinutes % 60;
+    const horaFormateada = `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
+  
+    return { fecha: fechaFormateada, hora: horaFormateada };
+  }
+  
   // Función para validar las cabeceras
   validateHeaders(headers: string[], expectedHeaders: string[]): boolean {
     return expectedHeaders.every((header) => headers.includes(header));

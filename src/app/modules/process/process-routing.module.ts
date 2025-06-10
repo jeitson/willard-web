@@ -50,6 +50,20 @@ const routes: Routes = [
 			import('../process/bulkrequest/bulkrequest.module').then(
 				({ BulkrequestModule }) => BulkrequestModule,
 			),
+	},
+	{
+		path: 'facture',
+		loadChildren: () =>
+			import('../process/factura/factura.module').then(
+				({ FacturaModule }) => FacturaModule,
+			),
+	},
+	{
+		path: 'report',
+		loadChildren: () =>
+			import('../process/reporte/reporte.module').then(
+				({ ReporteModule }) => ReporteModule,
+			),
 	}
 ];
 
