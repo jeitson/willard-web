@@ -138,19 +138,19 @@
                   <option *ngFor="let item of listData" [value]="item.id">{{item.name}}</option>
                 </select>
               </div>
-              <div class="mb-3" *ngIf="role === '18' || role === '20' || role === '13'">
+              <div class="mb-3" *ngIf="role === '18' || role === '20' || role === '22' || role === '13'">
                 <label for="role" class="form-label">Sede Acopio</label>
-                <select class="form-control form-select"  [(ngModel)]="collectionSites">
+                <select class="form-control form-select"  [(ngModel)]="user.collectionSites">
                   <option *ngFor="let item of listCollections" [value]="item.id">{{item.name}}</option>
                 </select>
               </div>
-              <div class="mb-3" *ngIf="role === '14'">
+              <div class="mb-3" *ngIf="role === '14' || role === '22'">
                 <label for="role" class="form-label">Zonas</label>
                 <select class="form-control form-select"  [(ngModel)]="zone">
                   <option *ngFor="let item of listZones" [value]="item.id">{{item.name}}</option>
                 </select>
               </div>
-              <div class="mb-3" *ngIf="role === '14'">
+              <div class="mb-3" *ngIf="role === '14' || role === '22'">
                 <label for="role" class="form-label">Transportador</label>
                 <select class="form-control form-select"  [(ngModel)]="user.transporterId">
                   <option *ngFor="let item of listTransporters" [value]="item.id">{{item.name}}</option>

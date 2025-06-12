@@ -40,7 +40,7 @@ export class BulkrequestComponent {
     private _general: GeneralService,
     private _toast: ToastService,
     private _request: RequestsService,
-    private _http: ApiService,
+    private _http: ApiService
   ) {}
   ngOnInit(): void {
     this.modalConfirm = new bootstrap.Modal(
@@ -101,32 +101,39 @@ export class BulkrequestComponent {
   exportToExcel(data: any[], fileName: string = 'Reporte.xlsx') {
     console.log(data);
     if (!data || data.length === 0) {
-        console.error('No hay datos para exportar.');
-        return;
+      console.error('No hay datos para exportar.');
+      return;
     }
 
     // Obtener las claves del primer objeto como encabezados
     const headers = Object.keys(data[0]);
 
     // Convertir los datos a una hoja de cálculo
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, { header: headers });
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
+      header: headers,
+    });
 
     // Ajustar el ancho de las columnas automáticamente
     worksheet['!cols'] = headers.map((header) => ({ wch: header.length + 5 }));
 
     // Crear el libro de trabajo
     const workbook: XLSX.WorkBook = {
-        Sheets: { Datos: worksheet },
-        SheetNames: ['Datos'],
+      Sheets: { Datos: worksheet },
+      SheetNames: ['Datos'],
     };
 
     // Generar el archivo Excel en formato binario
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
 
     // Crear un Blob y descargar el archivo
-    const blob: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    const blob: Blob = new Blob([excelBuffer], {
+      type: 'application/octet-stream',
+    });
     saveAs(blob, fileName);
-}
+  }
 
   addToTable() {
     if (this.selectedItem) {
@@ -201,16 +208,16 @@ export class BulkrequestComponent {
 
   onFileChange(event: any): void {
     const file = event.target.files[0];
-    if (file) {
-      this.uploadedFile = file; // Guardar el archivo cargado
+    if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
+    this.uploadedFile = file;
 
-        // Cabeceras esperadas
-        const expectedHeadersPrincipal = [
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+
+             const expectedHeadersPrincipal = [
           'idRuta',
           'idGuia',
           'tipo',
@@ -230,126 +237,146 @@ export class BulkrequestComponent {
           'docReferencia',
           'docReferencia2',
           'urlSoportes',
-          'detalles',
         ];
+      const expectedHeadersDetalle = ['idGuia', 'tipoBat', 'cantidad'];
 
-        const expectedHeadersDetalle = ['idGuia', 'tipoBat', 'cantidad'];
+      let principalData: any[] = [];
+      let detalleData: any[] = [];
 
-        let principalData: any[] = [];
-        let detalleData: any[] = [];
+      let valid = true;
 
-        workbook.SheetNames.forEach((sheetName: string) => {
-          const sheet = workbook.Sheets[sheetName];
-          const jsonData: any = XLSX.utils.sheet_to_json(sheet, { header: 1 }); // Obtener como array de arrays
-          console.log(jsonData);
-          if (jsonData.length > 0) {
-            const headers = jsonData[0].map((header: any) =>
-              header.toString().trim()
+      workbook.SheetNames.forEach((sheetName: string) => {
+        const sheet = workbook.Sheets[sheetName];
+        const jsonData: any = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        if (jsonData.length === 0) return;
+        console.log(jsonData);
+        const headers = jsonData[0].map((h: any) => h.toString().trim());
+        if (sheetName === 'principal') {
+          if (!this.validateHeaders(headers, expectedHeadersPrincipal)) {
+            this._toast.error(
+              'Error en cargue',
+              `Las cabeceras de '${sheetName}' no coinciden.`
             );
-
-            if (sheetName === 'principal') {
-              if (!this.validateHeaders(headers, expectedHeadersPrincipal)) {
-                this._toast.error(
-                  'Error en el cargue',
-                  `Error: Las cabeceras de la hoja '${sheetName}' no coinciden.`
-                );
-
-                return;
-              }
-              principalData = XLSX.utils.sheet_to_json(sheet);
-            } else if (sheetName === 'detalle') {
-              if (!this.validateHeaders(headers, expectedHeadersDetalle)) {
-                this._toast.error(
-                  'Error en el cargue',
-                  `Error: Las cabeceras de la hoja '${sheetName}' no coinciden.`
-                );
-                return;
-              }
-              detalleData = XLSX.utils.sheet_to_json(sheet);
-            }
+            valid = false;
           }
-        });
+          principalData = XLSX.utils.sheet_to_json(sheet);
+        } else if (sheetName === 'detalle') {
+          if (!this.validateHeaders(headers, expectedHeadersDetalle)) {
+            this._toast.error(
+              'Error en cargue',
+              `Las cabeceras de '${sheetName}' no coinciden.`
+            );
+            valid = false;
+          }
+          detalleData = XLSX.utils.sheet_to_json(sheet);
+        }
+      });
 
-        // Validación de tipos de datos en 'principal'
-        const isValidPrincipal = this.validateDataTypes(principalData, {
-          idRuta: 'string',
-          idGuia: 'number',
-          tipo: 'string',
-          secuencia: 'number',
-          fechaMov: 'number',
-          horaMov: 'number',
-          planeador: 'number',
-          zona: 'string',
-          ciudad: 'string',
-          depto: 'string',
-          placa: 'string',
-          conductor: 'string',
-          nombreSitio: 'string',
-          direccion: 'string',
-          posGps: 'string',
-          totCant: 'number',
-          docReferencia: 'string',
-          docReferencia2: 'string',
-          urlSoportes: 'string',
-          detalles: 'string',
-        });
+      if (!valid) return;
 
-        // Validación de tipos de datos en 'detalle'
-        const isValidDetalle = this.validateDataTypes(detalleData, {
-          idGuia: 'number',
-          tipoBat: 'string',
-          cantidad: 'number',
-        });
+      // Validar tipos de datos
+      const isValidPrincipal = this.validateDataTypes(principalData, {
+        idRuta: 'string',
+        idGuia: 'number',
+        tipo: 'string',
+        secuencia: 'number',
+        fechaMov: 'number',
+        horaMov: 'number',
+        planeador: 'number',
+        zona: 'string',
+        ciudad: 'string',
+        depto: 'string',
+        placa: 'string',
+        conductor: 'string',
+        nombreSitio: 'string',
+        direccion: 'string',
+        posGps: 'string',
+        totCant: 'number',
+        docReferencia: 'string',
+        docReferencia2: 'string',
+        urlSoportes: 'string',
+        detalles: 'string',
+      });
 
-        // if (!isValidPrincipal || !isValidDetalle) {
-        //   this._toast.error(
-        //     'Error:',
-        //     ' Algunos datos no cumplen con el tipo esperado.'
-        //   );
-        //   return;
-        // }
+      const isValidDetalle = this.validateDataTypes(detalleData, {
+        idGuia: 'number',
+        tipoBat: 'string',
+        Cantidad: 'number',
+      });
 
-        // Transformar datos
-        console.log(principalData);
-        const transformedData = principalData
-        .map((item) => {
-          const detalles = JSON.parse(item.detalles || '[]');
-          return detalles.map((detalle: any) => {
-            const { fecha, hora } = this.convertirFechaHora(item.fechaMov, item.horaMov);
-            console.log(fecha, hora)
-            return {
-              idGuia: item.idGuia,
-              tipoBat: detalle.tipoBat,
-              cantidad: detalle.cantidades,
-              fechaMov: fecha, // Fecha en formato YYYY-MM-DD
-              horaMov: hora, // Hora en formato HH:mm
-              ...item,
-            };
-          });
-        })
-        .flat();
+      // if (!isValidPrincipal || !isValidDetalle) {
+      //   this._toast.error(
+      //     'Error',
+      //     'Algunos datos no cumplen con el tipo esperado.'
+      //   );
+      //   return;
+      // }
 
-        console.log(transformedData);
-        this.formattedData = transformedData;
-      };
-      reader.readAsArrayBuffer(file);
-    }
+      const transformedData = principalData.flatMap((item) => {
+        let detalles: any[] = [];
+        try {
+          detalles = JSON.parse(item.detalles || '[]');
+        } catch (e) {
+          this._toast.error(
+            'Error en "detalles"',
+            `idGuia ${item.idGuia} tiene un JSON inválido.`
+          );
+          return [];
+        }
+
+        // const { fecha, hora } = this.convertirFechaHora(
+        //   item.fechaMov,
+        //   item.horaMov
+        // );
+        console.log(detalleData);
+        return detalleData.map((detalle: any) => ({
+          idGuia: item.idGuia,
+          tipoBat: detalle.tipoBat,
+          cantidad: detalle.Cantidad,
+          fechaMov: item.fechaMov,
+          horaMov: item.horaMov,
+          ...item,
+        }));
+      });
+
+      this.formattedData = transformedData;
+      console.log(transformedData);
+    };
+
+    reader.readAsArrayBuffer(file);
   }
-  convertirFechaHora(fechaMov: number, horaMov: number) {
-    // Convertir la fecha de formato serial de Excel a formato "YYYY-MM-DD"
-    const fechaBase = new Date(1899, 11, 30); // 30 de diciembre de 1899
+
+convertirFechaHora(fechaMov: number, horaMov: number): { fecha: string; hora: string } {
+  try {
+    // Validación básica
+    if (typeof fechaMov !== 'number' || isNaN(fechaMov) || fechaMov <= 0) {
+      throw new Error(`fechaMov inválido: ${fechaMov}`);
+    }
+    if (typeof horaMov !== 'number' || isNaN(horaMov) || horaMov < 0 || horaMov >= 1) {
+      throw new Error(`horaMov inválido: ${horaMov}`);
+    }
+
+    // Convertir la fecha desde serial Excel (base 30/12/1899)
+    const fechaBase = new Date(1899, 11, 30); // Excel base date
     const fecha = new Date(fechaBase.getTime() + fechaMov * 86400000);
+    if (isNaN(fecha.getTime())) throw new Error('Fecha no válida');
+
     const fechaFormateada = fecha.toISOString().split('T')[0]; // YYYY-MM-DD
-  
-    // Convertir la hora de formato decimal de Excel a "HH:mm"
-    const totalMinutes = Math.round(horaMov * 1440); // 1440 minutos en un día
+
+    // Convertir hora decimal de Excel a HH:mm
+    const totalMinutes = Math.round(horaMov * 1440);
     const horas = Math.floor(totalMinutes / 60);
     const minutos = totalMinutes % 60;
     const horaFormateada = `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
-  
+
     return { fecha: fechaFormateada, hora: horaFormateada };
+  } catch (error) {
+    console.error('Error en convertirFechaHora:', { fechaMov, horaMov, error });
+    return { fecha: '', hora: '' };
   }
-  
+}
+
+
   // Función para validar las cabeceras
   validateHeaders(headers: string[], expectedHeaders: string[]): boolean {
     return expectedHeaders.every((header) => headers.includes(header));

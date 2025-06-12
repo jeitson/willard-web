@@ -326,7 +326,7 @@
                       <li class="list-group-item d-flex justify-content-between align-items-center p-2" *ngFor="let item of selectedItems">
                         {{ item.name }} <br>
                         Cantidad: {{item.quantity}}
-                        <i class="fa-solid fa-trash text-danger" (click)="removeItemProduct(item)"></i>
+                        <i  *ngIf="audit.requestStatus!== 'CONFIRMADO'" class="fa-solid fa-trash text-danger" (click)="removeItemProduct(item)"></i>
                       </li>
                     </ul>
                   </div>

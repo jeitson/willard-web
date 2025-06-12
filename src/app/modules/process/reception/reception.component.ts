@@ -76,13 +76,8 @@ export class ReceptionComponent implements OnInit {
 
   ngOnInit(){
     this.role = sessionStorage.getItem('RoleId') || '';
-    const data =  JSON.parse(sessionStorage.getItem('profileData') || '{}');
-    if(data.userCollectionSites.length > 0){
-      this.headacopi = data[0].collectionSite?.name;
-      this.receptionForm.collectionSiteId = data[0].collectionSite?.id;
-    } else {
-      this.isAdmin = true;
-    }
+    
+
     this.modal = new bootstrap.Modal(document.getElementById('modalevidence'), {backdrop: 'static', keyboard: false});
     this.modalloading = new bootstrap.Modal(document.getElementById('modalLoading'), {backdrop: 'static', keyboard: false});
     this.modalconfirmGuide = new bootstrap.Modal(document.getElementById('modalconfirmGuide'), {backdrop: 'static', keyboard: false});
@@ -117,6 +112,7 @@ export class ReceptionComponent implements OnInit {
   getProductType(){
     this.api.get(`products/categories`).subscribe({
       next: (response: any) => {
+        console.log(response)
         this.listTypeProducts = response.data;
       },
       error: (error: any) => {
@@ -169,24 +165,57 @@ export class ReceptionComponent implements OnInit {
     return productlist;
   }
 
-  addReception(){
-    this.photos = [];
-    this.products.forEach(element => {
-      return element.quantity = 0;
-    });
-    this.receptionForm = {
-      transporterId:'',
-      licensePlate:'',
-      collectionSiteId:'',
-      driver:'',
-      routeId:'',
-      referenceDoc1:'',
-      referenceDoc2:'',
+ addReception(): void {
+  // Reiniciar fotos y cantidades
+  this.photos = [];
+  this.products.forEach(product => product.quantity = 0);
+
+  // Reiniciar formulario
+  this.receptionForm = {
+    transporterId: '',
+    licensePlate: '',
+    collectionSiteId: '',
+    driver: '',
+    routeId: '',
+    referenceDoc1: '',
+    referenceDoc2: ''
+  };
+
+  // Obtener datos del perfil del sessionStorage
+  const profileDataRaw = sessionStorage.getItem('profileData');
+  const profileData = profileDataRaw ? JSON.parse(profileDataRaw) : {};
+
+  console.log(profileData);
+
+  // Asignar sitio de acopio si existe
+  const userSites = profileData.userCollectionSites;
+  if (Array.isArray(userSites) && userSites.length > 0) {
+    const site = userSites[0];
+    const siteName = site?.collectionSite?.name;
+    const siteId = site?.collectionSiteId;
+
+    if (siteName && siteId) {
+      this.headacopi = siteName;
+      this.receptionForm.collectionSiteId = siteId;
+      console.log('Sitio de acopio asignado:', siteId);
+    } else {
+      console.warn('El sitio de acopio o su nombre están indefinidos');
+      this.isAdmin = true;
     }
-    this.toggleSection(this.listTypeProducts[0].id || '');
-    this.editpanel = true;
-    this.action = 'agregar'
+  } else {
+    this.isAdmin = true;
   }
+
+  // Mostrar primer tipo de producto
+  if (this.listTypeProducts.length > 0) {
+    this.toggleSection(this.listTypeProducts[0].id || '');
+  }
+
+  // Activar panel de edición
+  this.editpanel = true;
+  this.action = 'agregar';
+}
+
 
   editReception(item: any){
     this.reception = item;
@@ -426,6 +455,8 @@ export class ReceptionComponent implements OnInit {
       details: this.products,
       photos: photos,
     };
+    console.log(this.receptionForm);
+    console.log(data);
     this.api.post(`receptions`, data).subscribe({
       next: (response: any) => {
         this.editpanel = false;

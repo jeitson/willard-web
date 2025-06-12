@@ -138,6 +138,7 @@ export class UsersComponent {
   }
 
   createOrUpdateUser(item: any | null): void {
+    console.log(item);
     this.resetUser();
     this.action.name = 'Crear';
     this.viewoptions = true;
@@ -158,9 +159,17 @@ export class UsersComponent {
         referencePH: item.referencePH,
         roles: item.roles,
         transporterId: item.transporterId,
-        collectionSites: item.collectionSites.length > 0 ? item.collectionSites[0].collectionSiteId : '',
-        zones: item.zones.length > 0 ? item.zones[0].id : '',
+        collectionSites:
+          item.userCollectionSites.length > 0
+            ? item.userCollectionSites[0].collectionSiteId
+            : '',
+        zones: item.zones.length > 0 ? item.zones[0].zoneId : '',
       };
+     this.collectionSites =
+        item.userCollectionSites.length > 0
+          ? item.userCollectionSites[0].collectionSiteId
+          : '';
+      this.zone = item.zones.length > 0 ? item.zones[0].zoneId : '';
     }
   }
 
@@ -169,7 +178,7 @@ export class UsersComponent {
       ...this.user,
       roles: [Number(this.role)],
       collectionSites: [Number(this.collectionSites)],
-      zones: [ Number(this.zone)]
+      zones: [Number(this.zone)],
     };
     this.userService.updateUser(this.userId, data).subscribe({
       next: (response: any) => {
@@ -187,7 +196,7 @@ export class UsersComponent {
       ...this.user,
       roles: [Number(this.role)],
       collectionSites: [Number(this.collectionSites)],
-      zones: [ Number(this.zone)]
+      zones: [Number(this.zone)],
     };
     this.userService.createUser(data).subscribe({
       next: (response: any) => {
@@ -213,7 +222,7 @@ export class UsersComponent {
       transporterId: '',
       roles: [],
       collectionSites: [],
-      zones:[],
+      zones: [],
     };
   }
 
