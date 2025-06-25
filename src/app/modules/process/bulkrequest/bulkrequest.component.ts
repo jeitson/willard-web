@@ -79,7 +79,6 @@ export class BulkrequestComponent {
   }
 
   getPendingRequest() {
-    console.log(this.selectedItems)
     const routeIds = this.selectedItems.map((item) => item.routeId);
     const uniqueRouteIds = [...new Set(routeIds)];
 
@@ -94,42 +93,53 @@ export class BulkrequestComponent {
     console.log(requestBody);
 
     this._request.getPendingRequests(requestBody).subscribe((item: any) => {
-      const data = item.filter((x: any)=> x.idRuta === requestBody.routes[0])
-      this.exportToExcel(data);
+      console.log(item);
+      const filteredItems = item.filter((i: any) =>
+        requestBody.routes.includes(i.idRuta)
+      );
+      this.exportToExcel(filteredItems);
     });
   }
 
-  exportToExcel(data: any[], fileName: string = 'Reporte.xlsx') {
+exportToExcel(data: any[], fileName: string = 'Reporte.xlsx') {
+  console.log(data);
   if (!data || data.length === 0) {
     console.error('No hay datos para exportar.');
     return;
   }
 
-  // Hoja 1: Datos
-  const headers1 = Object.keys(data[0]);
+  // --- Primera hoja: datos originales ---
+  const headers = Object.keys(data[0]);
   const worksheet1: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
-    header: headers1,
+    header: headers,
   });
-  worksheet1['!cols'] = headers1.map(header => ({ wch: header.length + 5 }));
+  worksheet1['!cols'] = headers.map((header) => ({ wch: header.length + 5 }));
 
-  // Hoja 2: Baterias (cabecera fija)
-  const bateriasHeaders = ['idGuia', 'tipoBat', 'cantidad'];
-  const bateriasData: any[] = []; // Puedes llenar con datos reales si los tienes
-  const worksheet2: XLSX.WorkSheet = XLSX.utils.json_to_sheet(bateriasData, {
-    header: bateriasHeaders,
+  // --- Segunda hoja: encabezados idGuia, tipoBat, cantidad ---
+  const secondSheetHeaders = ['idGuia', 'tipoBat', 'cantidad'];
+
+  // Forzar encabezados incluyendo un objeto con claves y valores vacíos
+  const secondSheetData = [{
+    idGuia: '',
+    tipoBat: '',
+    cantidad: ''
+  }];
+
+  const worksheet2: XLSX.WorkSheet = XLSX.utils.json_to_sheet(secondSheetData, {
+    header: secondSheetHeaders,
+    skipHeader: false
   });
-  worksheet2['!cols'] = bateriasHeaders.map(header => ({ wch: header.length + 5 }));
+  worksheet2['!cols'] = secondSheetHeaders.map((header) => ({ wch: header.length + 5 }));
 
-  // Crear libro con ambas hojas
+  // --- Crear el libro con ambas hojas ---
   const workbook: XLSX.WorkBook = {
     Sheets: {
       Datos: worksheet1,
-      Baterias: worksheet2,
+      Baterias: worksheet2
     },
-    SheetNames: ['principal', 'detalle'],
+    SheetNames: ['Datos', 'Baterias'],
   };
 
-  // Escribir y guardar
   const excelBuffer: any = XLSX.write(workbook, {
     bookType: 'xlsx',
     type: 'array',
@@ -140,6 +150,7 @@ export class BulkrequestComponent {
   });
   saveAs(blob, fileName);
 }
+
 
   addToTable() {
     if (this.selectedItem) {
@@ -223,27 +234,27 @@ export class BulkrequestComponent {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: 'array' });
 
-             const expectedHeadersPrincipal = [
-          'idRuta',
-          'idGuia',
-          'tipo',
-          'secuencia',
-          'fechaMov',
-          'horaMov',
-          'planeador',
-          'zona',
-          'ciudad',
-          'depto',
-          'placa',
-          'conductor',
-          'nombreSitio',
-          'direccion',
-          'posGps',
-          'totCant',
-          'docReferencia',
-          'docReferencia2',
-          'urlSoportes',
-        ];
+      const expectedHeadersPrincipal = [
+        'idRuta',
+        'idGuia',
+        'tipo',
+        'secuencia',
+        'fechaMov',
+        'horaMov',
+        'planeador',
+        'zona',
+        'ciudad',
+        'depto',
+        'placa',
+        'conductor',
+        'nombreSitio',
+        'direccion',
+        'posGps',
+        'totCant',
+        'docReferencia',
+        'docReferencia2',
+        'urlSoportes',
+      ];
       const expectedHeadersDetalle = ['idGuia', 'tipoBat', 'cantidad'];
 
       let principalData: any[] = [];
@@ -352,36 +363,49 @@ export class BulkrequestComponent {
     reader.readAsArrayBuffer(file);
   }
 
-convertirFechaHora(fechaMov: number, horaMov: number): { fecha: string; hora: string } {
-  try {
-    // Validación básica
-    if (typeof fechaMov !== 'number' || isNaN(fechaMov) || fechaMov <= 0) {
-      throw new Error(`fechaMov inválido: ${fechaMov}`);
+  convertirFechaHora(
+    fechaMov: number,
+    horaMov: number
+  ): { fecha: string; hora: string } {
+    try {
+      // Validación básica
+      if (typeof fechaMov !== 'number' || isNaN(fechaMov) || fechaMov <= 0) {
+        throw new Error(`fechaMov inválido: ${fechaMov}`);
+      }
+      if (
+        typeof horaMov !== 'number' ||
+        isNaN(horaMov) ||
+        horaMov < 0 ||
+        horaMov >= 1
+      ) {
+        throw new Error(`horaMov inválido: ${horaMov}`);
+      }
+
+      // Convertir la fecha desde serial Excel (base 30/12/1899)
+      const fechaBase = new Date(1899, 11, 30); // Excel base date
+      const fecha = new Date(fechaBase.getTime() + fechaMov * 86400000);
+      if (isNaN(fecha.getTime())) throw new Error('Fecha no válida');
+
+      const fechaFormateada = fecha.toISOString().split('T')[0]; // YYYY-MM-DD
+
+      // Convertir hora decimal de Excel a HH:mm
+      const totalMinutes = Math.round(horaMov * 1440);
+      const horas = Math.floor(totalMinutes / 60);
+      const minutos = totalMinutes % 60;
+      const horaFormateada = `${horas.toString().padStart(2, '0')}:${minutos
+        .toString()
+        .padStart(2, '0')}`;
+
+      return { fecha: fechaFormateada, hora: horaFormateada };
+    } catch (error) {
+      console.error('Error en convertirFechaHora:', {
+        fechaMov,
+        horaMov,
+        error,
+      });
+      return { fecha: '', hora: '' };
     }
-    if (typeof horaMov !== 'number' || isNaN(horaMov) || horaMov < 0 || horaMov >= 1) {
-      throw new Error(`horaMov inválido: ${horaMov}`);
-    }
-
-    // Convertir la fecha desde serial Excel (base 30/12/1899)
-    const fechaBase = new Date(1899, 11, 30); // Excel base date
-    const fecha = new Date(fechaBase.getTime() + fechaMov * 86400000);
-    if (isNaN(fecha.getTime())) throw new Error('Fecha no válida');
-
-    const fechaFormateada = fecha.toISOString().split('T')[0]; // YYYY-MM-DD
-
-    // Convertir hora decimal de Excel a HH:mm
-    const totalMinutes = Math.round(horaMov * 1440);
-    const horas = Math.floor(totalMinutes / 60);
-    const minutos = totalMinutes % 60;
-    const horaFormateada = `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
-
-    return { fecha: fechaFormateada, hora: horaFormateada };
-  } catch (error) {
-    console.error('Error en convertirFechaHora:', { fechaMov, horaMov, error });
-    return { fecha: '', hora: '' };
   }
-}
-
 
   // Función para validar las cabeceras
   validateHeaders(headers: string[], expectedHeaders: string[]): boolean {
