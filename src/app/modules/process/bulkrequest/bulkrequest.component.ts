@@ -79,6 +79,7 @@ export class BulkrequestComponent {
   }
 
   getPendingRequest() {
+    console.log(this.selectedItems)
     const routeIds = this.selectedItems.map((item) => item.routeId);
     const uniqueRouteIds = [...new Set(routeIds)];
 
@@ -93,47 +94,52 @@ export class BulkrequestComponent {
     console.log(requestBody);
 
     this._request.getPendingRequests(requestBody).subscribe((item: any) => {
-      console.log(item);
-      this.exportToExcel(item);
+      const data = item.filter((x: any)=> x.idRuta === requestBody.routes[0])
+      this.exportToExcel(data);
     });
   }
 
   exportToExcel(data: any[], fileName: string = 'Reporte.xlsx') {
-    console.log(data);
-    if (!data || data.length === 0) {
-      console.error('No hay datos para exportar.');
-      return;
-    }
-
-    // Obtener las claves del primer objeto como encabezados
-    const headers = Object.keys(data[0]);
-
-    // Convertir los datos a una hoja de cálculo
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
-      header: headers,
-    });
-
-    // Ajustar el ancho de las columnas automáticamente
-    worksheet['!cols'] = headers.map((header) => ({ wch: header.length + 5 }));
-
-    // Crear el libro de trabajo
-    const workbook: XLSX.WorkBook = {
-      Sheets: { Datos: worksheet },
-      SheetNames: ['Datos'],
-    };
-
-    // Generar el archivo Excel en formato binario
-    const excelBuffer: any = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
-
-    // Crear un Blob y descargar el archivo
-    const blob: Blob = new Blob([excelBuffer], {
-      type: 'application/octet-stream',
-    });
-    saveAs(blob, fileName);
+  if (!data || data.length === 0) {
+    console.error('No hay datos para exportar.');
+    return;
   }
+
+  // Hoja 1: Datos
+  const headers1 = Object.keys(data[0]);
+  const worksheet1: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
+    header: headers1,
+  });
+  worksheet1['!cols'] = headers1.map(header => ({ wch: header.length + 5 }));
+
+  // Hoja 2: Baterias (cabecera fija)
+  const bateriasHeaders = ['idGuia', 'tipoBat', 'cantidad'];
+  const bateriasData: any[] = []; // Puedes llenar con datos reales si los tienes
+  const worksheet2: XLSX.WorkSheet = XLSX.utils.json_to_sheet(bateriasData, {
+    header: bateriasHeaders,
+  });
+  worksheet2['!cols'] = bateriasHeaders.map(header => ({ wch: header.length + 5 }));
+
+  // Crear libro con ambas hojas
+  const workbook: XLSX.WorkBook = {
+    Sheets: {
+      Datos: worksheet1,
+      Baterias: worksheet2,
+    },
+    SheetNames: ['principal', 'detalle'],
+  };
+
+  // Escribir y guardar
+  const excelBuffer: any = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array',
+  });
+
+  const blob: Blob = new Blob([excelBuffer], {
+    type: 'application/octet-stream',
+  });
+  saveAs(blob, fileName);
+}
 
   addToTable() {
     if (this.selectedItem) {
