@@ -41,7 +41,7 @@ export class FacturaComponent {
         next: (res) => {
           console.log('Notas de crédito:', res);
           // Aquí puedes guardar los datos en una variable si los necesitas
-          this.creditNotes = res;
+          this.creditNotes = res.data
         },
         error: (err) => {
           console.error('Error al obtener notas de crédito:', err);

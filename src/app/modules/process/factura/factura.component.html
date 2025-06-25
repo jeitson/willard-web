@@ -42,33 +42,45 @@
   <!-- Tabla de resultados -->
   <div class="card shadow-sm">
     <div class="table-responsive">
-      <table class="table mb-0">
-        <thead style="background-color: #f8f9fa;" class="text-uppercase small text-muted">
-          <tr>
-            <th>Transportadora</th>
-            <th>Número Guía</th>
-            <th>Número Factura</th>
-            <th>Baterías Pendientes por Tipo</th>
-            <th class="text-end">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Servientrega</td>
-            <td>GUIA001</td>
-            <td>FAC2024-001</td>
-            <td>
-              Plomo-Ácido Estándar 12V 45Ah: <b>5</b><br>
-              AGM 12V 70Ah: <b>2</b><br>
-              EFB 12V 60Ah: <b>1</b>
-            </td>
-            <td class="text-end">
-              <button class="btn btn-success btn-sm fw-semibold px-3 rounded">Gestionar</button>
-            </td>
-          </tr>
-     
-        </tbody>
-      </table>
+     <table class="table mb-0">
+  <thead style="background-color: #f8f9fa;" class="text-uppercase small text-muted">
+    <tr>
+      <th>Transportadora</th>
+      <th>Número Guía</th>
+      <th>Número Factura</th>
+      <th>Baterías Pendientes por Tipo</th>
+      <th class="text-end">Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngIf="creditNotes.length === 0">
+      <td colspan="5" class="text-center text-muted py-4">
+        No hay notas de crédito disponibles.
+      </td>
+    </tr>
+    <tr *ngFor="let item of creditNotes">
+      <td>{{ item.transporter }}</td>
+      <td>{{ item.guide }}</td>
+      <td>{{ item.invoice }}</td>
+      <td>
+        <div *ngIf="item.batteries_pending?.length; else noBaterias">
+          <div *ngFor="let data of item.batteries_pending">
+            <span class="d-block">
+              <b>Nombre:</b> {{ data.name }} <b>- Cantidad:</b> {{ data.quantity }}
+            </span>
+          </div>
+        </div>
+        <ng-template #noBaterias>
+          <span class="text-muted">Sin baterías pendientes</span>
+        </ng-template>
+      </td>
+      <td class="text-end">
+        <button class="btn btn-success btn-sm fw-semibold px-3 rounded">Gestionar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
     </div>
   </div>
       

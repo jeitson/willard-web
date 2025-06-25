@@ -7,6 +7,9 @@ import { baseData64 } from '../base64';
 export async function Certificate(data: any): Promise<string> {
   return new Promise((resolve, reject) => {
     try {
+      const today = new Date();
+const formattedDate = today.toISOString().split('T')[0]; // "2025-06-13"
+
       const documentDefinition = {
         content: [
           {
@@ -22,8 +25,8 @@ export async function Certificate(data: any): Promise<string> {
               },
             ],
           },
-          {
-            text: 'Barranquilla, 2024-09-17\n\nSeñores:\nA QUIEN INTERESE\nCiudad',
+         {
+            text: `Barranquilla, ${formattedDate}\n\nSeñores:\nA QUIEN INTERESE\nCiudad`,
             fontSize: 10,
             margin: [0, 5, 0, 10],
           },

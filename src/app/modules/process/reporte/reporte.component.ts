@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CentersService } from 'src/app/core/services/process/centers.service';
 import { ReportsService } from 'src/app/core/services/process/reports.service';
+import { Certificate } from 'src/app/core/utils/pdf/pdf_certificate';
 
 @Component({
   selector: 'app-reporte',
@@ -47,12 +48,15 @@ export class ReporteComponent {
 
     this._report.getReporteReciclajeBaterias(params).subscribe({
       next: (res) => {
-        console.log('Reporte:', res);
-        this.resultReport = res;
+        console.log('Reporte:', res.data);
+        this.resultReport = res.data;
       },
       error: (err) => {
         console.error('Error al obtener reporte:', err);
       },
     });
+  }
+  generate(){
+      Certificate('');
   }
 }

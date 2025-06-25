@@ -37,6 +37,7 @@
                     <label for="sedeAcopioId" class="form-label text-black">Sede de Acopio</label>
                     <div class="input-group">
                       <select class="form-select h-46" name="sedeAcopioId" id="sedeAcopioId" [(ngModel)]="formData.collectionSiteId">
+                         <option value="" selected>Seleccionar</option>
                         <option *ngFor="let sede of listSedes" [value]="sede.id">{{ sede.name }}</option>
                       </select>
                     </div>
@@ -51,32 +52,52 @@
   
           <!-- Tabla de resultados -->
           <div class="mt-5">
-            <h6 class="fw-semibold mb-3">Resultados del Reporte</h6>
+          <div class="col-md-12 d-flex justify-content-between align-items-center mb-3 gap-2 flex-wrap">
+  <h6 class="fw-semibold mb-0">Resultados del Reporte</h6>
+  <button type="submit" class="btn btn-warning" (click)="generate()">
+    Generar Informe PDF
+  </button>
+</div>
+
             <div class="table-responsive">
-              <table class="table table-bordered rounded shadow-sm overflow-hidden">
-                <thead style="background-color: #f1f1f1; font-size: 11px; font-weight: 600;">
-                  <tr>
-                    <th>ID LOTE</th>
-                    <th>FECHA ENTREGA</th>
-                    <th>CANTIDAD BATERÍAS</th>
-                    <th>MATERIALES RECICLADOS</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>5</td>
-                    <td>2025-02-01</td>
-                    <td>90</td>
-                    <td>plástico: 9 kg, plomo: 45 kg</td>
-                  </tr>
-                  <tr>
-                    <td>6</td>
-                    <td>2025-02-15</td>
-                    <td>110</td>
-                    <td>plomo: 55 kg, plástico: 8 kg</td>
-                  </tr>
-                </tbody>
-              </table>
+           <table class="table table-bordered rounded shadow-sm overflow-hidden">
+              <thead style="background-color: #f1f1f1; font-size: 11px; font-weight: 600;">
+                <tr>
+                  <th>ID LOTE</th>
+                  <th>FECHA ENTREGA</th>
+                  <th>CANTIDAD BATERÍAS</th>
+                  <th>MATERIALES RECICLADOS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Mensaje si no hay datos -->
+                <tr *ngIf="resultReport.length === 0">
+                  <td colspan="4" class="text-center text-muted py-4">
+                    No hay lotes registrados.
+                  </td>
+                </tr>
+
+                <!-- Filas de datos -->
+                <tr *ngFor="let item of resultReport">
+                  <td>{{ item.id }}</td>
+                  <td>{{ item.delivery_date }}</td>
+                  <td>{{ item.quantity_batteries }}</td>
+                  <td>
+                    <div *ngIf="item.materials?.length; else noMaterials" class="d-flex" >
+                      <div *ngFor="let data of item.materials"  >
+                        <span class="d-block">
+                          {{ data.name }}: {{ data.quantity }} {{ data.unity }},   
+                        </span>
+                      </div>
+                    </div>
+                    <ng-template #noMaterials>
+                      <span class="text-muted">Sin materiales reciclados</span>
+                    </ng-template>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
             </div>
           
           </div>
