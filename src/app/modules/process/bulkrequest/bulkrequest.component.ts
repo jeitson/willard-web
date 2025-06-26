@@ -101,56 +101,62 @@ export class BulkrequestComponent {
     });
   }
 
-exportToExcel(data: any[], fileName: string = 'Reporte.xlsx') {
-  console.log(data);
-  if (!data || data.length === 0) {
-    console.error('No hay datos para exportar.');
-    return;
+  exportToExcel(data: any[], fileName: string = 'Reporte.xlsx') {
+    console.log(data);
+    if (!data || data.length === 0) {
+      console.error('No hay datos para exportar.');
+      return;
+    }
+
+    // --- Primera hoja: datos originales ---
+    const headers = Object.keys(data[0]);
+    const worksheet1: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
+      header: headers,
+    });
+    worksheet1['!cols'] = headers.map((header) => ({ wch: header.length + 5 }));
+
+    // --- Segunda hoja: encabezados idGuia, tipoBat, cantidad ---
+    const secondSheetHeaders = ['idGuia', 'tipoBat', 'cantidad'];
+
+    // Forzar encabezados incluyendo un objeto con claves y valores vacíos
+    const secondSheetData = [
+      {
+        idGuia: '',
+        tipoBat: '',
+        cantidad: '',
+      },
+    ];
+
+    const worksheet2: XLSX.WorkSheet = XLSX.utils.json_to_sheet(
+      secondSheetData,
+      {
+        header: secondSheetHeaders,
+        skipHeader: false,
+      }
+    );
+    worksheet2['!cols'] = secondSheetHeaders.map((header) => ({
+      wch: header.length + 5,
+    }));
+
+    // --- Crear el libro con ambas hojas ---
+    const workbook: XLSX.WorkBook = {
+      Sheets: {
+        Datos: worksheet1,
+        Baterias: worksheet2,
+      },
+      SheetNames: ['Datos', 'Baterias'],
+    };
+
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const blob: Blob = new Blob([excelBuffer], {
+      type: 'application/octet-stream',
+    });
+    saveAs(blob, fileName);
   }
-
-  // --- Primera hoja: datos originales ---
-  const headers = Object.keys(data[0]);
-  const worksheet1: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data, {
-    header: headers,
-  });
-  worksheet1['!cols'] = headers.map((header) => ({ wch: header.length + 5 }));
-
-  // --- Segunda hoja: encabezados idGuia, tipoBat, cantidad ---
-  const secondSheetHeaders = ['idGuia', 'tipoBat', 'cantidad'];
-
-  // Forzar encabezados incluyendo un objeto con claves y valores vacíos
-  const secondSheetData = [{
-    idGuia: '',
-    tipoBat: '',
-    cantidad: ''
-  }];
-
-  const worksheet2: XLSX.WorkSheet = XLSX.utils.json_to_sheet(secondSheetData, {
-    header: secondSheetHeaders,
-    skipHeader: false
-  });
-  worksheet2['!cols'] = secondSheetHeaders.map((header) => ({ wch: header.length + 5 }));
-
-  // --- Crear el libro con ambas hojas ---
-  const workbook: XLSX.WorkBook = {
-    Sheets: {
-      Datos: worksheet1,
-      Baterias: worksheet2
-    },
-    SheetNames: ['Datos', 'Baterias'],
-  };
-
-  const excelBuffer: any = XLSX.write(workbook, {
-    bookType: 'xlsx',
-    type: 'array',
-  });
-
-  const blob: Blob = new Blob([excelBuffer], {
-    type: 'application/octet-stream',
-  });
-  saveAs(blob, fileName);
-}
-
 
   addToTable() {
     if (this.selectedItem) {
@@ -268,7 +274,7 @@ exportToExcel(data: any[], fileName: string = 'Reporte.xlsx') {
         if (jsonData.length === 0) return;
         console.log(jsonData);
         const headers = jsonData[0].map((h: any) => h.toString().trim());
-        if (sheetName === 'principal') {
+        if (sheetName === 'Datos') {
           if (!this.validateHeaders(headers, expectedHeadersPrincipal)) {
             this._toast.error(
               'Error en cargue',
@@ -277,7 +283,7 @@ exportToExcel(data: any[], fileName: string = 'Reporte.xlsx') {
             valid = false;
           }
           principalData = XLSX.utils.sheet_to_json(sheet);
-        } else if (sheetName === 'detalle') {
+        } else if (sheetName === 'Baterias') {
           if (!this.validateHeaders(headers, expectedHeadersDetalle)) {
             this._toast.error(
               'Error en cargue',
@@ -341,17 +347,17 @@ exportToExcel(data: any[], fileName: string = 'Reporte.xlsx') {
           return [];
         }
 
-        // const { fecha, hora } = this.convertirFechaHora(
-        //   item.fechaMov,
-        //   item.horaMov
-        // );
+        const { fecha, hora } = this.convertirFechaHora(
+          item.fechaMov,
+          item.horaMov
+        );
         console.log(detalleData);
         return detalleData.map((detalle: any) => ({
           idGuia: item.idGuia,
           tipoBat: detalle.tipoBat,
-          cantidad: detalle.Cantidad,
-          fechaMov: item.fechaMov,
-          horaMov: item.horaMov,
+          cantidad: detalle.cantidad,
+          fechaMov: fecha,
+          horaMov: hora,
           ...item,
         }));
       });

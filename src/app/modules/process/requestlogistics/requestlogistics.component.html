@@ -54,7 +54,7 @@
                       {{ item.createdAt | date: "yyyy-MM-dd" }}
                     </td>
                     
-                    <td class="text-center">{{ item.collectionSite || 'Por definir' }}</td>
+                    <td class="text-center">{{ item.collectionSite?.name || 'Por definir' }}</td>
                     <td class="text-center">{{ item.estimatedQuantity }}</td>
                     <td class="text-center">
                       {{ item.estimatedPickUpDate }}

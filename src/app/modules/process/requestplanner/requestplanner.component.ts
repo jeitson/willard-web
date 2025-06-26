@@ -66,8 +66,9 @@ export class RequestplannerComponent implements OnInit {
     private _toast: ToastService,
     private auth: AuthService
   ) {}
-
+  roleId: any;
   ngOnInit(): void {
+    this.roleId = sessionStorage.getItem('RoleId');
     this.modal = new bootstrap.Modal(document.getElementById('modalplaner'), {
       backdrop: 'static',
       keyboard: false,
@@ -84,20 +85,27 @@ export class RequestplannerComponent implements OnInit {
     });
   }
 
-  getRequests(page: any) {
-    this.api.get(`collection-request?page=${page}`).subscribe({
-      next: (response: any) => {
-        this.listroutes = response.data.items; //.filter((x: any)=> x.requestStatusId === 1);
-        this.listCopy = this.listroutes; // Hacemos una copia de la lista original
-        this.totalItems = this.listroutes.length; // Total de solicitudes
-        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
-        this.search();
-      },
-      error: (error: any) => {
-        console.error('Error:', error);
-      },
-    });
+getRequests(page: any) {
+
+  let url = `collection-request?page=${page}`;
+  if (this.roleId === '22') {
+    url += `&module=PT`;
   }
+
+  this.api.get(url).subscribe({
+    next: (response: any) => {
+      this.listroutes = response.data.items;
+      this.listCopy = this.listroutes; // Hacemos una copia de la lista original
+      this.totalItems = this.listroutes.length; // Total de solicitudes
+      this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
+      this.search();
+    },
+    error: (error: any) => {
+      console.error('Error:', error);
+    },
+  });
+}
+
 
   getList(key: string, listName: string) {
     this.api.get(`catalogs/key/${key}`).subscribe({

@@ -90,13 +90,13 @@ export class RequestagencyComponent {
   }
   ngOnInit(): void {
     // Certificate('');
+    this.roleId = sessionStorage.getItem('RoleId');
     this.getRequest(this.currentPage);
     this.getData();
     this.modal = new bootstrap.Modal(
       document.getElementById('modalRequestAgency'),
       { backdrop: 'static', keyboard: false }
     );
-    this.roleId = sessionStorage.getItem('RoleId');
     // Obtener el objeto guardado en sessionStorage
     // Si el roleId es 16, deshabilita el checkbox
     if (this.roleId === '16') {
@@ -106,15 +106,17 @@ export class RequestagencyComponent {
     this.filteredList = this.paginatedList;
   }
 
-  getRequest(page: any) {
-    this._requests.listSolicitudes(page).subscribe((response: any) => {
-      this.listsrequest = response.data.items.sort((a: any, b: any) => b.id - a.id);
-      this.listCopy = this.listsrequest; // Hacemos una copia de la lista original
-      this.totalItems = this.listsrequest.length; // Total de solicitudes
-      this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
-      this.search();
-    });
-  }
+getRequest(page: number) {
+  console.log(this.roleId)
+  const module = this.roleId === '22' ? 'AG' : undefined;
+  this._requests.listSolicitudes(page, module).subscribe((response: any) => {
+    this.listsrequest = response.data.items.sort((a: any, b: any) => b.id - a.id);
+    this.listCopy = this.listsrequest;
+    this.totalItems = this.listsrequest.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    this.search();
+  });
+}
 
 
   getData() {

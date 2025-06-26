@@ -13,10 +13,14 @@ export class RequestsService {
     return this._api.post('collection-request', solicitud);
   }
 
-  // Método para listar todas las solicitudes
-  listSolicitudes(item: any): Observable<any> {
-    return this._api.get(`collection-request?page=${item}`);
+ listSolicitudes(page: number, module?: string): Observable<any> {
+  let url = `collection-request?page=${page}`;
+  if (module) {
+    url += `&module=${module}`;
   }
+  return this._api.get(url);
+}
+
 
   completeSolicitud(id: any, content: any): Observable<any> {
     return this._api.patch(`collection-request/${id}`, content);

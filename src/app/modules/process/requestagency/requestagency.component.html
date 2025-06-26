@@ -282,7 +282,7 @@
                   </ul>
                   <textarea class="form-control" id="observations" [(ngModel)]="request.observations"
                     name="observations" rows="2" placeholder="observación de la solicitud" maxlength="2000" required
-                    (blur)="validateFields()"></textarea>
+                    (blur)="validateFields() "></textarea>
                   <div class="text-end">
                     <small>{{ request.observations?.length || 0 }}/2000
                       caracteres</small>

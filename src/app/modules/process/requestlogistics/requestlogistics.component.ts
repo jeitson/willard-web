@@ -51,6 +51,7 @@ export class RequestlogisticsComponent {
   totalPages = 0;
   paginatedList: any = [];
   listCopy: any[] = [];
+  roleId: any;
   constructor(
     private _Customers: CustomersService,
     private _Conveyor: ConvenyorService,
@@ -63,6 +64,7 @@ export class RequestlogisticsComponent {
     private userService: UsersService
   ) {}
   ngOnInit(): void {
+      this.roleId = sessionStorage.getItem('RoleId');
     this.modal = new bootstrap.Modal(
       document.getElementById('modalRequestlogistics'),
       { backdrop: 'static', keyboard: false }
@@ -71,7 +73,8 @@ export class RequestlogisticsComponent {
     this.getData();
   }
   getRequest(page: any) {
-    this._requests.listSolicitudes(page).subscribe((response: any) => {
+      const module = this.roleId === '22' ? 'WL' : undefined;
+    this._requests.listSolicitudes(page, module).subscribe((response: any) => {
       this.listsrequest = response.data.items;
       this.listCopy = this.listsrequest; // Hacemos una copia de la lista original
       this.totalItems = this.listsrequest.length; // Total de solicitudes
