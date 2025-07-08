@@ -1,0 +1,23 @@
+.primary.title {
+  color: #333;
+}
+
+.secundary {
+  font-size: 14px;
+  color: #666;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bg-add {
+  background-color: #48cae4;
+  color: white;
+}
+
+.bg-add:hover {
+  background-color: #00b4d8;
+}

@@ -13,6 +13,7 @@ import { ConciliationComponent } from './conciliation/conciliation.component';
 import { BulkrequestComponent } from './bulkrequest/bulkrequest.component';
 import { ReporteComponent } from './reporte/reporte.component';
 import { FacturaComponent } from './factura/factura.component';
+import { CertificateInformationComponent } from './certificate-information/certificate-information.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { FacturaComponent } from './factura/factura.component';
     ConciliationComponent,
     BulkrequestComponent,
     ReporteComponent,
-    FacturaComponent
+    FacturaComponent,
+    CertificateInformationComponent
   ],
   imports: [
     CommonModule,

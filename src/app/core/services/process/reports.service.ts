@@ -29,4 +29,12 @@ getReporteReciclajeBaterias(params?: any): Observable<any> {
   return this._api.get('reports/battery-recycling', params);
 }
 
+postInformationCertificates(data: FormData): Observable<any> {
+  return this._api.post('information-certificates', data);
+}
+getInformationCertificates(params?: any): Observable<any> {
+  return this._api.get('information-certificates', params);
+}
+
+
 }

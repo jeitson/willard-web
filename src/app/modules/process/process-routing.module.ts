@@ -64,6 +64,13 @@ const routes: Routes = [
 			import('../process/reporte/reporte.module').then(
 				({ ReporteModule }) => ReporteModule,
 			),
+	},
+		{
+		path: 'certificate-information',
+		loadChildren: () =>
+			import('../process/certificate-information/certificate-information.module').then(
+				({ CertificateInformationModule }) => CertificateInformationModule,
+			),
 	}
 ];
 

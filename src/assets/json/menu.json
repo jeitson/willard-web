@@ -79,6 +79,13 @@
         "id": "29",
         "route": "report",
         "status": false
+      },
+      {
+        "name": "Información de Certificado",
+        "type": "link",
+        "id": "30",
+        "route": "certificate-information",
+        "status": false
       }
     ]
   },

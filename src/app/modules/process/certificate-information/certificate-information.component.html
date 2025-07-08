@@ -1,0 +1,182 @@
+<div class="container">
+  <!-- Navegación con tabs -->
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="currentTab === 'upload'" (click)="currentTab = 'upload'">
+        <i class="fa-solid fa-upload me-1"></i> Cargar Archivo
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="currentTab === 'saved'" (click)="currentTab = 'saved'">
+        <i class="fa-solid fa-database me-1"></i> Registros Guardados
+      </a>
+    </li>
+  </ul>
+
+  <!-- TAB 1: Cargar archivo -->
+  <div *ngIf="currentTab === 'upload'">
+    <div class="page-header mb-3 d-flex justify-content-between align-items-start">
+      <div>
+        <h3 class="primary title">CARGA DE INFORMACIÓN</h3>
+        <p class="secundary">
+          Sube un archivo Excel con las siguientes columnas:
+          <strong>CODAGE, IRC, F_IRC, NITCLI, NOMCLI, NITTERC, NOMTERC, FAMBAT, CANT</strong>.
+        </p>
+      </div>
+      <button class="btn btn-dark btn-sm" (click)="reload()">
+        Recargar <i class="fa-solid fa-rotate-right"></i>
+      </button>
+    </div>
+
+    <!-- Subida de archivo -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <input type="file" (change)="onFileChange($event)" accept=".xlsx" class="form-control form-control-sm" />
+      </div>
+      <div class="col-md-3">
+        <button class="btn btn-success btn-sm" [disabled]="!selectedFile" (click)="uploadExcel()">
+          <i class="fa-solid fa-upload me-1"></i> Cargar Archivo
+        </button>
+      </div>
+      <div class="col-md-3">
+        <button class="btn btn-primary btn-sm" [disabled]="!selectedFile" (click)="sendFile()">
+          <i class="fa-solid fa-paper-plane me-1"></i> Enviar Base
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabla de resultados cargados -->
+    <div class="table-responsive">
+      <table class="table table-sm table-bordered">
+        <thead class="bg-light text-center">
+          <tr>
+            <th>#</th>
+            <th>CODAGE</th>
+            <th>IRC</th>
+            <th>F_IRC</th>
+            <th>NITCLI</th>
+            <th>NOMCLI</th>
+            <th>NITTERC</th>
+            <th>NOMTERC</th>
+            <th>FAMBAT</th>
+            <th>CANT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="records.length === 0">
+            <td colspan="10" class="text-center">No hay registros cargados aún.</td>
+          </tr>
+          <tr *ngFor="let r of records; let i = index" class="text-center">
+            <td>{{ i + 1 }}</td>
+            <td>{{ r.CODAGE }}</td>
+            <td>{{ r.IRC }}</td>
+            <td>{{ r.F_IRC }}</td>
+            <td>{{ r.NITCLI }}</td>
+            <td>{{ r.NOMCLI }}</td>
+            <td>{{ r.NITTERC }}</td>
+            <td>{{ r.NOMTERC }}</td>
+            <td>{{ r.FAMBAT }}</td>
+            <td>{{ r.CANT }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 2: Registros guardados -->
+  <div *ngIf="currentTab === 'saved'">
+   <div class="container">
+  <h4 class="primary title">REGISTROS GUARDADOS</h4>
+
+  <div class="table-responsive mt-3">
+    <table class="table table-sm table-bordered">
+      <thead class="bg-light text-center">
+        <tr>
+          <th>#</th>
+          <th>CODAGE</th>
+          <th>IRC</th>
+          <th>F. IRC</th>
+          <th>NIT Cliente</th>
+          <th>Nombre Cliente</th>
+          <th>NIT Tercero</th>
+          <th>Nombre Tercero</th>
+          <th>FAMBAT</th>
+          <th>CANT</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="savedRecords.length === 0">
+          <td colspan="10" class="text-center">No hay registros guardados.</td>
+        </tr>
+        <tr *ngFor="let r of savedRecords; let i = index" class="text-center">
+          <td>{{ (pagination.currentPage - 1) * pagination.itemsPerPage + i + 1 }}</td>
+          <td>{{ r.codage }}</td>
+          <td>{{ r.irc }}</td>
+          <td>{{ r.irc_date }}</td>
+          <td>{{ r.client_nit }}</td>
+          <td>{{ r.client_name }}</td>
+          <td>{{ r.third_nit || '-' }}</td>
+          <td>{{ r.third_name || '-' }}</td>
+          <td>{{ r.ambat_date }}</td>
+          <td>{{ r.quantity }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+<nav *ngIf="pagination.totalPages > 1" class="mt-3">
+  <ul class="pagination justify-content-center">
+
+    <!-- Botón Anterior -->
+    <li class="page-item" [class.disabled]="pagination.currentPage === 1">
+      <a class="page-link" (click)="getSavedRecords(pagination.currentPage - 1)">
+        <i class="fa-solid fa-angle-left"></i>
+      </a>
+    </li>
+
+    <!-- Página 1 -->
+    <li class="page-item" [class.active]="pagination.currentPage === 1">
+      <a class="page-link" (click)="getSavedRecords(1)">1</a>
+    </li>
+
+    <!-- ... si es necesario -->
+    <li *ngIf="visiblePages[0] > 2" class="page-item disabled">
+      <span class="page-link">...</span>
+    </li>
+
+    <!-- Páginas intermedias -->
+    <li
+      *ngFor="let page of visiblePages"
+      class="page-item"
+      [class.active]="pagination.currentPage === page"
+    >
+      <a class="page-link" (click)="getSavedRecords(page)">{{ page }}</a>
+    </li>
+
+    <!-- ... si es necesario -->
+    <li *ngIf="visiblePages[visiblePages.length - 1] < pagination.totalPages - 1" class="page-item disabled">
+      <span class="page-link">...</span>
+    </li>
+
+    <!-- Última página -->
+    <li
+      class="page-item"
+      [class.active]="pagination.currentPage === pagination.totalPages"
+    >
+      <a class="page-link" (click)="getSavedRecords(pagination.totalPages)">
+        {{ pagination.totalPages }}
+      </a>
+    </li>
+
+    <!-- Botón Siguiente -->
+    <li class="page-item" [class.disabled]="pagination.currentPage === pagination.totalPages">
+      <a class="page-link" (click)="getSavedRecords(pagination.currentPage + 1)">
+        <i class="fa-solid fa-angle-right"></i>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+</div>
+
+  </div>
+</div>
