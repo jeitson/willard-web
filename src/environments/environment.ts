@@ -38,7 +38,7 @@ export const environment = {
   //   username: 'sistemas',
   //   password: 'willard1505',
   // },
-  api: 'https://dev-bupas.uc.r.appspot.com/api/',
+  api: 'https://bupas.bateriaswillard.com/api/',
 };
 
 /*
