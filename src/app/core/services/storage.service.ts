@@ -80,7 +80,6 @@ export class StorageService {
       document.body.setAttribute('data-layout', 'vertical');
       document.body.setAttribute('data-layout-mode', 'light');
     }
-    //console.log(this.DarkModeActive, this.isDarkModeActive);
   }
 
   setHasReloaded(e: boolean = false) {

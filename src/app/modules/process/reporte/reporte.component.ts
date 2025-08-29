@@ -44,11 +44,9 @@ export class ReporteComponent {
       agencyId: this.formData.collectionSiteId
     };
 
-    console.log('Filtrando con:', params);
 
     this._report.getReporteReciclajeBaterias(params).subscribe({
       next: (res) => {
-        console.log('Reporte:', res.data);
         this.resultReport = res.data;
       },
       error: (err) => {

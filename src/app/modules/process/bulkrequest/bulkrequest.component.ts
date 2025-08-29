@@ -58,7 +58,6 @@ export class BulkrequestComponent {
   // Método para obtener datos con paginación
   get(page: number) {
     this._http.get('transporter-travel').subscribe((response: any) => {
-      console.log(response);
 
       this.detailData = response.data.items; // Datos de la tabla
       this.listBase = this.detailData;
@@ -73,7 +72,6 @@ export class BulkrequestComponent {
 
   getSolicitudPending() {
     this._request.getSolicitudPending().subscribe((response: any) => {
-      console.log(response);
       this.listPending = response.data;
     });
   }
@@ -90,10 +88,8 @@ export class BulkrequestComponent {
 
     const requestBody = { routes: uniqueRouteIds };
 
-    console.log(requestBody);
 
     this._request.getPendingRequests(requestBody).subscribe((item: any) => {
-      console.log(item);
       const filteredItems = item.filter((i: any) =>
         requestBody.routes.includes(i.idRuta)
       );
@@ -102,7 +98,6 @@ export class BulkrequestComponent {
   }
 
   exportToExcel(data: any[], fileName: string = 'Reporte.xlsx') {
-    console.log(data);
     if (!data || data.length === 0) {
       console.error('No hay datos para exportar.');
       return;
@@ -272,7 +267,6 @@ export class BulkrequestComponent {
         const sheet = workbook.Sheets[sheetName];
         const jsonData: any = XLSX.utils.sheet_to_json(sheet, { header: 1 });
         if (jsonData.length === 0) return;
-        console.log(jsonData);
         const headers = jsonData[0].map((h: any) => h.toString().trim());
         if (sheetName === 'Datos') {
           if (!this.validateHeaders(headers, expectedHeadersPrincipal)) {
@@ -351,7 +345,6 @@ export class BulkrequestComponent {
           item.fechaMov,
           item.horaMov
         );
-        console.log(detalleData);
         return detalleData.map((detalle: any) => ({
           idGuia: item.idGuia,
           tipoBat: detalle.tipoBat,
@@ -363,7 +356,6 @@ export class BulkrequestComponent {
       });
 
       this.formattedData = transformedData;
-      console.log(transformedData);
     };
 
     reader.readAsArrayBuffer(file);

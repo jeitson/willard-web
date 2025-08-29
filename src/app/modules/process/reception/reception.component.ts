@@ -112,7 +112,6 @@ export class ReceptionComponent implements OnInit {
   getProductType(){
     this.api.get(`products/categories`).subscribe({
       next: (response: any) => {
-        console.log(response)
         this.listTypeProducts = response.data;
       },
       error: (error: any) => {
@@ -134,7 +133,6 @@ export class ReceptionComponent implements OnInit {
 
   viewDetail(item: any){
     this.receptionDetail = item;
-    console.log(item);
     this.modalconfirmDetail.show();
   }
 
@@ -185,7 +183,6 @@ export class ReceptionComponent implements OnInit {
   const profileDataRaw = sessionStorage.getItem('profileData');
   const profileData = profileDataRaw ? JSON.parse(profileDataRaw) : {};
 
-  console.log(profileData);
 
   // Asignar sitio de acopio si existe
   const userSites = profileData.userCollectionSites;
@@ -197,7 +194,6 @@ export class ReceptionComponent implements OnInit {
     if (siteName && siteId) {
       this.headacopi = siteName;
       this.receptionForm.collectionSiteId = siteId;
-      console.log('Sitio de acopio asignado:', siteId);
     } else {
       console.warn('El sitio de acopio o su nombre están indefinidos');
       this.isAdmin = true;
@@ -455,8 +451,6 @@ export class ReceptionComponent implements OnInit {
       details: this.products,
       photos: photos,
     };
-    console.log(this.receptionForm);
-    console.log(data);
     this.api.post(`receptions`, data).subscribe({
       next: (response: any) => {
         this.editpanel = false;

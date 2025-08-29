@@ -57,7 +57,6 @@ export class RolesComponent implements OnInit {
   selectData(): void {
     this._rolesService.allRoles().subscribe({
       next: (value: any) => {
-        console.log(value);
         this.listData = value.data.items;
         this.listBase = this.listData;
         this.totalItems = value.data.meta.totalItems; // Total de solicitudes

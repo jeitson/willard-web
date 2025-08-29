@@ -74,7 +74,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
     // if (this.role) {
     //   this.name = response.roles?.[0]?.role.name || '';
     //   const modules = response.roles?.[0]?.role.menu || [];
-    //   console.log(modules);
     //   this.preloadModules(modules);
     // }
     if (this.role) {
@@ -87,7 +86,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
       targetModule.children.push({ id: "28" }, { id: "29" }, { id: "30" });
       }
       
-      console.log(modules);
       this.preloadModules(modules);
       }
   }

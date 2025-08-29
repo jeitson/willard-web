@@ -105,7 +105,6 @@ export class RequestlogisticsComponent {
     this.userService.getProfile().subscribe({
       next: (dataAdviserResponse: any) => {
         const dataAdviser = dataAdviserResponse.data;
-        console.log(dataAdviser);
         this.listDataAdviser = dataAdviser; // Almacenar los asesores
       },
       error: (error: any) => {
@@ -143,7 +142,6 @@ export class RequestlogisticsComponent {
   }
 
   createRequest(item: any) {
-    console.log(item);
     // Lógica para crear la solicitud
     this.data = {
       id: item.id,

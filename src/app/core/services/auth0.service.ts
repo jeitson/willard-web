@@ -104,7 +104,6 @@ export class Auth0Service {
   isTokenExpiring(token: string, bufferTimeInMinutes: number = 5): boolean {
     const timeUntilExpiration = this.getTimeUntilExpiration(token);
     const bufferTime = bufferTimeInMinutes * 60 * 1000; // Buffer time in milliseconds
-    //console.log(`timeUntilExpiration:: ${timeUntilExpiration} , bufferTime:: ${bufferTime}`);
     return timeUntilExpiration < bufferTime;
   }
 

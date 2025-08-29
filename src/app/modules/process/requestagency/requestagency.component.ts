@@ -107,7 +107,6 @@ export class RequestagencyComponent {
   }
 
 getRequest(page: number) {
-  console.log(this.roleId)
   const module = this.roleId === '22' ? 'AG' : undefined;
   this._requests.listSolicitudes(page, module).subscribe((response: any) => {
     this.listsrequest = response.data.items.sort((a: any, b: any) => b.id - a.id);

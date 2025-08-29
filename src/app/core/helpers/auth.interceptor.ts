@@ -27,7 +27,6 @@ export class AuthInterceptor implements HttpInterceptor {
         if (token && this.auth0Service.isTokenExpiring(token, 30)) {
           return this.auth0Service.renewTokenSilently().pipe(
             switchMap((newToken) => {
-              //console.log('newToken::', newToken);
               const headers = req.headers.set(
                 'Authorization',
                 `Bearer ${newToken}`

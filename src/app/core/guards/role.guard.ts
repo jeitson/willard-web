@@ -11,14 +11,12 @@ export class RoleGuard {
   constructor(private auth: AuthService, private router: Router) {}
 
   canAccess(expectedRole: string[]): Observable<boolean> {
-    //console.log('expectedRole::', expectedRole);
     return this.auth.user$.pipe(
       map((user) => {
         if (!user) {
           this.router.navigate(['/']);
           return false;
         }
-        //console.log('user::', user);
 
         // Verifica que 'roles' sea un array o una cadena de texto
         let roles: string[] = [];
@@ -28,7 +26,6 @@ export class RoleGuard {
         } else if (typeof userRoles === 'string') {
           roles = [userRoles];
         }
-        //console.log('roles::', roles);
         if (
           roles.length > 0 &&
           expectedRole.some((role) => roles.includes(role))

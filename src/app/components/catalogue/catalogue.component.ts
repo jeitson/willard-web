@@ -182,11 +182,9 @@ export class CatalogueComponent implements OnInit {
   }
 
   save(){
-    console.log(this.item);
     const data = {
       ...this.item
     };
-    console.log(data);
     this.api.post(`catalogs`, data).subscribe({
       next: (response: any) => {
         this.listKey();

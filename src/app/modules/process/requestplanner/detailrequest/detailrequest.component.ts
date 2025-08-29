@@ -19,11 +19,9 @@ export class DetailrequestComponent {
     // Obtener el parámetro 'id' de la ruta
     if(this.requestId !== null && this.requestId !== ''){
       this.listData = JSON.parse(this.requestId);
-      console.log(this.listData);
     } else{
       this.route.params.subscribe(params => {
         this.requestId = params['id']; // El '+' convierte el string a número
-        console.log('Request ID:', this.requestId); // Verifica si se obtiene correctamente
 
         // Llamar a getData solo si requestId es válido
         if (this.requestId) {
@@ -36,7 +34,6 @@ export class DetailrequestComponent {
   getData() {
     this._service.getSolicitudById(this.requestId).subscribe((response: any) => {
       this.listData =response.data
-      console.log(this.listData);
       // Aquí puedes manejar la respuesta según tus necesidades
     });
   }

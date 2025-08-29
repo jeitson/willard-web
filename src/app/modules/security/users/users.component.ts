@@ -138,7 +138,6 @@ export class UsersComponent {
   }
 
   createOrUpdateUser(item: any | null): void {
-    console.log(item);
     this.resetUser();
     this.action.name = 'Crear';
     this.viewoptions = true;

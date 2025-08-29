@@ -26,7 +26,6 @@ export class FacturaComponent {
     this._Conveyor.getTransportadores().subscribe({
       next: (response: any) => {
         this.listTransportador = response.data.items;
-        console.log(this.listTransportador);
       },
       error: (error: any) => {
         console.error('Error al obtener transportadores:', error);
@@ -39,7 +38,6 @@ export class FacturaComponent {
     if (selectedId) {
       this._creditnote.getCreditNotes(selectedId).subscribe({
         next: (res) => {
-          console.log('Notas de crédito:', res);
           // Aquí puedes guardar los datos en una variable si los necesitas
           this.creditNotes = res.data
         },
