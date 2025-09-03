@@ -145,3 +145,26 @@ video {
     grid-template-columns: repeat(3, 1fr); /* Mantener 4 columnas en pantallas pequeñas */
   }
 }
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto; /* scroll horizontal si es necesario */
+}
+
+.custom-table {
+  table-layout: auto;
+  font-size: 0.85rem; /* texto más compacto */
+  border-collapse: collapse;
+}
+
+.custom-table th,
+.custom-table td {
+  white-space: nowrap;  /* evita que el texto se corte en varias líneas */
+  padding: 6px 10px;    /* ajusta espacio interno */
+}
+
+.custom-table thead {
+  background-color: #f8f9fa;
+  position: sticky;     /* fija encabezado si hay scroll */
+  top: 0;
+  z-index: 1;
+}

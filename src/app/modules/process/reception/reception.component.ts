@@ -3,28 +3,28 @@ import { Subject } from 'rxjs';
 import { ApiService } from 'src/app/core/services/api/api.service';
 import { CentersService } from 'src/app/core/services/process/centers.service';
 import { ToastService } from 'src/app/core/services/toast.service';
-
+import * as XLSX from 'xlsx';
 declare var bootstrap: any;
 @Component({
   selector: 'app-reception',
   templateUrl: './reception.component.html',
-  styleUrls: ['./reception.component.css']
+  styleUrls: ['./reception.component.css'],
 })
 export class ReceptionComponent implements OnInit {
-
-  @ViewChild('video', { static: false }) videoElement!: ElementRef<HTMLVideoElement>;
-  p:number = 1;
+  @ViewChild('video', { static: false })
+  videoElement!: ElementRef<HTMLVideoElement>;
+  p: number = 1;
   totalItemsRender: number = 10;
   pagination: any = {};
   receptionForm = {
-    transporterId:'',
-    licensePlate:'',
-    collectionSiteId:'',
-    driver:'',
-    routeId:'',
-    referenceDoc1:'',
-    referenceDoc2:'',
-  }
+    transporterId: '',
+    licensePlate: '',
+    collectionSiteId: '',
+    driver: '',
+    routeId: '',
+    referenceDoc1: '',
+    referenceDoc2: '',
+  };
   listTransporters: any[] = [];
   photos: any[] = [];
   listTypeProducts: any[] = [];
@@ -34,14 +34,14 @@ export class ReceptionComponent implements OnInit {
   listCollections: any[] = [];
   products: any[] = [];
   product: any = {
-    productId:'',
-    quantity:''
+    productId: '',
+    quantity: '',
   };
   actionmodal: any = {
-    icon:'',
-    name:'',
-    value:'',
-    color:''
+    icon: '',
+    name: '',
+    value: '',
+    color: '',
   };
   searchTerm$ = new Subject<any>();
   searchTerm: string = ''; // Para almacenar el texto de búsqueda
@@ -54,10 +54,9 @@ export class ReceptionComponent implements OnInit {
   showCamera: boolean = false;
   photo: string | null = null;
   videoStream: MediaStream | null = null;
-  imageselect:any = {};
+  imageselect: any = {};
   reception: any = {};
   messageLoading = 'Subiendo Archivos, por favor espera...';
-
 
   // paginacion
   currentPage: number = 1; // Página actual
@@ -72,17 +71,31 @@ export class ReceptionComponent implements OnInit {
   guide: string = '';
   receptionDetail: any;
   isAdmin = false;
-  constructor(private api: ApiService,private _Service:CentersService, private _toast: ToastService){}
+  constructor(
+    private api: ApiService,
+    private _Service: CentersService,
+    private _toast: ToastService
+  ) {}
 
-  ngOnInit(){
+  ngOnInit() {
     this.role = sessionStorage.getItem('RoleId') || '';
-    
 
-    this.modal = new bootstrap.Modal(document.getElementById('modalevidence'), {backdrop: 'static', keyboard: false});
-    this.modalloading = new bootstrap.Modal(document.getElementById('modalLoading'), {backdrop: 'static', keyboard: false});
-    this.modalconfirmGuide = new bootstrap.Modal(document.getElementById('modalconfirmGuide'), {backdrop: 'static', keyboard: false});
-    this.modalconfirmDetail = new bootstrap.Modal(document.getElementById('modalconfirmDetail'), {backdrop: 'static', keyboard: false});
-
+    this.modal = new bootstrap.Modal(document.getElementById('modalevidence'), {
+      backdrop: 'static',
+      keyboard: false,
+    });
+    this.modalloading = new bootstrap.Modal(
+      document.getElementById('modalLoading'),
+      { backdrop: 'static', keyboard: false }
+    );
+    this.modalconfirmGuide = new bootstrap.Modal(
+      document.getElementById('modalconfirmGuide'),
+      { backdrop: 'static', keyboard: false }
+    );
+    this.modalconfirmDetail = new bootstrap.Modal(
+      document.getElementById('modalconfirmDetail'),
+      { backdrop: 'static', keyboard: false }
+    );
 
     this.getReceptions(this.currentPage);
     this.getTransporters();
@@ -91,7 +104,7 @@ export class ReceptionComponent implements OnInit {
     this.listCollectionSite();
   }
 
-  getReceptions(item: any){
+  getReceptions(item: any) {
     this.api.get(`receptions?page=${item}`).subscribe({
       next: (response: any) => {
         this.listReceptions = response.data.items.sort(
@@ -101,7 +114,6 @@ export class ReceptionComponent implements OnInit {
         this.totalItems = this.listReceptions.length; // Total de solicitudes
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); // Total de páginas
         this.search();
-
       },
       error: (error: any) => {
         console.error('Error al crear usuario:', error);
@@ -109,7 +121,7 @@ export class ReceptionComponent implements OnInit {
     });
   }
 
-  getProductType(){
+  getProductType() {
     this.api.get(`products/categories`).subscribe({
       next: (response: any) => {
         this.listTypeProducts = response.data;
@@ -120,7 +132,7 @@ export class ReceptionComponent implements OnInit {
     });
   }
 
-  listCollectionSite(){
+  listCollectionSite() {
     this._Service.getCollectionSites().subscribe({
       next: (response: any) => {
         this.listCollections = response.data.items;
@@ -131,12 +143,12 @@ export class ReceptionComponent implements OnInit {
     });
   }
 
-  viewDetail(item: any){
+  viewDetail(item: any) {
     this.receptionDetail = item;
     this.modalconfirmDetail.show();
   }
 
-  getProducts(){
+  getProducts() {
     this.api.get(`products`).subscribe({
       next: (response: any) => {
         this.listProducts = response.data.items;
@@ -158,83 +170,85 @@ export class ReceptionComponent implements OnInit {
     });
   }
 
-  filterProductBytype(id: string, products: any[]){
-    const productlist = products.filter((x:any)=>x.productTypeId === id);
+  filterProductBytype(id: string, products: any[]) {
+    const productlist = products.filter((x: any) => x.productTypeId === id);
     return productlist;
   }
 
- addReception(): void {
-  // Reiniciar fotos y cantidades
-  this.photos = [];
-  this.products.forEach(product => product.quantity = 0);
+  addReception(): void {
+    // Reiniciar fotos y cantidades
+    this.photos = [];
+    this.products.forEach((product) => (product.quantity = 0));
 
-  // Reiniciar formulario
-  this.receptionForm = {
-    transporterId: '',
-    licensePlate: '',
-    collectionSiteId: '',
-    driver: '',
-    routeId: '',
-    referenceDoc1: '',
-    referenceDoc2: ''
-  };
+    // Reiniciar formulario
+    this.receptionForm = {
+      transporterId: '',
+      licensePlate: '',
+      collectionSiteId: '',
+      driver: '',
+      routeId: '',
+      referenceDoc1: '',
+      referenceDoc2: '',
+    };
 
-  // Obtener datos del perfil del sessionStorage
-  const profileDataRaw = sessionStorage.getItem('profileData');
-  const profileData = profileDataRaw ? JSON.parse(profileDataRaw) : {};
+    // Obtener datos del perfil del sessionStorage
+    const profileDataRaw = sessionStorage.getItem('profileData');
+    const profileData = profileDataRaw ? JSON.parse(profileDataRaw) : {};
 
+    // Asignar sitio de acopio si existe
+    const userSites = profileData.userCollectionSites;
+    if (Array.isArray(userSites) && userSites.length > 0) {
+      const site = userSites[0];
+      const siteName = site?.collectionSite?.name;
+      const siteId = site?.collectionSiteId;
 
-  // Asignar sitio de acopio si existe
-  const userSites = profileData.userCollectionSites;
-  if (Array.isArray(userSites) && userSites.length > 0) {
-    const site = userSites[0];
-    const siteName = site?.collectionSite?.name;
-    const siteId = site?.collectionSiteId;
-
-    if (siteName && siteId) {
-      this.headacopi = siteName;
-      this.receptionForm.collectionSiteId = siteId;
+      if (siteName && siteId) {
+        this.headacopi = siteName;
+        this.receptionForm.collectionSiteId = siteId;
+      } else {
+        console.warn('El sitio de acopio o su nombre están indefinidos');
+        this.isAdmin = true;
+      }
     } else {
-      console.warn('El sitio de acopio o su nombre están indefinidos');
       this.isAdmin = true;
     }
-  } else {
-    this.isAdmin = true;
+
+    // Mostrar primer tipo de producto
+    if (this.listTypeProducts.length > 0) {
+      this.toggleSection(this.listTypeProducts[0].id || '');
+    }
+
+    // Activar panel de edición
+    this.editpanel = true;
+    this.action = 'agregar';
   }
 
-  // Mostrar primer tipo de producto
-  if (this.listTypeProducts.length > 0) {
-    this.toggleSection(this.listTypeProducts[0].id || '');
-  }
-
-  // Activar panel de edición
-  this.editpanel = true;
-  this.action = 'agregar';
-}
-
-
-  editReception(item: any){
+  editReception(item: any) {
     this.reception = item;
     this.modalconfirmGuide.show();
     this.guide = item.routeId;
   }
 
   updateGuide() {
-    if(this.guide === '' || this.guide === this.reception.routeId){
-      this._toast.warning('Error', 'El número de guía que quiere actualizar no puede estar vacío o ser igual al actual.')
+    if (this.guide === '' || this.guide === this.reception.routeId) {
+      this._toast.warning(
+        'Error',
+        'El número de guía que quiere actualizar no puede estar vacío o ser igual al actual.'
+      );
       return;
     }
-    this.api.put(`receptions/${this.reception.id}`,{routeId: this.guide}).subscribe({
-      next: (response: any) => {
-        this.modalconfirmGuide.hide();
-        this._toast.success('Completado','Guía actualizada correctamente')
-        this.getReceptions(this.currentPage);
-      },
-      error: (error: any) => {
-        console.error('Error al actualizar el id de guia');
-      },
-    });
-
+    this.api
+      .put(`receptions/${this.reception.id}`, { routeId: this.guide })
+      .subscribe({
+        next: (response: any) => {
+          this.modalconfirmGuide.hide();
+          this._toast.success('Completado', 'Guía actualizada correctamente');
+          this.getReceptions(this.currentPage);
+        },
+        error: (error: any) => {
+          console.error('Error al actualizar el id de guia');
+        },
+      });
   }
 
   toggleSection(section: string) {
@@ -247,64 +261,77 @@ export class ReceptionComponent implements OnInit {
     }
   }
 
-  countQuantity(categoryId: number){
+  countQuantity(categoryId: number) {
     // return this.listProducts.filter(product => product.productTypeId === type)
     // .reduce((sum, product) => sum + product.quantity, 0);
     // Busca la categoría en el listado de categorías
-  const category = this.listTypeProducts.find(typep => typep.id === categoryId);
+    const category = this.listTypeProducts.find(
+      (typep) => typep.id === categoryId
+    );
 
-  // Si no encuentra la categoría, retorna 0
-  if (!category || !category.products) {
-    return 0;
+    // Si no encuentra la categoría, retorna 0
+    if (!category || !category.products) {
+      return 0;
+    }
+
+    // Suma las cantidades de los productos
+    const totalQuantity = category.products.reduce((sum: any, product: any) => {
+      // Asegúrate de que la cantidad sea un número válido
+      const quantity = Number(product.quantity) || 0;
+      return sum + quantity;
+    }, 0);
+
+    return totalQuantity;
   }
 
-  // Suma las cantidades de los productos
-  const totalQuantity = category.products.reduce((sum: any, product: any) => {
-    // Asegúrate de que la cantidad sea un número válido
-    const quantity = Number(product.quantity) || 0;
-    return sum + quantity;
-  }, 0);
-
-  return totalQuantity;
+  sumQuantity(item: any) {
+    return item.reduce(
+      (sum: any, product: any) => (sum += Number(product.quantity)),
+      0
+    );
   }
 
-  sumQuantity(item: any){
-    return item.reduce((sum: any, product: any) => (sum += Number(product.quantity)), 0);
-  }
-
-  addProduct(productTypeId: number){
-    const exist = this.products.find((x:any)=> x.productId === this.product.productId);
-    if(exist === undefined){
-      this.products.push({...this.product, productTypeId });
+  addProduct(productTypeId: number) {
+    const exist = this.products.find(
+      (x: any) => x.productId === this.product.productId
+    );
+    if (exist === undefined) {
+      this.products.push({ ...this.product, productTypeId });
       this.product = {
-        productId:'',
-        quantity:''
-      }
+        productId: '',
+        quantity: '',
+      };
     } else {
-      this._toast.warning('Error', 'Ya existe una cantidad agregada para este producto')
+      this._toast.warning(
+        'Error',
+        'Ya existe una cantidad agregada para este producto'
+      );
     }
   }
 
-  deleteProduct(item: any){
-    this.products = this.products.filter((x:any)=> x.productId !== item.productId);
+  deleteProduct(item: any) {
+    this.products = this.products.filter(
+      (x: any) => x.productId !== item.productId
+    );
   }
 
-  getNamePropuct(id: number){
-    return this.listProducts.find((x: any)=> x.id === id).name;
+  getNamePropuct(id: number) {
+    return this.listProducts.find((x: any) => x.id === id).name;
   }
 
-  getNameTransporter(id: string){
-    return this.listTransporters.find((x: any)=> x.id === id)?.name || '';
+  getNameTransporter(id: string) {
+    return this.listTransporters.find((x: any) => x.id === id)?.name || '';
   }
 
   // Abre la cámara y muestra el stream
   openCamera() {
-    if(this.photos.length === 6){
-      this._toast.info('Importante','Se permiten maximo 6 soportes adjuntos');
+    if (this.photos.length === 6) {
+      this._toast.info('Importante', 'Se permiten maximo 6 soportes adjuntos');
       return;
     }
     this.showCamera = true;
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    navigator.mediaDevices
+      .getUserMedia({ video: { facingMode: 'environment' } })
       .then((stream) => {
         this.videoStream = stream;
         this.videoElement.nativeElement.srcObject = stream;
@@ -319,7 +346,7 @@ export class ReceptionComponent implements OnInit {
   closeCamera() {
     this.showCamera = false;
     if (this.videoStream) {
-      this.videoStream.getTracks().forEach(track => track.stop());
+      this.videoStream.getTracks().forEach((track) => track.stop());
       this.videoStream = null;
     }
   }
@@ -334,55 +361,202 @@ export class ReceptionComponent implements OnInit {
     const context = canvas.getContext('2d');
     if (context) {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      this.photo = canvas.toDataURL('image/png');  // Convierte la imagen en base64
-      this.photos.push({url:this.photo, id: new Date().getTime()});
+      this.photo = canvas.toDataURL('image/png'); // Convierte la imagen en base64
+      this.photos.push({ url: this.photo, id: new Date().getTime() });
     }
 
-    this.closeCamera();  // Opcional: cerrar la cámara después de capturar la foto
+    this.closeCamera(); // Opcional: cerrar la cámara después de capturar la foto
   }
 
   openGallery() {
-    if(this.photos.length === 6){
-      this._toast.info('Importante','Se permiten maximo 6 soportes adjuntos');
+    if (this.photos.length === 6) {
+      this._toast.info('Importante', 'Se permiten maximo 6 soportes adjuntos');
       return;
     }
-    const cameraInput = document.getElementById('cameraInput') as HTMLInputElement;
+    const cameraInput = document.getElementById(
+      'cameraInput'
+    ) as HTMLInputElement;
     cameraInput.click(); // Simula el click sobre el input para abrir la cámara
   }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
+  showTable = false; // controla la visibilidad de la tabla
+  excelData: any[] = []; // guarda los datos de la hoja "Detalle"
+  headers: string[] = []; // guarda los encabezados de las columnas
+
+  // Evento al seleccionar archivo
+  onFileSelected(event: any): void {
+    const file: File = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-
-      // Al completar la lectura del archivo, obtén el base64
+      const reader: FileReader = new FileReader();
       reader.onload = (e: any) => {
-        const base64String = e.target.result; // El resultado será el base64
-        this.photos.push({url:base64String, id: new Date().getTime()});; // Puedes almacenarlo en el array 'photos' o usarlo como necesites
-      };
+        const data: Uint8Array = new Uint8Array(e.target.result);
+        const workbook: XLSX.WorkBook = XLSX.read(data, { type: 'array' });
 
-      // Lee el archivo como una URL en base64
-      reader.readAsDataURL(file);
+        // Tomar la hoja "Detalle"
+        const worksheet: XLSX.WorkSheet = workbook.Sheets['Detalle'];
+
+        // Convertir toda la hoja a JSON (modo array)
+        const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, {
+          header: 1,
+        });
+        console.log('jsonData:', jsonData);
+
+        // Encabezados en la primera fila
+        const headers = jsonData[0];
+
+        // Datos desde la segunda fila
+        const rows = jsonData.slice(1);
+
+        // Mapeo de nombres de columnas a claves más limpias
+        const headerMap: { [key: string]: string } = {
+          'DD/MM/YYYY': 'fecha',
+          '#Remision - #Ruta': 'remision_ruta',
+          'Agencia PH Origen': 'agencia_origen',
+          TRANSPORTADOR: 'transportador',
+          'PLACA-VEHICULO': 'placa_vehiculo',
+          CONDUCTOR: 'conductor',
+          '24/42': '24_42',
+          '48/34': '48_34',
+          '27/G4': '27_G4',
+          '22/36': '22_36',
+          '30H': '30H',
+          '4D': '4D',
+          '8D': '8D',
+          MOTO: 'moto',
+          'SCRAP PIMSA': 'scrap_pimsa',
+          SCRAP: 'scrap',
+        };
+
+        // Transformar cada fila en objeto JSON con las claves mapeadas
+        this.excelData = rows.map((row) =>
+          headers.reduce((obj: any, key: string, i: number) => {
+            const mappedKey = headerMap[key] || key; // usa el nombre mapeado o deja el original
+            obj[mappedKey] = row[i];
+            return obj;
+          }, {})
+        );
+
+        console.log('this.excelData:', this.excelData);
+
+        // Mostrar tabla y ocultar formulario
+        this.showTable = true;
+      };
+      reader.readAsArrayBuffer(file);
     }
   }
 
-  viewPhoto(item: any){
+  modalOpen = false;
+  closeModal(): void {
+    this.modalOpen = false;
+  }
+  selectedRow: any = null;
+  openModal(row: any) {
+    this.selectedRow = row;
+    const modal = new bootstrap.Modal(document.getElementById('detalleModal'));
+    modal.show();
+  }
+  downloadExcel(): void {
+    // Definir encabezados
+    const headers = [
+      'FechadeRecepcion',
+      'idRuta',
+      'AgenciaPH',
+      'TRANSPORTADOR',
+      'PLACA- VEHICULO',
+      'CONDUCTOR',
+      '30H',
+      '48',
+      '4D',
+      '8D',
+      '22',
+      '24',
+      '27',
+      'GRUPO 24',
+      'GRUPO 27',
+      'GRUPO 31',
+      'GRUPO 35',
+      'GRUPO 34',
+      'GRUPO 51 Y 51R',
+      'GRUPO 65',
+      'GRUPO 78',
+      'ESTACIONARIAS',
+      'MOTOS',
+    ];
+
+    // Primera fila de datos (con ceros en los productos)
+    const row1 = [
+      '1/08/2025', // FechadeRecepcion
+      '6070', // idRuta
+      '20', // AgenciaPH
+      '01 - SERVIMEJIA', // TRANSPORTADOR
+      'HHW-666', // PLACA- VEHICULO
+      'MARCOS PINTO', // CONDUCTOR
+      0, // 30H
+      0, // 48
+      0, // 4D
+      0, // 8D
+      0, // 22
+      0, // 24
+      0, // 27
+      0, // GRUPO 24
+      0, // GRUPO 27
+      0, // GRUPO 31
+      0, // GRUPO 35
+      0, // GRUPO 34
+      0, // GRUPO 51 Y 51R
+      0, // GRUPO 65
+      0, // GRUPO 78
+      0, // ESTACIONARIAS
+      0, // MOTOS
+    ];
+
+    // Crear hoja con cabeceras y fila inicial
+    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([headers, row1]);
+
+    // Crear libro
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Detalle');
+
+    // Descargar archivo
+    XLSX.writeFile(workbook, 'estructura_productos.xlsx');
+  }
+  ProccessBase() {
+    console.log(this.excelData)
+    // const data = this.excelData.map((row: any) => {
+    //   const obj = {
+    //     transporterId: row['transportador'] || '',
+    //     licensePlate: row['PLACA- VEHICULO'] || '',
+    //     collectionSiteId: row['AgenciaPH'] || row['Agencia PH Origen'] || '',
+    //     driver: row['conductor'] || '',
+    //     routeId: row['idRuta'] || row['#Remision -  #Ruta'] || '',
+    //     referenceDoc1: row['FechadeRecepcion'] || row['DD/MM/YYYY'] || '',
+    //     referenceDoc2: '', // libre para usar
+    //     details: [] as { productId: string; quantity: any }[],
+    //     photos: '',
+    //   };
+    //   console.log(data);
+    // });
+  }
+  viewPhoto(item: any) {
     this.imageselect = item;
     this.modal.show();
   }
 
-  deleteEvidence(item: any){
-    this.photos = this.photos.filter((x: any)=> x.id !== item.id);
+  deleteEvidence(item: any) {
+    this.photos = this.photos.filter((x: any) => x.id !== item.id);
     this.modal.hide();
   }
 
-  cancelReception(){
+  cancelReception() {
     this.editpanel = false;
     this.action = 'listar';
-
   }
 
-  base64ToBlob(base64: string, contentType: string = '', sliceSize: number = 512): Blob {
+  base64ToBlob(
+    base64: string,
+    contentType: string = '',
+    sliceSize: number = 512
+  ): Blob {
     const byteCharacters = atob(base64); // decodificar base64
     const byteArrays: Uint8Array[] = [];
 
@@ -399,52 +573,67 @@ export class ReceptionComponent implements OnInit {
     return new Blob(byteArrays, { type: contentType });
   }
 
-  confirmReception(){
-    if(this.photos.length === 0){
-      this._toast.info('Importante', 'Debe adjuntar evidencias para la recepción')
+  confirmReception() {
+    if (this.photos.length === 0) {
+      this._toast.info(
+        'Importante',
+        'Debe adjuntar evidencias para la recepción'
+      );
       return;
     }
-    this.products = this.listTypeProducts.flatMap((element) => element.products).reduce((acc, { id, quantity }) => {
-      if (quantity > 0) {
-        acc.push({ productId:id, quantity });
-      }
-      return acc;
-    }, [])
-    if(this.products.length === 0){
-      this._toast.info('Importante', 'Debe indicar la cantidad de almenos un producto para la recepción');
+    this.products = this.listTypeProducts
+      .flatMap((element) => element.products)
+      .reduce((acc, { id, quantity }) => {
+        if (quantity > 0) {
+          acc.push({ productId: id, quantity });
+        }
+        return acc;
+      }, []);
+    if (this.products.length === 0) {
+      this._toast.info(
+        'Importante',
+        'Debe indicar la cantidad de almenos un producto para la recepción'
+      );
       return;
     }
     this.actionmodal.name = 'Confirmar Envio';
     this.actionmodal.value = 'saveshipping';
     this.actionmodal.color = '#198754';
     this.actionmodal.icon = 'fa-solid fa-check';
-    this.modalConfirm = new bootstrap.Modal(document.getElementById('modalconfirm'), {backdrop: 'static', keyboard: false});
+    this.modalConfirm = new bootstrap.Modal(
+      document.getElementById('modalconfirm'),
+      { backdrop: 'static', keyboard: false }
+    );
     this.modalConfirm.show();
   }
 
-  uploadEvidence(){
+  uploadEvidence() {
     this.modalConfirm.hide();
     this.modalloading.show();
     const formData = new FormData();
-    this.photos.map(item => ({url: item.url.replace(/^data:image\/[a-zA-Z]+;base64,/, '')})).forEach((base64String, index) => {
-      // Aquí asumimos que son imágenes, puedes cambiar el 'image/png' según el tipo de archivo
-      const blob = this.base64ToBlob(base64String.url, 'image/png');
-      // Adjunta el blob al FormData, nombrando cada archivo con un índice u otro identificador
-      formData.append(`file${index}`, blob, `image${index}.png`);
-    });
+    this.photos
+      .map((item) => ({
+        url: item.url.replace(/^data:image\/[a-zA-Z]+;base64,/, ''),
+      }))
+      .forEach((base64String, index) => {
+        // Aquí asumimos que son imágenes, puedes cambiar el 'image/png' según el tipo de archivo
+        const blob = this.base64ToBlob(base64String.url, 'image/png');
+        // Adjunta el blob al FormData, nombrando cada archivo con un índice u otro identificador
+        formData.append(`file${index}`, blob, `image${index}.png`);
+      });
     this.api.postWithReturnData(`files/upload`, formData).subscribe({
       next: (response: any) => {
-        this.messageLoading = 'Recepcionando productos, por favor espera...'
+        this.messageLoading = 'Recepcionando productos, por favor espera...';
         this.saveReception(response);
       },
       error: (error: any) => {
         this.modalloading.hide();
         console.error('Error al subir archivos:', error);
-      }
+      },
     });
   }
 
-  saveReception(photos: any[]){
+  saveReception(photos: any[]) {
     const data = {
       ...this.receptionForm,
       licensePlate: this.receptionForm.licensePlate.toUpperCase(),
@@ -461,48 +650,86 @@ export class ReceptionComponent implements OnInit {
       error: (error: any) => {
         this.modalloading.hide();
         console.error('Error al guardar la recepción:', error);
-      }
+      },
     });
   }
 
+  transformExcelToObjects(jsonData: any[]): any[] {
+    const headers = jsonData[0]; // primera fila (encabezados)
+    const rows = jsonData.slice(1); // resto de filas
 
-    // paginación
-    updatePaginatedList() {
-      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-      const endIndex = startIndex + this.itemsPerPage;
-      this.paginatedList = this.listReceptions.slice(startIndex, endIndex);
-    }
+    // mapea cada fila a tu objeto
+    return rows.map((row: any[]) => {
+      const obj = {
+        transporterId: row[headers.indexOf('TRANSPORTADOR')] || '',
+        licensePlate: row[headers.indexOf('PLACA- VEHICULO')] || '',
+        collectionSiteId: row[headers.indexOf('AgenciaPH')] || '',
+        driver: row[headers.indexOf('CONDUCTOR')] || '',
+        routeId: row[headers.indexOf('idRuta')] || '',
+        referenceDoc1: row[headers.indexOf('FechadeRecepcion')] || '',
+        referenceDoc2: '', // lo puedes usar para otro campo si lo necesitas
+        details: [] as { productId: string; quantity: any }[],
+        photos: '',
+      };
 
-    goToPage(page: number) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page;
-        this.updatePaginatedList();
-        this.getReceptions(page);
-      }
-    }
-
-    onPageChange(event: Event) {
-      const selectElement = event.target as HTMLSelectElement;
-      const selectedPage = Number(selectElement.value);
-      this.goToPage(selectedPage);
-    }
-
-    get pagesArray() {
-      return Array(this.totalPages)
-        .fill(0)
-        .map((x, i) => i + 1);
-    }
-
-    search(): void {
-      this.searchTerm$.subscribe(({ value }: { value: string }) => {
-        this.listReceptions = this.listBase.filter(item => {
-          const itemValues = Object.values(item);
-          return itemValues.some(item =>
-            String(item).toLowerCase().includes(value.toLowerCase()),
-          );
-        });
+      // recorrer productos (todo lo que no son datos generales)
+      headers.forEach((head: any, i: any) => {
+        if (
+          ![
+            'FechadeRecepcion',
+            'idRuta',
+            'AgenciaPH',
+            'TRANSPORTADOR',
+            'PLACA- VEHICULO',
+            'CONDUCTOR',
+          ].includes(head)
+        ) {
+          obj.details.push({
+            productId: head,
+            quantity: row[i] || 0,
+          });
+        }
       });
+
+      return obj;
+    });
+  }
+
+  // paginación
+  updatePaginatedList() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedList = this.listReceptions.slice(startIndex, endIndex);
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedList();
+      this.getReceptions(page);
     }
+  }
 
+  onPageChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedPage = Number(selectElement.value);
+    this.goToPage(selectedPage);
+  }
 
+  get pagesArray() {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((x, i) => i + 1);
+  }
+
+  search(): void {
+    this.searchTerm$.subscribe(({ value }: { value: string }) => {
+      this.listReceptions = this.listBase.filter((item) => {
+        const itemValues = Object.values(item);
+        return itemValues.some((item) =>
+          String(item).toLowerCase().includes(value.toLowerCase())
+        );
+      });
+    });
+  }
 }
