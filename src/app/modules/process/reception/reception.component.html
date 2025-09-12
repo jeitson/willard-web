@@ -105,7 +105,7 @@
   <div class="d-flex flex-rows gap-10" *ngIf="!showTable">
     <label class="btn btn-success mb-0">
       <i class="bi bi-upload"></i> Subir archivo
-      <input type="file" hidden (change)="onFileSelected($event)">
+      <input type="file" hidden (change)="onFileSelectedExcel($event)">
     </label>
  <!-- Botón para descargar -->
 <button class="btn btn-warning mb-0" (click)="downloadExcel()">
@@ -218,9 +218,9 @@
 <div class="row" *ngIf="showTable">
   <div class="table-wrapper">
     <table class="table table-bordered table-sm text-center align-middle w-100 custom-table">
-      <thead>
+      <thead class="table-light">
         <tr>
-          <!-- Solo mostramos algunas columnas principales -->
+          <!-- Columnas principales -->
           <th>Fecha</th>
           <th>Ruta</th>
           <th>Agencia</th>
@@ -231,13 +231,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of excelData; let i = index">
-          <td>{{ row.FechadeRecepcion }}</td>
-          <td>{{ row.idRuta }}</td>
-          <td>{{ row.AgenciaPH }}</td>
-          <td>{{ row.transportador }}</td>
-          <td>{{ row["PLACA- VEHICULO"] }}</td>
-          <td>{{ row.conductor }}</td>
+        <tr *ngFor="let row of jsonData; let i = index">
+          <td>{{ row.FechaRecepcion }}</td>
+          <td>{{ row.RutaId }}</td>
+          <td>{{ row.AgenciaPh }}</td>
+          <td>{{ row.Transportador }}</td>
+          <td>{{ row.PlacaVehiculo }}</td>
+          <td>{{ row.Conductor }}</td>
           <td>
             <button class="btn btn-success btn-sm" (click)="openModal(row)">
               Ver Detalle
@@ -248,6 +248,7 @@
     </table>
   </div>
 </div>
+
 
 
     </div>

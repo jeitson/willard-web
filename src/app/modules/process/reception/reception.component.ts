@@ -4,6 +4,7 @@ import { ApiService } from 'src/app/core/services/api/api.service';
 import { CentersService } from 'src/app/core/services/process/centers.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 import * as XLSX from 'xlsx';
+import Swal from 'sweetalert2';
 declare var bootstrap: any;
 @Component({
   selector: 'app-reception',
@@ -57,7 +58,7 @@ export class ReceptionComponent implements OnInit {
   imageselect: any = {};
   reception: any = {};
   messageLoading = 'Subiendo Archivos, por favor espera...';
-
+  jsonData: any[] = [];
   // paginacion
   currentPage: number = 1; // Página actual
   itemsPerPage: number = 5; // Cantidad de elementos por página
@@ -135,7 +136,9 @@ export class ReceptionComponent implements OnInit {
   listCollectionSite() {
     this._Service.getCollectionSites().subscribe({
       next: (response: any) => {
-        this.listCollections = response.data.items;
+        this.listCollections = response.data.items.filter(
+          (x: any) => x.siteTypeId === '48'
+        );
       },
       error: (error: any) => {
         console.error('Error al obtener centros de recolección:', error);
@@ -384,65 +387,64 @@ export class ReceptionComponent implements OnInit {
   headers: string[] = []; // guarda los encabezados de las columnas
 
   // Evento al seleccionar archivo
-  onFileSelected(event: any): void {
+  onFileSelectedExcel(event: any): void {
     const file: File = event.target.files[0];
     if (file) {
-      const reader: FileReader = new FileReader();
-      reader.onload = (e: any) => {
-        const data: Uint8Array = new Uint8Array(e.target.result);
-        const workbook: XLSX.WorkBook = XLSX.read(data, { type: 'array' });
-
-        // Tomar la hoja "Detalle"
-        const worksheet: XLSX.WorkSheet = workbook.Sheets['Detalle'];
-
-        // Convertir toda la hoja a JSON (modo array)
-        const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, {
-          header: 1,
+      this.excelToJson(file)
+        .then((data) => {
+          this.jsonData = data;
+          this.showTable = true;
+          console.log('✅ JSON result:', this.jsonData);
+        })
+        .catch((err) => {
+          console.error('❌ Error leyendo Excel:', err);
         });
-        console.log('jsonData:', jsonData);
-
-        // Encabezados en la primera fila
-        const headers = jsonData[0];
-
-        // Datos desde la segunda fila
-        const rows = jsonData.slice(1);
-
-        // Mapeo de nombres de columnas a claves más limpias
-        const headerMap: { [key: string]: string } = {
-          'DD/MM/YYYY': 'fecha',
-          '#Remision - #Ruta': 'remision_ruta',
-          'Agencia PH Origen': 'agencia_origen',
-          TRANSPORTADOR: 'transportador',
-          'PLACA-VEHICULO': 'placa_vehiculo',
-          CONDUCTOR: 'conductor',
-          '24/42': '24_42',
-          '48/34': '48_34',
-          '27/G4': '27_G4',
-          '22/36': '22_36',
-          '30H': '30H',
-          '4D': '4D',
-          '8D': '8D',
-          MOTO: 'moto',
-          'SCRAP PIMSA': 'scrap_pimsa',
-          SCRAP: 'scrap',
-        };
-
-        // Transformar cada fila en objeto JSON con las claves mapeadas
-        this.excelData = rows.map((row) =>
-          headers.reduce((obj: any, key: string, i: number) => {
-            const mappedKey = headerMap[key] || key; // usa el nombre mapeado o deja el original
-            obj[mappedKey] = row[i];
-            return obj;
-          }, {})
-        );
-
-        console.log('this.excelData:', this.excelData);
-
-        // Mostrar tabla y ocultar formulario
-        this.showTable = true;
-      };
-      reader.readAsArrayBuffer(file);
     }
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+
+      // Al completar la lectura del archivo, obtén el base64
+      reader.onload = (e: any) => {
+        const base64String = e.target.result; // El resultado será el base64
+        this.photos.push({ url: base64String, id: new Date().getTime() }); // Puedes almacenarlo en el array 'photos' o usarlo como necesites
+      };
+
+      // Lee el archivo como una URL en base64
+      reader.readAsDataURL(file);
+    }
+  }
+
+  excelToJson(file: File): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        try {
+          const data: Uint8Array = new Uint8Array(e.target.result);
+          const workbook: XLSX.WorkBook = XLSX.read(data, { type: 'array' });
+
+          // Leer la hoja "Detalle"
+          const sheetName: string = 'Detalle';
+          const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
+
+          // Convertir a JSON
+          const records: any[] = XLSX.utils.sheet_to_json(worksheet, {
+            defval: null,
+          });
+          resolve(records);
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      reader.onerror = (error) => reject(error);
+
+      reader.readAsArrayBuffer(file);
+    });
   }
 
   modalOpen = false;
@@ -451,6 +453,7 @@ export class ReceptionComponent implements OnInit {
   }
   selectedRow: any = null;
   openModal(row: any) {
+    console.log(row);
     this.selectedRow = row;
     const modal = new bootstrap.Modal(document.getElementById('detalleModal'));
     modal.show();
@@ -458,85 +461,203 @@ export class ReceptionComponent implements OnInit {
   downloadExcel(): void {
     // Definir encabezados
     const headers = [
-      'FechadeRecepcion',
-      'idRuta',
-      'AgenciaPH',
-      'TRANSPORTADOR',
-      'PLACA- VEHICULO',
-      'CONDUCTOR',
-      '30H',
-      '48',
-      '4D',
-      '8D',
-      '22',
-      '24',
-      '27',
-      'GRUPO 24',
-      'GRUPO 27',
-      'GRUPO 31',
-      'GRUPO 35',
-      'GRUPO 34',
-      'GRUPO 51 Y 51R',
-      'GRUPO 65',
-      'GRUPO 78',
-      'ESTACIONARIAS',
-      'MOTOS',
+      'FechaRecepcion',
+      'RutaId',
+      'AgenciaPh',
+      'Transportador',
+      'PlacaVehiculo',
+      'Conductor',
+      '21-30H',
+      '22-48',
+      '23-4D',
+      '24-8D',
+      '16-22',
+      '17-24',
+      '18-27',
+      '10-GRUPO24',
+      '7-GRUPO27',
+      '6-GRUPO31',
+      '12-GRUPO35',
+      '8-GRUPO34',
+      '13-GRUPO51y51R',
+      '14-GRUPO65',
+      '15-GRUPO78',
+      '20-ESTACIONARIAS',
+      '19-MOTOS',
     ];
 
-    // Primera fila de datos (con ceros en los productos)
-    const row1 = [
-      '1/08/2025', // FechadeRecepcion
-      '6070', // idRuta
-      '20', // AgenciaPH
-      '01 - SERVIMEJIA', // TRANSPORTADOR
-      'HHW-666', // PLACA- VEHICULO
-      'MARCOS PINTO', // CONDUCTOR
-      0, // 30H
-      0, // 48
-      0, // 4D
-      0, // 8D
-      0, // 22
-      0, // 24
-      0, // 27
-      0, // GRUPO 24
-      0, // GRUPO 27
-      0, // GRUPO 31
-      0, // GRUPO 35
-      0, // GRUPO 34
-      0, // GRUPO 51 Y 51R
-      0, // GRUPO 65
-      0, // GRUPO 78
-      0, // ESTACIONARIAS
-      0, // MOTOS
-    ];
+    Swal.fire({
+      title: 'Seleccionar',
+      html: `
+    <div style="display:flex; flex-direction:column; gap:6px; font-size:13px; text-align:left; min-width:250px;">
+      <div>
+        <label for="swal-transportador" style="display:block; margin-bottom:2px;">Transportador:</label>
+        <select id="swal-transportador" class="swal2-select"
+          style="width:80%; padding:2px 2px; font-size:13px; border-radius:4px;">
+          ${this.listTransporters
+            .map((t) => `<option value="${t.id}">${t.name}</option>`)
+            .join('')}
+        </select>
+      </div>
+      <div>
+        <label for="swal-collection" style="display:block; margin-bottom:2px;">Recuperadora:</label>
+        <select id="swal-collection" class="swal2-select"
+          style="width:80%; padding:2px 2px; font-size:13px; border-radius:4px;">
+          ${this.listCollections
+            .map((c) => `<option value="${c.id}">${c.name}</option>`)
+            .join('')}
+        </select>
+      </div>
+    </div>
+  `,
+      showCancelButton: true,
+      confirmButtonText: 'Generar Excel',
+      preConfirm: () => {
+        const transportadorId = (
+          document.getElementById('swal-transportador') as HTMLSelectElement
+        ).value;
+        const collectionId = (
+          document.getElementById('swal-collection') as HTMLSelectElement
+        ).value;
 
-    // Crear hoja con cabeceras y fila inicial
-    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([headers, row1]);
+        return { transportadorId, collectionId };
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const transportador = this.listTransporters.find(
+          (t) => t.id === result.value.transportadorId
+        );
+        const collection = this.listCollections.find(
+          (c) => c.id === result.value.collectionId
+        );
 
-    // Crear libro
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Detalle');
+        // Primera fila de datos
+        const row1 = [
+          '1/08/2025', // FechadeRecepcion
+          '6070', // idRuta
+          collection?.id + '-' + collection?.name || '', // 📦 Colección seleccionada
+          transportador?.id + '-' + transportador?.name || '', // 🚛 TRANSPORTADOR (id)
+          'HHW-666', // PLACA- VEHICULO
+          'MARCOS PINTO', // CONDUCTOR
+          0, // 30H
+          1, // 48
+          3, // 4D
+          6, // 8D
+          0, // 22
+          0, // 24
+          0, // 27
+          0, // GRUPO 24
+          0, // GRUPO 27
+          0, // GRUPO 31
+          0, // GRUPO 35
+          0, // GRUPO 34
+          0, // GRUPO 51 Y 51R
+          0, // GRUPO 65
+          0, // GRUPO 78
+          0, // ESTACIONARIAS
+          0, // MOTOS
+        ];
 
-    // Descargar archivo
-    XLSX.writeFile(workbook, 'estructura_productos.xlsx');
+        // Crear hoja con cabeceras y fila inicial
+        const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([
+          headers,
+          row1,
+        ]);
+
+        // Crear libro
+        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Detalle');
+
+        // Descargar archivo
+        XLSX.writeFile(workbook, 'estructura_productos.xlsx');
+      }
+    });
   }
   ProccessBase() {
-    console.log(this.excelData)
-    // const data = this.excelData.map((row: any) => {
-    //   const obj = {
-    //     transporterId: row['transportador'] || '',
-    //     licensePlate: row['PLACA- VEHICULO'] || '',
-    //     collectionSiteId: row['AgenciaPH'] || row['Agencia PH Origen'] || '',
-    //     driver: row['conductor'] || '',
-    //     routeId: row['idRuta'] || row['#Remision -  #Ruta'] || '',
-    //     referenceDoc1: row['FechadeRecepcion'] || row['DD/MM/YYYY'] || '',
-    //     referenceDoc2: '', // libre para usar
-    //     details: [] as { productId: string; quantity: any }[],
-    //     photos: '',
-    //   };
-    //   console.log(data);
-    // });
+    const result = this.transformData(this.jsonData);
+    console.log(result);
+
+    Swal.fire({
+      title: 'Procesando...',
+      text: 'Por favor espere un momento',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    this.api.post(`receptions`, result).subscribe({
+      next: (response: any) => {
+        Swal.close(); // cerramos el loading
+        Swal.fire({
+          icon: 'success',
+          title: 'Proceso completado',
+          text: 'La base se procesó correctamente',
+          timer: 2500,
+          showConfirmButton: false,
+        });
+
+        this.getReceptions(this.currentPage);
+        this.modalloading.hide();
+        this.editpanel = false;
+      },
+      error: (error: any) => {
+        Swal.close(); // cerramos el loading
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al procesar',
+          text: error?.message || 'Hubo un problema al guardar la recepción',
+        });
+
+        this.modalloading.hide();
+        console.error('Error al guardar la recepción:', error);
+      },
+    });
   }
+  transformData(jsonData: any[]) {
+    console.log(jsonData);
+    // definimos los campos que corresponden a productos
+    const productFields = [
+      '21-30H',
+      '22-48',
+      '23-4D',
+      '24-8D',
+      '16-22',
+      '17-24',
+      '18-27',
+      '10-GRUPO24',
+      '7-GRUPO27',
+      '6-GRUPO31',
+      '12-GRUPO35',
+      '8-GRUPO34',
+      '13-GRUPO51y51R',
+      '14-GRUPO65',
+      '15-GRUPO78',
+      '20-ESTACIONARIAS',
+      '19-MOTOS',
+    ];
+
+    return {
+      receptions: jsonData.map((item) => ({
+        routeId: item.RutaId,
+        transporterId: Number(item.Transportador.split('-')[0]), // lo mando como número
+        collectionSiteId: Number(item.AgenciaPh.split('-')[0]), // lo mando como número
+        licensePlate: item.PlacaVehiculo,
+        driver: item.Conductor,
+        referenceDoc1: '',
+        referenceDoc2: '',
+        photos: [], // aquí luego puedes meter los objetos { url }
+        details: productFields
+          .map((field) => ({
+            productId: field.split('-')[0],
+            quantity: item[field] ?? 0,
+          }))
+          .filter((d) => d.quantity > 0), // 🔥 Solo productos con cantidad > 0
+      })),
+    };
+  }
+
   viewPhoto(item: any) {
     this.imageselect = item;
     this.modal.show();
@@ -621,6 +742,7 @@ export class ReceptionComponent implements OnInit {
         // Adjunta el blob al FormData, nombrando cada archivo con un índice u otro identificador
         formData.append(`file${index}`, blob, `image${index}.png`);
       });
+
     this.api.postWithReturnData(`files/upload`, formData).subscribe({
       next: (response: any) => {
         this.messageLoading = 'Recepcionando productos, por favor espera...';
@@ -634,12 +756,17 @@ export class ReceptionComponent implements OnInit {
   }
 
   saveReception(photos: any[]) {
-    const data = {
+    const reception = {
       ...this.receptionForm,
       licensePlate: this.receptionForm.licensePlate.toUpperCase(),
       details: this.products,
       photos: photos,
     };
+    const data = {
+      receptions: [reception],
+    };
+
+    console.log(data);
     this.api.post(`receptions`, data).subscribe({
       next: (response: any) => {
         this.editpanel = false;
@@ -651,47 +778,6 @@ export class ReceptionComponent implements OnInit {
         this.modalloading.hide();
         console.error('Error al guardar la recepción:', error);
       },
-    });
-  }
-
-  transformExcelToObjects(jsonData: any[]): any[] {
-    const headers = jsonData[0]; // primera fila (encabezados)
-    const rows = jsonData.slice(1); // resto de filas
-
-    // mapea cada fila a tu objeto
-    return rows.map((row: any[]) => {
-      const obj = {
-        transporterId: row[headers.indexOf('TRANSPORTADOR')] || '',
-        licensePlate: row[headers.indexOf('PLACA- VEHICULO')] || '',
-        collectionSiteId: row[headers.indexOf('AgenciaPH')] || '',
-        driver: row[headers.indexOf('CONDUCTOR')] || '',
-        routeId: row[headers.indexOf('idRuta')] || '',
-        referenceDoc1: row[headers.indexOf('FechadeRecepcion')] || '',
-        referenceDoc2: '', // lo puedes usar para otro campo si lo necesitas
-        details: [] as { productId: string; quantity: any }[],
-        photos: '',
-      };
-
-      // recorrer productos (todo lo que no son datos generales)
-      headers.forEach((head: any, i: any) => {
-        if (
-          ![
-            'FechadeRecepcion',
-            'idRuta',
-            'AgenciaPH',
-            'TRANSPORTADOR',
-            'PLACA- VEHICULO',
-            'CONDUCTOR',
-          ].includes(head)
-        ) {
-          obj.details.push({
-            productId: head,
-            quantity: row[i] || 0,
-          });
-        }
-      });
-
-      return obj;
     });
   }
 
