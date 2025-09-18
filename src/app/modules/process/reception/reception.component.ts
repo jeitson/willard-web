@@ -671,6 +671,7 @@ export class ReceptionComponent implements OnInit {
   cancelReception() {
     this.editpanel = false;
     this.action = 'listar';
+      this.getReceptions(this.currentPage);
   }
 
   base64ToBlob(
