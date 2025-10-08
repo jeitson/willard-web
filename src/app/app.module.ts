@@ -32,8 +32,8 @@ url = url.replace('==#', '=');
     // NgbModule,
     ToastrModule.forRoot(),
     Auth0Module.forRoot({
-      domain: 'dev-tf6rjjtc.auth0.com',
-      clientId: 'WZNm59oARsrlUlcSjdDrxqRfM6DtmqSz',
+       domain: 'bupas.us.auth0.com',
+      clientId: 'wacqNimhMjCOAjjdRL5fEnvNlzRkfx5V',
       authorizationParams: {
         redirect_uri: window.location.origin + '/#/landing?redirect=' + url,
       },
@@ -46,3 +46,5 @@ url = url.replace('==#', '=');
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+// domain: 'dev-tf6rjjtc.auth0.comhttp://bupas.us.auth0.com',
+// clientId: 'WZNm59oARsrlUlcSjdDrxqRfM6DtmqSz',

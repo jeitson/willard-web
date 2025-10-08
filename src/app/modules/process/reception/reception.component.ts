@@ -670,6 +670,7 @@ export class ReceptionComponent implements OnInit {
 
   cancelReception() {
     this.editpanel = false;
+    this.showTable = false
     this.action = 'listar';
       this.getReceptions(this.currentPage);
   }
