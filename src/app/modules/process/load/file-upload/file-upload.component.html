@@ -1,0 +1,174 @@
+<div class="container py-4">
+
+  <!-- ==================================================== -->
+  <!-- 🔹 VISTA PRINCIPAL: SELECCIÓN DE TIPO DE CARGUE -->
+  <!-- ==================================================== -->
+  <div *ngIf="view === 'main'" class="row g-4">
+    <div class="col-md-6">
+      <div class="card-selection-clean h-100 text-start" (click)="openList('irc')">
+        <div class="card-body-clean">
+          <div class="icon-box icon-primary-light mb-3">
+            <i class="fa-solid fa-database fa-lg text-primary"></i>
+          </div>
+          <h5 class="card-title-lg-clean mb-1">Cargue IRC</h5>
+          <p class="text-secondary-clean mb-3">
+            Suba y gestione los registros de información IRC (Inventario de Reciclaje de Componentes).
+          </p>
+          <span class="btn-action-clean text-primary">Ver cargues existentes <i class="fa-solid fa-arrow-right"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card-selection-clean h-100 text-start" (click)="openList('facturas')">
+        <div class="card-body-clean">
+          <div class="icon-box icon-success-light mb-3">
+            <i class="fa-solid fa-file-invoice-dollar fa-lg text-success"></i>
+          </div>
+          <h5 class="card-title-lg-clean mb-1">Cargue Facturas</h5>
+          <p class="text-secondary-clean mb-3">
+            Suba y gestione las facturas asociadas al reciclaje y la logística de transporte.
+          </p>
+          <span class="btn-action-clean text-success">Ver cargues existentes <i class="fa-solid fa-arrow-right"></i></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- 🔹 VISTA LISTA: TABLA DE CARGUES Y SUBIDA DE ARCHIVO -->
+  <!-- ==================================================== -->
+  <div *ngIf="view === 'list'">
+
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+      <div>
+        <h5 class="fw-bold mb-0 text-dark d-flex align-items-center">
+          <i class="fa-solid fa-folder-open text-primary me-2"></i> {{ currentLabel }}
+        </h5>
+        <small class="text-muted">Gestione los cargues y revise los archivos subidos.</small>
+      </div>
+      <div class="d-flex gap-2 mt-3 mt-md-0">
+        <button class="btn btn-outline-secondary btn-sm" (click)="goBack()">
+          <i class="fa-solid fa-arrow-left me-1"></i> Atrás
+        </button>
+        <button class="btn btn-success btn-sm" (click)="fileInput.click()">
+          <i class="fa-solid fa-upload me-1"></i> Subir Cargue
+        </button>
+        <input type="file" #fileInput accept=".xlsx,.xls" (change)="onFileSelected($event)" hidden />
+      </div>
+    </div>
+
+    <div class="page-divider mb-3"><hr /></div>
+       <!-- Fecha Inicio -->
+  <div class="row">
+        <div class="col-md-3">
+        <label class="form-label">Fecha Inicio</label>
+        <input type="date" class="form-control" >
+      </div>
+
+      <!-- Fecha Fin -->
+      <div class="col-md-3">
+        <label class="form-label">Fecha Fin</label>
+        <input type="date" class="form-control" >
+      </div>
+      
+
+  </div>
+    <!-- Tabla de Cargues -->
+    <div [hidden]="previewData.length > 0" class="list-upload-view-clean mb-4 p-3">
+      <div class="table-responsive clean-table-responsive">
+        <table class="table clean-table align-middle">
+          <thead>
+            <tr>
+              <th>Archivo</th>
+              <th>Usuario</th>
+              <th>Filas</th>
+              <th>Fecha Cargue</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+<tbody>
+  <!-- Si no hay información -->
+  <tr *ngIf="uploads?.length === 0">
+    <td colspan="5" class="text-center text-muted py-4">
+      No hay cargues registrados.
+    </td>
+  </tr>
+
+  <!-- Filas dinámicas -->
+  <tr *ngFor="let item of uploads; let i = index"
+      [class.table-active-custom]="selectedRowIndex === i">
+
+    <!-- Archivo cargado -->
+    <td>
+      <i class="fa-regular fa-file-excel me-1 text-success"></i>
+      {{ item.name }} <br>
+      <small class="text-muted">{{ item.fileName }}</small>
+    </td>
+
+    <!-- Usuario -->
+    <td>
+      <strong>{{ item.createdBy }}</strong>
+    </td>
+
+    <!-- Filas procesadas -->
+    <td>
+      <span class="text-success fw-semibold">{{ item.processedRecords }}</span>
+      /
+      <span class="text-danger fw-semibold">{{ item.errorRecords }}</span>
+    </td>
+
+    <!-- Fecha -->
+    <td>{{ item.createdAt | date:'short' }}</td>
+
+    <!-- Acciones -->
+    <td class="text-center">
+      <!-- <button class="btn btn-sm btn-outline-primary me-1" (click)="viewUpload(i)">
+        <i class="fa-solid fa-eye"></i>
+      </button> -->
+      <button class="btn btn-sm btn-outline-danger" (click)="deleteUpload(item)">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    </td>
+
+  </tr>
+</tbody>
+
+        </table>
+      </div>
+    </div>
+
+    <!-- Vista previa del archivo cargado -->
+    <div *ngIf="previewData.length > 0" class="preview-section-clean p-3">
+      <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap">
+        <h6 class="fw-bold mb-0">
+          <i class="fa-solid fa-file-excel text-success me-1"></i> Vista Previa:
+          <span class="text-dark">{{ previewFileName }}</span>
+        </h6>
+        <button class="btn btn-sm btn-primary" [disabled]="isSaving" (click)="saveUpload()">
+          <i class="fa-solid fa-save me-1"></i>
+          {{ isSaving ? 'Guardando...' : 'Guardar Cargue' }}
+        </button>
+      </div>
+
+      <div class="table-responsive preview-table-clean mt-2">
+        <table class="table table-sm table-bordered mb-0">
+          <thead>
+            <tr>
+              <th *ngFor="let col of previewColumns">{{ col }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of previewData.slice(0, 10)">
+              <td *ngFor="let col of previewColumns">{{ row[col] }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div *ngIf="previewData.length > 10" class="text-end mt-1">
+          <small class="text-muted">Mostrando las primeras 10 filas de {{ previewData.length }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AuthModule as Auth0Module } from '@auth0/auth0-angular';
@@ -13,16 +13,14 @@ import { NgxDanisoftUtilsModule } from 'ngx-danisoft-utils';
 const _location = location.hash.split('redirect');
 let url = '';
 
-if (_location.length > 0){
-    url = _location[_location.length - 1];
+if (_location.length > 0) {
+  url = _location[_location.length - 1];
 }
 
 url = url.replace('==#', '=');
 
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -32,10 +30,10 @@ url = url.replace('==#', '=');
     // NgbModule,
     ToastrModule.forRoot(),
     Auth0Module.forRoot({
-       domain: 'bupas.us.auth0.com',
-      clientId: 'wacqNimhMjCOAjjdRL5fEnvNlzRkfx5V',
+      domain: 'dev-tf6rjjtc.auth0.com',
+      clientId: 'WZNm59oARsrlUlcSjdDrxqRfM6DtmqSz',
       authorizationParams: {
-        redirect_uri: window.location.origin + '/#/landing?redirect=' + url,
+        redirect_uri: window.location.origin + '/#/landing',
       },
     }),
   ],
@@ -43,8 +41,8 @@ url = url.replace('==#', '=');
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: Auth0Interceptor, multi: true },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
 // domain: 'dev-tf6rjjtc.auth0.comhttp://bupas.us.auth0.com',
 // clientId: 'WZNm59oARsrlUlcSjdDrxqRfM6DtmqSz',

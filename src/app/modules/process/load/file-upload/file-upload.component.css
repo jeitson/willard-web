@@ -1,0 +1,164 @@
+/* ---------------------------------------------------- */
+/* 🔹 Variables de Color (Bootstrap, ajusta si es necesario) */
+/* ---------------------------------------------------- */
+:root {
+    --bs-primary: #007bff; /* Azul corporativo */
+    --bs-success: #28a745; /* Verde corporativo */
+    --color-border: #e0e0e0;
+    --color-background-light: #f8f9fa;
+    --color-text-secondary: #6c757d;
+}
+
+/* ---------------------------------------------------- */
+/* 🔹 Estilos de la Vista Principal (MAIN) */
+/* ---------------------------------------------------- */
+
+.section-title-clean {
+    font-weight: 600;
+    color: #343a40;
+    font-size: 1.8rem;
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: 10px;
+    margin-bottom: 3rem !important; /* Más espacio */
+}
+
+.card-selection-clean {
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background-color: #ffffff;
+    height: 100%;
+}
+
+/* Efecto Hover Profesional */
+.card-selection-clean:hover {
+    border-color: var(--bs-primary); /* Borde azul al pasar el ratón */
+    transform: translateY(-4px); 
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-body-clean {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Alineación a la izquierda, más profesional */
+}
+
+/* Caja de Icono (Fondo sutil) */
+.icon-box {
+    width: 65px;
+    height: 65px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+}
+
+.icon-primary-light {
+    background-color: rgba(0, 123, 255, 0.1); /* Fondo azul muy claro */
+    border-color: rgba(0, 123, 255, 0.3);
+}
+
+.icon-success-light {
+    background-color: rgba(40, 167, 69, 0.1); /* Fondo verde muy claro */
+    border-color: rgba(40, 167, 69, 0.3);
+}
+
+.card-title-lg-clean {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #343a40;
+    margin-bottom: 0;
+}
+
+.text-secondary-clean {
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+.btn-action-clean {
+    font-weight: 600;
+    font-size: 1rem;
+    padding-bottom: 2px;
+    border-bottom: 2px solid transparent;
+    transition: border-bottom 0.3s ease;
+}
+
+.card-irc-clean:hover .btn-action-clean {
+    border-bottom-color: var(--bs-primary);
+}
+
+.card-facturas-clean:hover .btn-action-clean {
+    border-bottom-color: var(--bs-success);
+}
+/* ---------------------------------------------------- */
+/* 🔹 Estilos Adicionales para la Vista de Lista/Tabla */
+/* ---------------------------------------------------- */
+
+.list-upload-view-clean {
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+}
+
+.card-header-clean {
+    padding: 1rem 1.5rem;
+    background-color: var(--color-background-light);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.btn-upload-clean {
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+}
+
+/* Estilos de la Tabla */
+.clean-table-responsive {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.clean-table {
+    margin-bottom: 0;
+}
+
+.clean-table th {
+    font-weight: 600;
+    color: #343a40;
+}
+
+.clean-table td {
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+/* Fila activa personalizada */
+.clean-table tbody tr.table-active-custom {
+    background-color: rgba(0, 123, 255, 0.05) !important; /* Azul muy suave */
+    border-left: 3px solid var(--bs-primary);
+}
+
+.clean-table tbody tr:hover {
+    background-color: var(--color-background-light);
+}
+
+/* Estilos de Botones de Acción en la Tabla */
+.clean-table .btn-sm {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    border-radius: 4px;
+}
+
+/* Estilo de la Sección de Preview (para el siguiente paso) */
+.preview-section-clean {
+    background-color: var(--color-background-light);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+}
+.preview-table-clean th {
+    background-color: #e9ecef !important;
+}

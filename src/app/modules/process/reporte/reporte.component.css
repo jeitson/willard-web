@@ -1,0 +1,16 @@
+.table td, .table th {
+  vertical-align: middle;
+}
+
+.table tbody tr:hover {
+  background: #fafafa;
+}
+
+button.btn-light {
+  background: #f8f9fa !important;
+}
+
+.form-label {
+  font-weight: 600;
+  font-size: 13px;
+}

@@ -74,7 +74,7 @@
         "status": false
       },
       {
-        "name": "Reporte",
+        "name": "Reporte Certificado",
         "type": "link",
         "id": "29",
         "route": "report",
@@ -85,6 +85,20 @@
         "type": "link",
         "id": "30",
         "route": "certificate-information",
+        "status": false
+      },
+      {
+        "name": "Cargues",
+        "type": "link",
+        "id": "31",
+        "route": "file-upload",
+        "status": false
+      },
+          {
+        "name": "Reporte",
+        "type": "link",
+        "id": "32",
+        "route": "file-report",
         "status": false
       }
     ]
@@ -100,21 +114,21 @@
     "subMenu": [
       {
         "name": "Usuarios",
-        "type":"link",
+        "type": "link",
         "id": "31",
         "route": "users",
         "status": false
       },
       {
         "name": "Roles",
-        "type":"link",
+        "type": "link",
         "id": "32",
         "route": "roles",
         "status": false
       },
       {
         "name": "Auditoria",
-        "type":"link",
+        "type": "link",
         "id": "33",
         "route": "request",
         "status": false

@@ -14,6 +14,8 @@ import { BulkrequestComponent } from './bulkrequest/bulkrequest.component';
 import { ReporteComponent } from './reporte/reporte.component';
 import { FacturaComponent } from './factura/factura.component';
 import { CertificateInformationComponent } from './certificate-information/certificate-information.component';
+import { FileUploadComponent } from './load/file-upload/file-upload.component';
+import { ReportFileComponent } from './load/report-file/report-file.component';
 
 
 @NgModule({
@@ -28,7 +30,9 @@ import { CertificateInformationComponent } from './certificate-information/certi
     BulkrequestComponent,
     ReporteComponent,
     FacturaComponent,
-    CertificateInformationComponent
+    CertificateInformationComponent,
+    FileUploadComponent,
+    ReportFileComponent
   ],
   imports: [
     CommonModule,

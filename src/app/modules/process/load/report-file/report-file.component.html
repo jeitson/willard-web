@@ -1,0 +1,61 @@
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="page-header d-flex justify-content-between align-items-center mb-3">
+
+    <div>
+      <h5 class="primary title noselect mb-0">ENVÍO DE BUPAS</h5>
+      <p class="secundary mb-1">En este módulo podrás realizar los diferentes envíos de BUPAs</p>
+    </div>
+
+    <div class="d-flex gap-10">
+      <button class="btn btn-sm bg-success2">
+        Agregar <i class="fa-solid fa-add"></i>
+      </button>
+
+      <button class="btn btn-sm btn-dark">
+        Recargar <i class="fa-solid fa-rotate-right"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <hr class="mt-1 mb-3">
+
+  <!-- 🔍 FILTROS -->
+  <div class="card shadow-sm p-3 mb-4">
+    <h6 class="fw-bold mb-3">Filtros del reporte</h6>
+
+    <div class="row g-3">
+
+      <!-- Fecha Inicio -->
+      <div class="col-md-3">
+        <label class="form-label">Fecha Inicio</label>
+        <input type="date" class="form-control" [(ngModel)]="filters.startDate">
+      </div>
+
+      <!-- Fecha Fin -->
+      <div class="col-md-3">
+        <label class="form-label">Fecha Fin</label>
+        <input type="date" class="form-control" [(ngModel)]="filters.endDate">
+      </div>
+
+      <div class="col-md-3">
+          <!-- BOTÓN DESCARGAR -->
+          <div class="mt-4 text-center">
+            <button class="btn btn-success" (click)="downloadReport()">
+              Descargar Reporte <i class="fa-solid fa-file-arrow-down"></i>
+            </button>
+          </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BODY VACÍO (donde irán tablas o cards) -->
+  <div class="page-body">
+    <div class="row"></div>
+  </div>
+
+</div>

@@ -458,12 +458,15 @@ export class ReceptionComponent implements OnInit {
     const modal = new bootstrap.Modal(document.getElementById('detalleModal'));
     modal.show();
   }
+
+  // 48 = recuperadora 49 = agencia
   downloadExcel(): void {
     // Definir encabezados
     const headers = [
       'FechaRecepcion',
       'RutaId',
       'AgenciaPh',
+      'Recuperadora',
       'Transportador',
       'PlacaVehiculo',
       'Conductor',
@@ -485,29 +488,54 @@ export class ReceptionComponent implements OnInit {
       '20-ESTACIONARIAS',
       '19-MOTOS',
     ];
+    const transportadores = [...this.listTransporters];
 
+    const agencias = this.listCollections.filter(
+      (c) => String(c.siteTypeId).trim() === '49'
+    );
+
+    const recuperadoras = this.listCollections.filter(
+      (c) => String(c.siteTypeId).trim() === '48'
+    );
+    console.log(agencias, recuperadoras);
     Swal.fire({
       title: 'Seleccionar',
       html: `
     <div style="display:flex; flex-direction:column; gap:6px; font-size:13px; text-align:left; min-width:250px;">
+      
+      <!-- Transportador -->
       <div>
         <label for="swal-transportador" style="display:block; margin-bottom:2px;">Transportador:</label>
         <select id="swal-transportador" class="swal2-select"
           style="width:80%; padding:2px 2px; font-size:13px; border-radius:4px;">
-          ${this.listTransporters
+          ${transportadores
             .map((t) => `<option value="${t.id}">${t.name}</option>`)
             .join('')}
         </select>
       </div>
+
+      <!-- Agencia -->
       <div>
-        <label for="swal-collection" style="display:block; margin-bottom:2px;">Recuperadora:</label>
-        <select id="swal-collection" class="swal2-select"
+        <label for="swal-agencia" style="display:block; margin-bottom:2px;">Agencia:</label>
+        <select id="swal-agencia" class="swal2-select"
           style="width:80%; padding:2px 2px; font-size:13px; border-radius:4px;">
-          ${this.listCollections
-            .map((c) => `<option value="${c.id}">${c.name}</option>`)
+          ${agencias
+            .map((a) => `<option value="${a.id}">${a.name}</option>`)
             .join('')}
         </select>
       </div>
+
+      <!-- Recuperadora -->
+      <div>
+        <label for="swal-recuperadora" style="display:block; margin-bottom:2px;">Recuperadora:</label>
+        <select id="swal-recuperadora" class="swal2-select"
+          style="width:80%; padding:2px 2px; font-size:13px; border-radius:4px;">
+          ${recuperadoras
+            .map((r) => `<option value="${r.id}">${r.name}</option>`)
+            .join('')}
+        </select>
+      </div>
+
     </div>
   `,
       showCancelButton: true,
@@ -537,6 +565,7 @@ export class ReceptionComponent implements OnInit {
           '6070', // idRuta
           collection?.id + '-' + collection?.name || '', // 📦 Colección seleccionada
           transportador?.id + '-' + transportador?.name || '', // 🚛 TRANSPORTADOR (id)
+          '-',
           'HHW-666', // PLACA- VEHICULO
           'MARCOS PINTO', // CONDUCTOR
           0, // 30H
@@ -587,7 +616,7 @@ export class ReceptionComponent implements OnInit {
       },
     });
 
-    this.api.post(`receptions`, result).subscribe({
+    this.api.post(`receptions`, { ...result, collectionSiteId: 7 }).subscribe({
       next: (response: any) => {
         Swal.close(); // cerramos el loading
         Swal.fire({
@@ -641,9 +670,10 @@ export class ReceptionComponent implements OnInit {
     return {
       receptions: jsonData.map((item) => ({
         routeId: item.RutaId,
-        transporterId: Number(item.Transportador.split('-')[0]), // lo mando como número
-        collectionSiteId: Number(item.AgenciaPh.split('-')[0]), // lo mando como número
+        transporterId: Number(item.Transportador), // lo mando como número
+        agencyId: Number(item.AgenciaPh), // lo mando como número
         licensePlate: item.PlacaVehiculo,
+        recuperatorId: Number(item.Recuperadora),
         driver: item.Conductor,
         referenceDoc1: '',
         referenceDoc2: '',
@@ -670,27 +700,19 @@ export class ReceptionComponent implements OnInit {
 
   cancelReception() {
     this.editpanel = false;
-    this.showTable = false
+    this.showTable = false;
     this.action = 'listar';
-      this.getReceptions(this.currentPage);
+    this.getReceptions(this.currentPage);
   }
 
-  base64ToBlob(
-    base64: string,
-    contentType: string = '',
-    sliceSize: number = 512
-  ): Blob {
-    const byteCharacters = atob(base64); // decodificar base64
-    const byteArrays: Uint8Array[] = [];
+  base64ToBlob(base64: string, contentType = ''): Blob {
+    const byteCharacters = atob(base64);
+    const byteArrays = [];
 
-    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-      const slice = byteCharacters.slice(offset, offset + sliceSize);
-      const byteNumbers = new Array(slice.length);
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      byteArrays.push(byteArray);
+    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+      const slice = byteCharacters.slice(offset, offset + 512);
+      const byteNumbers = Array.from(slice, (char) => char.charCodeAt(0));
+      byteArrays.push(new Uint8Array(byteNumbers));
     }
 
     return new Blob(byteArrays, { type: contentType });

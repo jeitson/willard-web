@@ -13,7 +13,31 @@ export class GeneralService {
     return this._api.get<any>('assets/json/menu.json');
   }
 
+	getImageDataUrlFromLocalPath1(localPath: string): Observable<string> {
+		return new Observable<string>(observer => {
+			const canvas = document.createElement(
+				'canvas',
+			) as HTMLCanvasElement;
+			const img = new Image();
+			img.onload = () => {
+				canvas.height = img.height;
+				canvas.width = img.width;
 
+				const context = canvas.getContext('2d');
+				if (context) {
+					context.drawImage(img, 0, 0);
+					observer.next(canvas.toDataURL('image/png'));
+					observer.complete();
+				} else {
+					observer.error(
+						'No se pudo obtener el contexto 2D del canvas',
+					);
+				}
+			};
+			img.onerror = () => observer.error('Imagen no disponible');
+			img.src = localPath;
+		});
+	}
     // Método para enviar el archivo a la ruta especificada
     uploadFile(file: File): Observable<any> {
       const formData = new FormData();

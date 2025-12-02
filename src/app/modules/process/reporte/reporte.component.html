@@ -16,94 +16,240 @@
     </div>
   
     <div class="page-body">
-      <div class="card">
-        <div class="card-body">
-  
-          <!-- Formulario de fechas -->
-          <div class=" p-4">
-            <h6 class="fw-semibold mb-4">Seleccionar Rango de Fechas</h6>
-            <div class="row g-3 align-items-end">
-                <div class="col-md-3">
-                  <label for="fechaInicial" class="form-label">Fecha Inicial:</label>
-                  <input type="date" class="form-control" id="fechaInicial"  required
-                          [(ngModel)]="formData.startDate"/>
-                </div>
-                <div class="col-md-3">
-                  <label for="fechaFinal" class="form-label">Fecha Final:</label>
-                  <input type="date" class="form-control" id="fechaFinal"      required
-                          [(ngModel)]="formData.endDate" />
-                </div>
-               <div class="col-md-3">
-                    <label for="sedeAcopioId" class="form-label text-black">Sede de Acopio</label>
-                    <div class="input-group">
-                      <select class="form-select h-46" name="sedeAcopioId" id="sedeAcopioId" [(ngModel)]="formData.collectionSiteId">
-                         <option value="" selected>Seleccionar</option>
-                        <option *ngFor="let sede of listSedes" [value]="sede.id">{{ sede.name }}</option>
-                      </select>
-                    </div>
-                  </div>
-              <div class="col-md-3 d-flex align-items-end">
-                <button type="submit" class="btn btn-success w-100" (click)="searchfilter()">
-                  Filtrar Reporte
-                </button>
-              </div>
-            </div>
-          </div>
-  
-          <!-- Tabla de resultados -->
-          <div class="mt-5">
-          <div class="col-md-12 d-flex justify-content-between align-items-center mb-3 gap-2 flex-wrap">
-  <h6 class="fw-semibold mb-0">Resultados del Reporte</h6>
-  <button type="submit" class="btn btn-warning" (click)="generate()">
-    Generar Informe PDF
-  </button>
+<div class="card shadow-sm border-0">
+  <div class="card-body">
+
+    <!-- FORMULARIO PRINCIPAL -->
+    <div class="row g-3 mb-3">
+
+      <div class="col-md-3">
+        <label class="form-label">Fecha Inicial</label>
+        <input 
+          type="date" 
+          class="form-control form-control-sm"
+          [(ngModel)]="formData.startDate"
+        >
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Fecha Final</label>
+        <input 
+          type="date" 
+          class="form-control form-control-sm"
+          [(ngModel)]="formData.endDate"
+        >
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Registros IRC</label>
+        <select 
+          class="form-select form-select-sm"
+          [(ngModel)]="type"
+          (ngModelChange)="onTypeChange()"
+        >
+          <option value="">Seleccione una opción</option>
+          <option value="generated">Generados</option>
+          <option value="pending">Pendientes</option>
+        </select>
+      </div>
+
+      <div class="col-md-3 d-flex align-items-end">
+        <button class="btn btn-success w-100" (click)="searchfilter()">
+          <i class="fa-solid fa-magnifying-glass me-1"></i> Filtrar
+        </button>
+      </div>
+
+    </div>
+
+    <!-- RESULTADOS + BOTONES -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h6 class="fw-semibold mb-0">Resultados</h6>
+
+      <button 
+        class="btn btn-primary btn-sm"
+        *ngIf="type === 'pending'"
+        (click)="processCertificates()"
+      >
+        Generar Certificados
+      </button>
+    </div>
+
+    <!-- MOSTRAR / OCULTAR FILTROS -->
+    <button 
+      *ngIf="resultReport.length > 0 "
+      class="btn btn-light btn-sm border mb-3 text-end"
+      (click)="showFilters = !showFilters"
+    >
+      <i class="fa-solid" [ngClass]="showFilters ? 'fa-filter-circle-xmark' : 'fa-filter'"></i>
+      {{ showFilters ? 'Ocultar filtros' : 'Mostrar filtros' }}
+    </button>
+
+    <!-- FILTROS SECUNDARIOS -->
+    <div 
+      class="p-3 border rounded bg-light mb-3"
+      *ngIf="showFilters"
+      style="font-size: 13px;"
+    >
+      <div class="row g-3">
+
+        <div class="col-md-2">
+          <label class="form-label">Fecha Certificación</label>
+          <input 
+            type="date" 
+            class="form-control form-control-sm"
+            [(ngModel)]="filters.date"
+            (input)="applyFilters()"
+          >
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">IRC</label>
+          <input 
+            type="number" 
+            class="form-control form-control-sm"
+            [(ngModel)]="filters.irc"
+            (input)="applyFilters()"
+          >
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Agencia</label>
+          <input 
+            type="text"
+            class="form-control form-control-sm"
+            [(ngModel)]="filters.agency"
+            (input)="applyFilters()"
+          >
+        </div>
+<div class="col-md-2">
+  <label class="form-label">Cliente</label>
+  <input 
+    type="text"
+    class="form-control form-control-sm"
+    [(ngModel)]="filters.clientName"
+    (input)="applyFilters()"
+  >
 </div>
 
-            <div class="table-responsive">
-           <table class="table table-bordered rounded shadow-sm overflow-hidden">
-              <thead style="background-color: #f1f1f1; font-size: 11px; font-weight: 600;">
-                <tr>
-                  <th>ID LOTE</th>
-                  <th>FECHA ENTREGA</th>
-                  <th>CANTIDAD BATERÍAS</th>
-                  <th>MATERIALES RECICLADOS</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Mensaje si no hay datos -->
-                <tr *ngIf="resultReport.length === 0">
-                  <td colspan="4" class="text-center text-muted py-4">
-                    No hay lotes registrados.
-                  </td>
-                </tr>
-
-                <!-- Filas de datos -->
-                <tr *ngFor="let item of resultReport">
-                  <td>{{ item.id }}</td>
-                  <td>{{ item.delivery_date }}</td>
-                  <td>{{ item.quantity_batteries }}</td>
-                  <td>
-                    <div *ngIf="item.materials?.length; else noMaterials" class="d-flex" >
-                      <div *ngFor="let data of item.materials"  >
-                        <span class="d-block">
-                          {{ data.name }}: {{ data.quantity }} {{ data.unity }},   
-                        </span>
-                      </div>
-                    </div>
-                    <ng-template #noMaterials>
-                      <span class="text-muted">Sin materiales reciclados</span>
-                    </ng-template>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-            </div>
-          
-          </div>
-  
+<div class="col-md-2">
+  <label class="form-label">NIT Cliente</label>
+  <input 
+    type="text"
+    class="form-control form-control-sm"
+    [(ngModel)]="filters.clientNit"
+    (input)="applyFilters()"
+  >
+</div>
+<div class="col-md-2">
+  <label class="form-label">Nombre Tercero</label>
+  <input 
+    type="text"
+    class="form-control form-control-sm"
+    [(ngModel)]="filters.clientName"
+    (input)="applyFilters()"
+  >
+</div>
+        <div class="col-md-2">
+          <label class="form-label">Nit Tercero</label>
+          <input 
+            type="text" 
+            class="form-control form-control-sm"
+            [(ngModel)]="filters.thirdPartyNit"
+            (input)="applyFilters()"
+          >
         </div>
+
       </div>
+    </div>
+
+    <!-- TABLAS -->
+    <div class="table-responsive" *ngIf="type === 'pending'">
+      <table class="table table-sm table-bordered shadow-sm">
+        <thead class="table-light">
+          <tr style="font-size: 11px;">
+            <th class="text-center"><input type="checkbox" (change)="toggleAll($event)" /></th>
+            <th>ID</th>
+            <th>FECHA</th>
+            <th>AGENCIA</th>
+            <th>IRC</th>
+            <th>CLIENTE</th>
+            <th>REFERENCIA</th>
+            <th>CANTIDAD</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngIf="resultReport.length === 0">
+            <td colspan="8" class="text-center text-muted py-3">No hay registros</td>
+          </tr>
+
+          <tr *ngFor="let item of resultReport">
+            <td class="text-center">
+              <input type="checkbox" [(ngModel)]="item.selected" (change)="updateSelection(item)" />
+            </td>
+
+            <td>{{ item.id }}</td>
+            <td>{{ item.date }}</td>
+            <td>{{ item.agency }}</td>
+            <td>{{ item.irc }}</td>
+
+            <td>
+              <strong>{{ item.clientName }}</strong><br>
+              <small class="text-muted">{{ item.clientNit }}</small>
+            </td>
+
+            <td>{{ item.reference }}</td>
+            <td>{{ item.quantity }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TABLA GENERATED -->
+    <div class="table-responsive" *ngIf="type === 'generated'">
+      <table class="table table-sm table-bordered shadow-sm">
+        <thead class="table-light">
+          <tr style="font-size: 11px;">
+            <th>CLIENTE</th>
+            <th>NIT</th>
+            <th>AGENCIA</th>
+            <th>IRCs</th>
+            <th>FECHA ACTA</th>
+            <th>ESTADO</th>
+            <th>OPCIONES</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngIf="resultReport.length === 0">
+            <td colspan="7" class="text-center text-muted py-3">No hay actas</td>
+          </tr>
+
+          <tr *ngFor="let item of resultReport">
+            <td><strong>{{ item.clientName }}</strong></td>
+            <td>{{ item.clientNit }}</td>
+            <td>{{ item.agency }}</td>
+            <td>
+              <span *ngFor="let code of item.ircs" class="badge bg-secondary me-1">{{ code }}</span>
+            </td>
+            <td>{{ item.dateGenerationActa }}</td>
+            <td>
+              <span class="badge bg-success" *ngIf="item.actGenerated">Generado</span>
+              <span class="badge bg-danger" *ngIf="!item.actGenerated">Pendiente</span>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-success" (click)="generate(item)">
+                Descargar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
     </div>
   </div>
   

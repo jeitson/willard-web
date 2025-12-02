@@ -83,7 +83,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       // Agregar los nuevos children al módulo con id "2"
       const targetModule = modules.find((m: any) => m.id === "2" && m.type === "sub" && Array.isArray(m.children));
       if (targetModule) {
-      targetModule.children.push({ id: "28" }, { id: "29" }, { id: "30" });
+      targetModule.children.push({ id: "28" }, { id: "29" }, { id: "30" }, { id: "31" }, { id: "32" });
       }
       
       this.preloadModules(modules);
