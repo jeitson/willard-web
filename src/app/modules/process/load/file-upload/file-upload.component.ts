@@ -55,29 +55,75 @@ export class FileUploadComponent {
   // ======================================================
   // 🔹 Navegación
   // ======================================================
-  openList(type: FileType): void {
-    this.fileType = type;
-    console.log(this.fileType);
-    this.view = 'list';
-    this.resetPreview();
+ // VARIABLES
+currentPage = 1;
+itemsPerPage = 10;
+totalPages = 1;
+order: 'ASC' | 'DESC' = 'ASC';
 
-    this._Service.getAllUploads().subscribe((response: any) => {
-      console.log(response);
+// Getter para crear el array de páginas
+get pages(): number[] {
+  return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+}
 
-      const uploads = response.data.items || response; // por si la API devuelve array o items[]
-      console.log(uploads);
+// Abrir lista con paginación
+openList(type: FileType, page: number = 1): void {
+  this.fileType = type;
+  this.currentPage = page;
+  this.view = 'list';
+  this.resetPreview();
 
-      const filtered = uploads.filter((item: any) => {
+  // asegúrate de usar números (no strings) en los params
+  const params = {
+    page: this.currentPage,
+    pageSize: this.itemsPerPage,
+    order: this.order
+  };
+
+  // Llamada al servicio — espera que getAllUploads acepte un objeto params
+  this._Service.getAllUploads(params).subscribe({
+    next: (response: any) => {
+      // debug útil
+      console.log('API uploads response:', response);
+
+      const uploads = (response?.data?.items) ?? response ?? [];
+
+      // Actualizar paginación desde la API si existe
+      const meta = response?.data?.meta;
+      if (meta) {
+        this.currentPage = meta.currentPage ?? this.currentPage;
+        this.itemsPerPage = meta.itemsPerPage ?? this.itemsPerPage;
+        this.totalPages = meta.totalPages ?? this.totalPages;
+      } else {
+        // Si la API no devuelve meta, hacer paginación cliente simple
+        this.totalPages = Math.max(1, Math.ceil(uploads.length / this.itemsPerPage));
+      }
+
+      console.log(this.currentPage,
+this.itemsPerPage,
+this.totalPages)
+
+      // Filtrado por tipo
+      this.uploads = uploads.filter((item: any) => {
         if (this.fileType === 'irc') return item.uploadType === 'IRC';
         if (this.fileType === 'facturas') return item.uploadType === 'FACTURA';
         return false;
       });
+    },
+    error: (err) => {
+      console.error('Error obteniendo uploads', err);
+      // maneja el error como prefieras (toast, fallback, etc.)
+      this.uploads = [];
+      this.totalPages = 1;
+    }
+  });
+}
 
-      console.log('FILTRADOS:', filtered);
-
-      this.uploads = filtered;
-    });
-  }
+// CAMBIO DE PÁGINA
+changePage(page: number): void {
+  if (page < 1 || page > this.totalPages) return;
+  this.openList(this.fileType, page);
+}
 
   goBack(): void {
     this.view = 'main';
@@ -103,7 +149,7 @@ export class FileUploadComponent {
         const workbook = XLSX.read(e.target.result, { type: 'array' });
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         const json = XLSX.utils.sheet_to_json<UploadRow>(sheet, { defval: '' });
-// 
+        //
         if (!json.length) throw new Error('Archivo vacío');
 
         this.previewData = this.normalizeKeys(json);
@@ -176,12 +222,12 @@ export class FileUploadComponent {
     return { records };
   }
 
- /** Normaliza fechas YYYY-MM-DD de forma segura */
-private toDate(val: any): string {
-  if (!val) return '';
+  /** Normaliza fechas YYYY-MM-DD de forma segura */
+  private toDate(val: any): string {
+    if (!val) return '';
 
-  return val.split('/').reverse().join('-');
-}
+    return val.split('/').reverse().join('-');
+  }
 
   // ======================================================
   // 🔹 Guardar y Gestionar Cargues
@@ -235,24 +281,22 @@ private toDate(val: any): string {
   // }
 
   saveUpload(): void {
-  if (!this.selectedFile) {
-    this._toast.warning('Error', '⚠️ No hay archivo seleccionado.');
-    return;
-  }
+    if (!this.selectedFile) {
+      this._toast.warning('Error', '⚠️ No hay archivo seleccionado.');
+      return;
+    }
 
-  const formData = new FormData();
-  formData.append('file', this.selectedFile);   // ⬅️ AQUÍ MANDAS EL ARCHIVO
+    const formData = new FormData();
+    formData.append('file', this.selectedFile); // ⬅️ AQUÍ MANDAS EL ARCHIVO
 
-  this.isSaving = true;
+    this.isSaving = true;
 
-  let request$ =
-    this.fileType === 'irc'
-      ? this._Service.postCargueIRCExcel(formData)
-      : this._Service.postCargueFacturasExcel(formData);
+    let request$ =
+      this.fileType === 'irc'
+        ? this._Service.postCargueIRCExcel(formData)
+        : this._Service.postCargueFacturasExcel(formData);
 
-  request$
-    .pipe(finalize(() => (this.isSaving = false)))
-    .subscribe({
+    request$.pipe(finalize(() => (this.isSaving = false))).subscribe({
       next: () => {
         const newItem: UploadItem = {
           fileName: this.previewFileName,
@@ -272,8 +316,7 @@ private toDate(val: any): string {
         this._toast.warning('Error', '❌ Error enviando el archivo.');
       },
     });
-}
-
+  }
 
   viewUpload(index: number): void {
     const item = this.uploads[this.fileType][index];
@@ -314,8 +357,6 @@ private toDate(val: any): string {
 
       this._Service.getDelete(index.id).subscribe({
         next: (response: any) => {
-    
-
           // Si tu API devuelve status 200 o un campo success
           this.openList(this.fileType);
           Swal.fire({
@@ -329,7 +370,7 @@ private toDate(val: any): string {
             },
             buttonsStyling: false,
           });
-                console.log(response);
+          console.log(response);
         },
 
         error: (err) => {

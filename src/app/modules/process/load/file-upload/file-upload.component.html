@@ -60,21 +60,19 @@
     </div>
 
     <div class="page-divider mb-3"><hr /></div>
-       <!-- Fecha Inicio -->
-  <div class="row">
+  <!-- <div class="row">
         <div class="col-md-3">
         <label class="form-label">Fecha Inicio</label>
         <input type="date" class="form-control" >
       </div>
 
-      <!-- Fecha Fin -->
       <div class="col-md-3">
         <label class="form-label">Fecha Fin</label>
         <input type="date" class="form-control" >
       </div>
       
 
-  </div>
+  </div> -->
     <!-- Tabla de Cargues -->
     <div [hidden]="previewData.length > 0" class="list-upload-view-clean mb-4 p-3">
       <div class="table-responsive clean-table-responsive">
@@ -136,6 +134,35 @@
 </tbody>
 
         </table>
+<!-- PAGINACIÓN -->
+<nav  class="mt-3">
+  <ul class="pagination justify-content-center">
+
+    <!-- Anterior -->
+    <li class="page-item" [class.disabled]="currentPage === 1">
+      <button class="page-link" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+        «
+      </button>
+    </li>
+
+    <!-- Números de página -->
+    <li class="page-item" *ngFor="let p of pages" [class.active]="currentPage === p">
+      <button class="page-link" (click)="changePage(p)">
+        {{ p }}
+      </button>
+    </li>
+
+    <!-- Siguiente -->
+    <li class="page-item" [class.disabled]="currentPage === totalPages">
+      <button class="page-link" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+        »
+      </button>
+    </li>
+
+  </ul>
+</nav>
+
+
       </div>
     </div>
 

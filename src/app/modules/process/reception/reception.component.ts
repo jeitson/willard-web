@@ -21,6 +21,7 @@ export class ReceptionComponent implements OnInit {
     transporterId: '',
     licensePlate: '',
     collectionSiteId: '',
+    recuperadoraId: '',
     driver: '',
     routeId: '',
     referenceDoc1: '',
@@ -72,6 +73,8 @@ export class ReceptionComponent implements OnInit {
   guide: string = '';
   receptionDetail: any;
   isAdmin = false;
+  agencias: any[] = [];
+  recuperadoras: any[] = [];
   constructor(
     private api: ApiService,
     private _Service: CentersService,
@@ -136,8 +139,12 @@ export class ReceptionComponent implements OnInit {
   listCollectionSite() {
     this._Service.getCollectionSites().subscribe({
       next: (response: any) => {
-        this.listCollections = response.data.items.filter(
-          (x: any) => x.siteTypeId === '48'
+        this.listCollections = response.data.items;
+        this.agencias = this.listCollections.filter(
+          (c) => String(c.siteTypeId).trim() === '49'
+        );
+        this.recuperadoras = this.listCollections.filter(
+          (c) => String(c.siteTypeId).trim() === '48'
         );
       },
       error: (error: any) => {
@@ -188,6 +195,7 @@ export class ReceptionComponent implements OnInit {
       transporterId: '',
       licensePlate: '',
       collectionSiteId: '',
+      recuperadoraId: '',
       driver: '',
       routeId: '',
       referenceDoc1: '',
@@ -393,6 +401,7 @@ export class ReceptionComponent implements OnInit {
       this.excelToJson(file)
         .then((data) => {
           this.jsonData = data;
+          console.log(this.jsonData);
           this.showTable = true;
           console.log('✅ JSON result:', this.jsonData);
         })
@@ -461,7 +470,6 @@ export class ReceptionComponent implements OnInit {
 
   // 48 = recuperadora 49 = agencia
   downloadExcel(): void {
-    // Definir encabezados
     const headers = [
       'FechaRecepcion',
       'RutaId',
@@ -488,120 +496,121 @@ export class ReceptionComponent implements OnInit {
       '20-ESTACIONARIAS',
       '19-MOTOS',
     ];
+
     const transportadores = [...this.listTransporters];
 
-    const agencias = this.listCollections.filter(
-      (c) => String(c.siteTypeId).trim() === '49'
-    );
-
-    const recuperadoras = this.listCollections.filter(
-      (c) => String(c.siteTypeId).trim() === '48'
-    );
-    console.log(agencias, recuperadoras);
     Swal.fire({
       title: 'Seleccionar',
       html: `
-    <div style="display:flex; flex-direction:column; gap:6px; font-size:13px; text-align:left; min-width:250px;">
-      
-      <!-- Transportador -->
-      <div>
-        <label for="swal-transportador" style="display:block; margin-bottom:2px;">Transportador:</label>
-        <select id="swal-transportador" class="swal2-select"
-          style="width:80%; padding:2px 2px; font-size:13px; border-radius:4px;">
-          ${transportadores
-            .map((t) => `<option value="${t.id}">${t.name}</option>`)
-            .join('')}
-        </select>
-      </div>
+      <div style="display:flex; flex-direction:column; gap:6px; font-size:13px; text-align:left; min-width:250px;">
+        
+        <!-- Transportador -->
+        <div>
+          <label for="swal-transportador" style="display:block; margin-bottom:2px;">Transportador:</label>
+          <select id="swal-transportador" class="swal2-select"
+            style="width:80%; padding:2px 2px; font-size:13px; border-radius:4px;">
+            ${transportadores
+              .map((t) => `<option value="${t.id}">${t.name}</option>`)
+              .join('')}
+          </select>
+        </div>
 
-      <!-- Agencia -->
-      <div>
-        <label for="swal-agencia" style="display:block; margin-bottom:2px;">Agencia:</label>
-        <select id="swal-agencia" class="swal2-select"
-          style="width:80%; padding:2px 2px; font-size:13px; border-radius:4px;">
-          ${agencias
-            .map((a) => `<option value="${a.id}">${a.name}</option>`)
-            .join('')}
-        </select>
-      </div>
+        <!-- Agencia -->
+        <div>
+          <label for="swal-agencia" style="display:block; margin-bottom:2px;">Agencia:</label>
+          <select id="swal-agencia" class="swal2-select"
+            style="width:80%; padding:2px 2px; font-size:13px; border-radius:4px;">
+            ${this.agencias
+              .map((a) => `<option value="${a.id}">${a.name}</option>`)
+              .join('')}
+          </select>
+        </div>
 
-      <!-- Recuperadora -->
-      <div>
-        <label for="swal-recuperadora" style="display:block; margin-bottom:2px;">Recuperadora:</label>
-        <select id="swal-recuperadora" class="swal2-select"
-          style="width:80%; padding:2px 2px; font-size:13px; border-radius:4px;">
-          ${recuperadoras
-            .map((r) => `<option value="${r.id}">${r.name}</option>`)
-            .join('')}
-        </select>
-      </div>
+        <!-- Recuperadora -->
+        <div>
+          <label for="swal-recuperadora" style="display:block; margin-bottom:2px;">Recuperadora:</label>
+          <select id="swal-recuperadora" class="swal2-select"
+            style="width:80%; padding:2px 2px; font-size:13px; border-radius:4px;">
+            ${this.recuperadoras
+              .map((r) => `<option value="${r.id}">${r.name}</option>`)
+              .join('')}
+          </select>
+        </div>
 
-    </div>
-  `,
+      </div>
+    `,
       showCancelButton: true,
       confirmButtonText: 'Generar Excel',
       preConfirm: () => {
         const transportadorId = (
           document.getElementById('swal-transportador') as HTMLSelectElement
         ).value;
-        const collectionId = (
-          document.getElementById('swal-collection') as HTMLSelectElement
+
+        const agenciaId = (
+          document.getElementById('swal-agencia') as HTMLSelectElement
         ).value;
 
-        return { transportadorId, collectionId };
+        const recuperadoraId = (
+          document.getElementById('swal-recuperadora') as HTMLSelectElement
+        ).value;
+
+        return { transportadorId, agenciaId, recuperadoraId };
       },
     }).then((result) => {
       if (result.isConfirmed) {
         const transportador = this.listTransporters.find(
           (t) => t.id === result.value.transportadorId
         );
-        const collection = this.listCollections.find(
-          (c) => c.id === result.value.collectionId
+
+        const agencia = this.agencias.find(
+          (a) => a.id === result.value.agenciaId
         );
 
-        // Primera fila de datos
+        const recuperadora = this.recuperadoras.find(
+          (r) => r.id === result.value.recuperadoraId
+        );
+
+        // Fila inicial
         const row1 = [
-          '1/08/2025', // FechadeRecepcion
-          '6070', // idRuta
-          collection?.id + '-' + collection?.name || '', // 📦 Colección seleccionada
-          transportador?.id + '-' + transportador?.name || '', // 🚛 TRANSPORTADOR (id)
-          '-',
-          'HHW-666', // PLACA- VEHICULO
-          'MARCOS PINTO', // CONDUCTOR
-          0, // 30H
-          1, // 48
-          3, // 4D
-          6, // 8D
-          0, // 22
-          0, // 24
-          0, // 27
-          0, // GRUPO 24
-          0, // GRUPO 27
-          0, // GRUPO 31
-          0, // GRUPO 35
-          0, // GRUPO 34
-          0, // GRUPO 51 Y 51R
-          0, // GRUPO 65
-          0, // GRUPO 78
-          0, // ESTACIONARIAS
-          0, // MOTOS
+          '1/08/2025', // FechaRecepcion
+          '6070', // RutaId
+          `${agencia?.id || ''} `, // ⭐ AgenciaPh
+          `${recuperadora?.id || ''} `, // ⭐ Recuperadora
+          `${transportador?.id || ''} `, // Transportador
+          'HHW-666', // Placa
+          'MARCOS PINTO', // Conductor
+          0,
+          1,
+          3,
+          6,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0, // demás columnas
         ];
 
-        // Crear hoja con cabeceras y fila inicial
         const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([
           headers,
           row1,
         ]);
 
-        // Crear libro
         const workbook: XLSX.WorkBook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Detalle');
 
-        // Descargar archivo
         XLSX.writeFile(workbook, 'estructura_productos.xlsx');
       }
     });
   }
+
   ProccessBase() {
     const result = this.transformData(this.jsonData);
     console.log(result);
@@ -616,7 +625,7 @@ export class ReceptionComponent implements OnInit {
       },
     });
 
-    this.api.post(`receptions`, { ...result, collectionSiteId: 7 }).subscribe({
+    this.api.post(`receptions`, { ...result }).subscribe({
       next: (response: any) => {
         Swal.close(); // cerramos el loading
         Swal.fire({
@@ -781,11 +790,18 @@ export class ReceptionComponent implements OnInit {
 
   saveReception(photos: any[]) {
     const reception = {
-      ...this.receptionForm,
+      routeId: this.receptionForm.routeId,
+      transporterId: this.receptionForm.transporterId,
+      agencyId: this.receptionForm.collectionSiteId,
       licensePlate: this.receptionForm.licensePlate.toUpperCase(),
-      details: this.products,
+      recuperatorId: this.receptionForm.recuperadoraId,
+      driver: this.receptionForm.driver,
+      referenceDoc1: this.receptionForm.referenceDoc1,
+      referenceDoc2: this.receptionForm.referenceDoc1,
       photos: photos,
+      details: this.products,
     };
+
     const data = {
       receptions: [reception],
     };

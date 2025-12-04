@@ -121,20 +121,28 @@
   </div>
 </div>
 
+
   <div class="page-divider mb-3">
     <hr class="mt-1 mb-1">
   </div>
   <div class="page-body">
     <div style="padding-bottom: 80px;">
       <div class="row" *ngIf="!showTable">
-        <div class="col-md-12 mb-3" *ngIf="!isAdmin">
+        <!-- <div class="col-md-12 mb-3" *ngIf="!isAdmin">
           <label class="form-control">{{role==='18'?'Agencia PH':'Recuperadora'}}: {{headacopi}}</label>
-        </div>
+        </div> -->
         <div class="col-md-12 mb-3" >
-          <label class="">Sedes de Acopio</label>
+          <label class="">Recuperadora</label>
+          <select class="form-control form-select" name="collectionssite" [(ngModel)]="receptionForm.recuperadoraId" required>
+            <option value="" selected>Seleccionar</option>
+            <option *ngFor="let opt of recuperadoras" value="{{opt.id}}">{{opt.name}}</option>
+          </select>
+        </div>
+          <div class="col-md-12 mb-3" >
+          <label class="">Agencia:</label>
           <select class="form-control form-select" name="collectionssite" [(ngModel)]="receptionForm.collectionSiteId" required>
             <option value="" selected>Seleccionar</option>
-            <option *ngFor="let opt of listCollections" value="{{opt.id}}">{{opt.name}}</option>
+            <option *ngFor="let opt of agencias" value="{{opt.id}}">{{opt.name}}</option>
           </select>
         </div>
         <div class="col-sm-6 col-md-6 mb-3">
@@ -215,42 +223,41 @@
           </div>
         </div>
       </div>
-<div class="row" *ngIf="showTable">
-  <div class="table-wrapper">
-    <table class="table table-bordered table-sm text-center align-middle w-100 custom-table">
-      <thead class="table-light">
-        <tr>
-          <!-- Columnas principales -->
-          <th>Fecha</th>
-          <th>Ruta</th>
-          <th>Agencia</th>
-          <th>Transportador</th>
-          <th>Placa</th>
-          <th>Conductor</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let row of jsonData; let i = index">
-          <td>{{ row.FechaRecepcion }}</td>
-          <td>{{ row.RutaId }}</td>
-          <td>{{ row.AgenciaPh }}</td>
-          <td>{{ row.Transportador }}</td>
-          <td>{{ row.PlacaVehiculo }}</td>
-          <td>{{ row.Conductor }}</td>
-          <td>
-            <button class="btn btn-success btn-sm" (click)="openModal(row)">
-              Ver Detalle
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-
-
+      <div class="row" *ngIf="showTable">
+        <div class="table-wrapper">
+          <table class="table table-bordered table-sm text-center align-middle w-100 custom-table">
+            <thead class="table-light">
+              <tr>
+                <!-- Columnas principales -->
+                <th>Fecha</th>
+                <th>Ruta</th>
+                <th>Agencia</th>
+                <th>Recuperadora</th>
+                <th>Transportador</th>
+                <th>Placa</th>
+                <th>Conductor</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of jsonData; let i = index">
+                <td>{{ row.FechaRecepcion }}</td>
+                <td>{{ row.RutaId }}</td>
+                <td>{{ row.AgenciaPh }}</td>
+                <td>{{ row.Recuperadora }}</td>
+                <td>{{ row.Transportador }}</td>
+                <td>{{ row.PlacaVehiculo }}</td>
+                <td>{{ row.Conductor }}</td>
+                <td>
+                  <button class="btn btn-success btn-sm" (click)="openModal(row)">
+                    Ver Detalle
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
     <div class="fixed-footer">
       <button class="btn btn-sm btn-dark" (click)="cancelReception()">Cancelar <i class="fa-solid fa-close"></i></button>
