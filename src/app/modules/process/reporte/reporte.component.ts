@@ -33,7 +33,6 @@ export class ReporteComponent {
   ngOnInit() {
     this.getData();
     this._ProductsService.getProducts().subscribe((respponse: any) => {
-      console.log(respponse);
       this.product = respponse.data.items;
     });
   }
@@ -76,7 +75,6 @@ export class ReporteComponent {
 
     this._report.getUploadsByType(this.type, params).subscribe({
       next: (res) => {
-        console.log(res);
         // CLONAR los datos para no mantener referencia
         this.resultReport = Array.isArray(res.data.items)
           ? [...res.data.items]
@@ -91,8 +89,6 @@ export class ReporteComponent {
         } else {
           this._toast.success('Éxito', 'Datos cargados correctamente.');
         }
-
-        console.log('resultReportBase', this.resultReportBase);
       },
       error: (err) => {
         console.error('Error al obtener reporte:', err);
@@ -195,7 +191,6 @@ export class ReporteComponent {
 
       this._report.generateCertificateIndividual(id, {}).subscribe({
         next: (resp) => {
-          console.log('Certificado individual generado', resp);
           this._toast.success('Éxito', 'Certificado individual generado.');
 
           // 🔄 REFRESH AUTOMÁTICO
@@ -215,7 +210,6 @@ export class ReporteComponent {
 
       this._report.generateCertificateGroup(data).subscribe({
         next: (resp) => {
-          console.log('Certificados grupales generados', resp);
           this._toast.success('Éxito', 'Certificados grupales generados.');
 
           this.searchfilter();
@@ -239,7 +233,6 @@ export class ReporteComponent {
   }
 
   generate(item: any) {
-    console.log(item);
     this._GeneralService
       .getImageDataUrlFromLocalPath1('/assets/images/firmac.png')
       .subscribe((responseimage: any) => {
@@ -249,7 +242,6 @@ export class ReporteComponent {
         };
         this._report.getCertificateData(data).subscribe({
           next: (response: any) => {
-            console.log(response);
             Certificate(this.product, response.data, responseimage);
             this._toast.success('Éxito', 'Datos del certificado obtenidos.');
           },
@@ -261,7 +253,6 @@ export class ReporteComponent {
             );
           },
         });
-        console.log(responseimage);
       });
   }
 }

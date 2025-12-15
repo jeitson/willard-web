@@ -9,7 +9,6 @@ export async function Certificate(
   data: any,
   firma: any
 ): Promise<string> {
-  console.log(data);
   return new Promise((resolve, reject) => {
     try {
       const today = new Date();

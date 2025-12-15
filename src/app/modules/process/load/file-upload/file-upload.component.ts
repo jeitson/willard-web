@@ -84,7 +84,6 @@ openList(type: FileType, page: number = 1): void {
   this._Service.getAllUploads(params).subscribe({
     next: (response: any) => {
       // debug útil
-      console.log('API uploads response:', response);
 
       const uploads = (response?.data?.items) ?? response ?? [];
 
@@ -99,9 +98,6 @@ openList(type: FileType, page: number = 1): void {
         this.totalPages = Math.max(1, Math.ceil(uploads.length / this.itemsPerPage));
       }
 
-      console.log(this.currentPage,
-this.itemsPerPage,
-this.totalPages)
 
       // Filtrado por tipo
       this.uploads = uploads.filter((item: any) => {
@@ -146,9 +142,19 @@ changePage(page: number): void {
     const reader = new FileReader();
     reader.onload = (e: any) => {
       try {
-        const workbook = XLSX.read(e.target.result, { type: 'array' });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const json = XLSX.utils.sheet_to_json<UploadRow>(sheet, { defval: '' });
+ const workbook = XLSX.read(e.target.result, {
+  type: 'array',
+  cellDates: true
+});
+
+const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+const json = XLSX.utils.sheet_to_json<UploadRow>(sheet, {
+  defval: '',
+  raw: false,
+  dateNF: 'yyyy-mm-dd'
+});
+
         //
         if (!json.length) throw new Error('Archivo vacío');
 
@@ -318,24 +324,24 @@ changePage(page: number): void {
     });
   }
 
-  viewUpload(index: number): void {
-    const item = this.uploads[this.fileType][index];
-    if (!item) return;
+  // viewUpload(index: number): void {
+  //   const item = this.uploads[this.fileType][index];
+  //   if (!item) return;
 
-    if (!item.parsedRows?.length) {
-      this._toast.info(
-        'Validar',
-        'ℹ️ No hay detalles disponibles para previsualizar este cargue.'
-      );
+  //   if (!item.parsedRows?.length) {
+  //     this._toast.info(
+  //       'Validar',
+  //       'ℹ️ No hay detalles disponibles para previsualizar este cargue.'
+  //     );
 
-      return;
-    }
+  //     return;
+  //   }
 
-    this.previewData = item.parsedRows;
-    this.previewColumns = item.columns;
-    this.previewFileName = item.fileName;
-    this.selectedRowIndex = index;
-  }
+  //   this.previewData = item.parsedRows;
+  //   this.previewColumns = item.columns;
+  //   this.previewFileName = item.fileName;
+  //   this.selectedRowIndex = index;
+  // }
 
   deleteUpload(index: any): void {
     Swal.fire({
@@ -370,9 +376,7 @@ changePage(page: number): void {
             },
             buttonsStyling: false,
           });
-          console.log(response);
         },
-
         error: (err) => {
           console.error(err);
           Swal.fire({

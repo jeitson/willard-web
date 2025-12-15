@@ -395,20 +395,22 @@ export class ReceptionComponent implements OnInit {
   headers: string[] = []; // guarda los encabezados de las columnas
 
   // Evento al seleccionar archivo
+  excelFile!: File; // 👈 propiedad del componente
+
   onFileSelectedExcel(event: any): void {
     const file: File = event.target.files[0];
-    if (file) {
-      this.excelToJson(file)
-        .then((data) => {
-          this.jsonData = data;
-          console.log(this.jsonData);
-          this.showTable = true;
-          console.log('✅ JSON result:', this.jsonData);
-        })
-        .catch((err) => {
-          console.error('❌ Error leyendo Excel:', err);
-        });
-    }
+    if (!file) return;
+
+    this.excelFile = file; // 🔥 guardamos el archivo
+
+    this.excelToJson(file)
+      .then((data) => {
+        this.jsonData = data;
+        this.showTable = true;
+      })
+      .catch((err) => {
+        console.error('❌ Error leyendo Excel:', err);
+      });
   }
 
   onFileSelected(event: any) {
@@ -462,7 +464,6 @@ export class ReceptionComponent implements OnInit {
   }
   selectedRow: any = null;
   openModal(row: any) {
-    console.log(row);
     this.selectedRow = row;
     const modal = new bootstrap.Modal(document.getElementById('detalleModal'));
     modal.show();
@@ -470,7 +471,10 @@ export class ReceptionComponent implements OnInit {
 
   // 48 = recuperadora 49 = agencia
   downloadExcel(): void {
-    const headers = [
+    /* ===============================
+     1️⃣ Columnas fijas del Excel
+  =============================== */
+    const fixedHeaders = [
       'FechaRecepcion',
       'RutaId',
       'AgenciaPh',
@@ -478,37 +482,33 @@ export class ReceptionComponent implements OnInit {
       'Transportador',
       'PlacaVehiculo',
       'Conductor',
-      '21-30H',
-      '22-48',
-      '23-4D',
-      '24-8D',
-      '16-22',
-      '17-24',
-      '18-27',
-      '10-GRUPO24',
-      '7-GRUPO27',
-      '6-GRUPO31',
-      '12-GRUPO35',
-      '8-GRUPO34',
-      '13-GRUPO51y51R',
-      '14-GRUPO65',
-      '15-GRUPO78',
-      '20-ESTACIONARIAS',
-      '19-MOTOS',
+      'Remision',
     ];
+
+    /* ===============================
+     2️⃣ Columnas dinámicas (productos)
+  =============================== */
+    const productHeaders = this.listProducts.map((p) => `${p.id}-${p.name}`);
+
+    /* ===============================
+     3️⃣ Headers finales
+  =============================== */
+    const headers = [...fixedHeaders, ...productHeaders];
 
     const transportadores = [...this.listTransporters];
 
+    /* ===============================
+     4️⃣ SweetAlert
+  =============================== */
     Swal.fire({
       title: 'Seleccionar',
       html: `
       <div style="display:flex; flex-direction:column; gap:6px; font-size:13px; text-align:left; min-width:250px;">
-        
+
         <!-- Transportador -->
         <div>
-          <label for="swal-transportador" style="display:block; margin-bottom:2px;">Transportador:</label>
-          <select id="swal-transportador" class="swal2-select"
-            style="width:80%; padding:2px 2px; font-size:13px; border-radius:4px;">
+          <label style="display:block; margin-bottom:2px;">Transportador:</label>
+          <select id="swal-transportador" class="swal2-select" style="width:80%;">
             ${transportadores
               .map((t) => `<option value="${t.id}">${t.name}</option>`)
               .join('')}
@@ -517,9 +517,8 @@ export class ReceptionComponent implements OnInit {
 
         <!-- Agencia -->
         <div>
-          <label for="swal-agencia" style="display:block; margin-bottom:2px;">Agencia:</label>
-          <select id="swal-agencia" class="swal2-select"
-            style="width:80%; padding:2px 2px; font-size:13px; border-radius:4px;">
+          <label style="display:block; margin-bottom:2px;">Agencia:</label>
+          <select id="swal-agencia" class="swal2-select" style="width:80%;">
             ${this.agencias
               .map((a) => `<option value="${a.id}">${a.name}</option>`)
               .join('')}
@@ -528,9 +527,8 @@ export class ReceptionComponent implements OnInit {
 
         <!-- Recuperadora -->
         <div>
-          <label for="swal-recuperadora" style="display:block; margin-bottom:2px;">Recuperadora:</label>
-          <select id="swal-recuperadora" class="swal2-select"
-            style="width:80%; padding:2px 2px; font-size:13px; border-radius:4px;">
+          <label style="display:block; margin-bottom:2px;">Recuperadora:</label>
+          <select id="swal-recuperadora" class="swal2-select" style="width:80%;">
             ${this.recuperadoras
               .map((r) => `<option value="${r.id}">${r.name}</option>`)
               .join('')}
@@ -545,93 +543,94 @@ export class ReceptionComponent implements OnInit {
         const transportadorId = (
           document.getElementById('swal-transportador') as HTMLSelectElement
         ).value;
-
         const agenciaId = (
           document.getElementById('swal-agencia') as HTMLSelectElement
         ).value;
-
         const recuperadoraId = (
           document.getElementById('swal-recuperadora') as HTMLSelectElement
         ).value;
-
         return { transportadorId, agenciaId, recuperadoraId };
       },
     }).then((result) => {
-      if (result.isConfirmed) {
-        const transportador = this.listTransporters.find(
-          (t) => t.id === result.value.transportadorId
-        );
+      if (!result.isConfirmed) return;
 
-        const agencia = this.agencias.find(
-          (a) => a.id === result.value.agenciaId
-        );
+      /* ===============================
+       5️⃣ Buscar entidades
+    =============================== */
+      const transportador = this.listTransporters.find(
+        (t) => t.id === result.value.transportadorId
+      );
+      const agencia = this.agencias.find(
+        (a) => a.id === result.value.agenciaId
+      );
+      const recuperadora = this.recuperadoras.find(
+        (r) => r.id === result.value.recuperadoraId
+      );
 
-        const recuperadora = this.recuperadoras.find(
-          (r) => r.id === result.value.recuperadoraId
-        );
+      /* ===============================
+       6️⃣ Valores dinámicos por producto
+    =============================== */
+      const productValues = this.listProducts.map(() => 0);
 
-        // Fila inicial
-        const row1 = [
-          '1/08/2025', // FechaRecepcion
-          '6070', // RutaId
-          `${agencia?.id || ''} `, // ⭐ AgenciaPh
-          `${recuperadora?.id || ''} `, // ⭐ Recuperadora
-          `${transportador?.id || ''} `, // Transportador
-          'HHW-666', // Placa
-          'MARCOS PINTO', // Conductor
-          0,
-          1,
-          3,
-          6,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0, // demás columnas
-        ];
+      /* ===============================
+       7️⃣ Fila de datos
+    =============================== */
+      const row1 = [
+        '1/00/0000', // FechaRecepcion
+        '0', // RutaId
+        agencia?.id || '', // AgenciaPh
+        recuperadora?.id || '', // Recuperadora
+        transportador?.id || '', // Transportador
+        'AAA-000', // PlacaVehiculo
+        'JOHN DIE', // Conductor
+        '0', // Conductor
+        ...productValues, // Productos dinámicos
+      ];
 
-        const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([
-          headers,
-          row1,
-        ]);
+      /* ===============================
+       8️⃣ Crear Excel
+    =============================== */
+      const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([
+        headers,
+        row1,
+      ]);
 
-        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Detalle');
+      const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Detalle');
 
-        XLSX.writeFile(workbook, 'estructura_productos.xlsx');
-      }
+      XLSX.writeFile(workbook, 'estructura_productos.xlsx');
     });
   }
 
   ProccessBase() {
-    const result = this.transformData(this.jsonData);
-    console.log(result);
+    if (!this.excelFile) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Archivo requerido',
+        text: 'Debe seleccionar un archivo Excel antes de procesar',
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', this.excelFile); // 👈 nombre esperado por backend
+    formData.append('originalName', this.excelFile.name);
 
     Swal.fire({
       title: 'Procesando...',
       text: 'Por favor espere un momento',
       allowOutsideClick: false,
       allowEscapeKey: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
+      didOpen: () => Swal.showLoading(),
     });
 
-    this.api.post(`receptions`, { ...result }).subscribe({
+    this.api.post(`receptions/excel`, formData).subscribe({
       next: (response: any) => {
-        Swal.close(); // cerramos el loading
+        Swal.close();
         Swal.fire({
           icon: 'success',
           title: 'Proceso completado',
-          text: 'La base se procesó correctamente',
+          text: 'El archivo fue enviado correctamente',
           timer: 2500,
           showConfirmButton: false,
         });
@@ -641,61 +640,19 @@ export class ReceptionComponent implements OnInit {
         this.editpanel = false;
       },
       error: (error: any) => {
-        Swal.close(); // cerramos el loading
+        Swal.close();
         Swal.fire({
           icon: 'error',
           title: 'Error al procesar',
-          text: error?.message || 'Hubo un problema al guardar la recepción',
+          text: error?.message || 'Error enviando el archivo',
         });
 
         this.modalloading.hide();
-        console.error('Error al guardar la recepción:', error);
+        console.error('❌ Error upload Excel:', error);
       },
     });
   }
-  transformData(jsonData: any[]) {
-    console.log(jsonData);
-    // definimos los campos que corresponden a productos
-    const productFields = [
-      '21-30H',
-      '22-48',
-      '23-4D',
-      '24-8D',
-      '16-22',
-      '17-24',
-      '18-27',
-      '10-GRUPO24',
-      '7-GRUPO27',
-      '6-GRUPO31',
-      '12-GRUPO35',
-      '8-GRUPO34',
-      '13-GRUPO51y51R',
-      '14-GRUPO65',
-      '15-GRUPO78',
-      '20-ESTACIONARIAS',
-      '19-MOTOS',
-    ];
 
-    return {
-      receptions: jsonData.map((item) => ({
-        routeId: item.RutaId,
-        transporterId: Number(item.Transportador), // lo mando como número
-        agencyId: Number(item.AgenciaPh), // lo mando como número
-        licensePlate: item.PlacaVehiculo,
-        recuperatorId: Number(item.Recuperadora),
-        driver: item.Conductor,
-        referenceDoc1: '',
-        referenceDoc2: '',
-        photos: [], // aquí luego puedes meter los objetos { url }
-        details: productFields
-          .map((field) => ({
-            productId: field.split('-')[0],
-            quantity: item[field] ?? 0,
-          }))
-          .filter((d) => d.quantity > 0), // 🔥 Solo productos con cantidad > 0
-      })),
-    };
-  }
 
   viewPhoto(item: any) {
     this.imageselect = item;
@@ -806,7 +763,6 @@ export class ReceptionComponent implements OnInit {
       receptions: [reception],
     };
 
-    console.log(data);
     this.api.post(`receptions`, data).subscribe({
       next: (response: any) => {
         this.editpanel = false;

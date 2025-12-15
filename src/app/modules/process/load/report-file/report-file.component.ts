@@ -41,7 +41,6 @@ export class ReportFileComponent {
       )
       .subscribe({
         next: (resp: HttpResponse<Blob>) => {
-          console.log('MIME TYPE recibido:', resp.body?.type);
           resp.body?.text().then((t) => console.log('Contenido recibido:', t));
 
           // Obtener nombre del archivo desde headers
